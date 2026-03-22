@@ -5,22 +5,29 @@ EARENDIL simplifies SAR operations by letting lost users know where they are, an
 
 # 1. Hardware
 
-## 1.1. Target platform and components
+## 1.1. Target platform
 
 This project is build around Raspberry Pi's RP2040 microcontroller. 
 
-- **Microcontroller + Radio:** Adafruit Feather RP2040 + RFM95
-- **Magnetometer:** [Adafruit TEXT_HERE]()
-- **Display:** [Adafruit TEXT_HERE]()
-- **GNSS receiver:** [Adafruit Ultimate GPS]()
-- **Accelerometer + Gyroscope:** [Adafruit TEXT_HERE]()
+## 1.2. Handheld components
 
-| Subsystem         | Component         | Cost (as of 2026-03-21) |
-| :----------- | :--------------: | :------: |
-| Microcontroller + Radio | Adafruit Feather RP2040 + RFM95 | $45T 
-| GNSS receiver    | Even more text   | $6B
+| Subsystem | Component | Relevant standards | Cost (as of 2026-03-21) |
+| :-------- | :-------- | :----------------- | :---------------------- |
+| Microcontroller + Radio Transceiver | [Adafruit Feather RP2040 with RFM95 LoRa Radio - 915MHz - RadioFruit and STEMMA QT](https://www.adafruit.com/product/5714) | UART, SPI, I²C, USB | $29.95 |
+| Round Display | [Adafruit 1.28" 240x240 Round TFT LCD Display with MicroSD - GC9A01A with EYESPI Connector](https://www.adafruit.com/product/6178) | SPI | $17.50
+| GNSS (GPS) receiver | [Adafruit Ultimate GPS Breakout with GLONASS + GPS - PA1616D - 99 channel w/10 Hz updates](https://www.adafruit.com/product/5440) | UART | $29.95 |
+| Magnetometer | [Adafruit Triple-axis Magnetometer - MMC5603 - STEMMA QT / Qwiic](https://www.adafruit.com/product/5579) | I²C | $5.95 |
+| Precision Altimeter | | I²C | |
+| Accelerometer + Gyroscope | | I²C | |
+| MicroSD reader | | SPI | |
 
+Other hardware includes
+- Radio antenna
+- Antenna connector
+- PCB (design pending)
+- Case (design pending)
 
+## 1.3. Node components
 
 # Software
 
@@ -83,7 +90,7 @@ Done! The Feather should be now programmed and functional.
 # Team roles
 [Subject to change as the project moves forward]
 
-- **Leo**: Embedded Systems Lead, Software Engineer (?), project ideation/vision
+- **Leo**: Embedded Systems Lead, Software Engineer (?), project ideation/vision/hardware selection (?)
 - **Stephen**: Project Lead, Software Engineer, ...
 - **Jacob**: UI/UX Software Engineer, ...
 - **Matthew**: Power Systems Engineer, ...
