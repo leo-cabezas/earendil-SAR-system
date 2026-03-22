@@ -46,7 +46,7 @@ Make sure the GNU Arm Embedded Toolchain is installed and available in your $PAT
 
 [Mention the other repos that are implicitly included in EARENDIL, that they are lean-ified, and that users are free to instead use the original repo. Annotate versions too, for completion.]
 
-# Compilation instructions (Linux)
+# 2.2. Compilation instructions (Linux)
 
 **Step 0** - Navigate to /build in your CLI:
 ```
@@ -67,13 +67,13 @@ You will use this .uf2 file to program the Adafruit Feather RP2040 + RFM95 via i
 
 #
 
-### Recompilation instructions (optional)
+### 2.2.1. Recompilation instructions (optional)
 
 When recompiling the project after modifying the source files:
 - **If CMakeLists.txt was modified:** Do ```rm -rf *```in /build, then proceed with Steps 1 and 2.
 - **Otherwise:** Proceed with Step 2. If errors are raised, use ```make clean``` then ```make```.
 
-# Upload instructions
+# 2.3. Upload instructions
 
 **Step 0** - Grab a USB-C-to-USB-A cable and plug it into the Feather's USB-C port.
  
@@ -87,7 +87,7 @@ When recompiling the project after modifying the source files:
 
 Done! The Feather should be now programmed and functional.
 
-# Team roles
+# 3. Team roles
 [Subject to change as the project moves forward]
 
 - **Leo**: Embedded Systems Lead, Software Engineer (?), project ideation/vision/hardware selection (?)
@@ -97,4 +97,4 @@ Done! The Feather should be now programmed and functional.
 
 
 
-# Remarks (if any)
+# 4. Remarks (if any)
