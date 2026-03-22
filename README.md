@@ -29,6 +29,13 @@ Other hardware includes
 
 ## 1.3. Node components
 
+| Subsystem | Component | Relevant standards | Cost (as of 2026-03-21) |
+| :-------- | :-------- | :----------------- | :---------------------- |
+| Microcontroller + Radio Transceiver | [Adafruit Feather RP2040 with RFM95 LoRa Radio - 915MHz - RadioFruit and STEMMA QT](https://www.adafruit.com/product/5714) | UART, SPI, I²C, USB | $29.95 |
+| GNSS (GPS) receiver | [Adafruit Ultimate GPS Breakout with GLONASS + GPS - PA1616D - 99 channel w/10 Hz updates](https://www.adafruit.com/product/5440) | UART | $29.95 |
+| Precision Altimeter | | I²C | |
+| MicroSD reader | | SPI | |
+
 # Software
 
 ## 2.1. Software dependencies
@@ -83,7 +90,7 @@ When recompiling the project after modifying the source files:
 
 **Step 4** - Mount the 'RPI-RP2' storage volume and upload the project's .uf2 to it.
 
-Done! The Feather should be now programmed and functional.
+*Done! The Feather should be now programmed and functional.*
 
 # 3. Team roles
 [Subject to change as the project moves forward]
