@@ -1,3 +1,7 @@
+# TO-DO:
+
+Need to add Windows + WSL section (USB attach command, etc.)
+
 # EARENDIL: A portable search-and-rescue (SAR) system
 University of Kansas --- EECS 542 (Senior Design Project) --- Team 1
 
@@ -43,9 +47,22 @@ Other hardware includes
 TO-DO: REVISE MINIMUM REQUIRED VERSIONS, DEP. VERSIONS IN GENERAL
 
 - [**pico-sdk (2.2.0)**](https://github.com/raspberrypi/pico-sdk)
+```
+git clone [pico_sdk_repo]
+```
+```
+
+```
+
 - [**FreeRTOS-Kernel (11.2.0)**](https://github.com/FreeRTOS/FreeRTOS-Kernel)
 - [**CMake (minimum 3.13)**](https://github.com/Kitware/CMake) => Must be available in your $PATH
 - [**arm-none-eabi-gcc (version?)**]() => Must be available in your $PATH
+
+In Debian based systems, do
+```
+sudo apt-get install build-essential gcc-arm-none-eabi
+```
+
 - [**arm-none-eabi-g++ (version?)**]() => Must be available in your $PATH
 - What else? Need to make sure nothing's missing.
 
@@ -54,6 +71,14 @@ Make sure the GNU Arm Embedded Toolchain is installed and available in your $PAT
 [Mention the other repos that are implicitly included in EARENDIL, that they are lean-ified, and that users are free to instead use the original repo. Annotate versions too, for completion.]
 
 ## 2.2. Compilation instructions (Linux)
+
+SUPER DUPER EXTREMELY IMPORTANT OR SERIALUSB WILL NOT WORK:
+```
+cd [path_to_pico_sdk]
+```
+```
+git submodule update --init
+```
 
 **Step 0** - Navigate to /build in your CLI:
 ```

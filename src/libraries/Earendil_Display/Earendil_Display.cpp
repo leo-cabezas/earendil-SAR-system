@@ -1,4 +1,4 @@
-#include <earendil_display.h>
+#include <Earendil_Display.h>
 
 Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 

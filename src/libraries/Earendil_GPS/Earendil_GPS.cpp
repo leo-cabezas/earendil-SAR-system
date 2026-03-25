@@ -1,4 +1,4 @@
-#include <earendil_gps.h>
+#include <Earendil_GPS.h>
 
 Adafruit_GPS GPS(&GPSSerial);
 

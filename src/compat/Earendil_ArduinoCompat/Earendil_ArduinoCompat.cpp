@@ -1,4 +1,4 @@
-#include <earendil_arduino_compat.h>
+#include <Earendil_ArduinoCompat.h>
 #include <cstdio>
 
 size_t EarendilSerial::write(uint8_t b){

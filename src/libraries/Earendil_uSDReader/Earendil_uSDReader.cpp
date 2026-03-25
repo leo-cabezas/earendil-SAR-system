@@ -1,4 +1,4 @@
-#include <earendil_usdreader.h>
+#include <Earendil_uSDReader.h>
 
 #define DISABLE_FS_H_WARNING
 #include <SdFat.h>

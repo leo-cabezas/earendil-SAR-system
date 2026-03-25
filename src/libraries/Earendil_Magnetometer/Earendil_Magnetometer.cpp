@@ -1,4 +1,4 @@
-#include <earendil_magnetometer.h>
+#include <Earendil_Magnetometer.h>
 
 Adafruit_MMC5603 mag = Adafruit_MMC5603();
 

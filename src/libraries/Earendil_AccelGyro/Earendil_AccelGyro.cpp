@@ -1,4 +1,4 @@
-#include <earendil_accelgyro.h>
+#include <Earendil_AccelGyro.h>
 
 Adafruit_LSM6DSOX sox;
 

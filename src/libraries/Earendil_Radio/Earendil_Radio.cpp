@@ -1,6 +1,6 @@
 // Simple test RX radio task.
 
-#include <earendil_radio.h>
+#include <Earendil_Radio.h>
 
 RH_RF95 rf95(RFM95_CS_PIN, RFM95_IRQ_PIN);
 

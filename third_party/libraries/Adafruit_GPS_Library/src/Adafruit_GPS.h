@@ -56,8 +56,6 @@
 #define NMEA_MAX_SOURCE_ID                                                     \
   3 ///< maximum length of a source ID name, including terminating 0
 
-// EARENDIL MODIFICATION: Added custom Serial compatibility layer for prints.
-#include <earendil_arduino_compat.h>
 #include "Arduino.h"
 #ifdef USE_SW_SERIAL
 #include <SoftwareSerial.h>

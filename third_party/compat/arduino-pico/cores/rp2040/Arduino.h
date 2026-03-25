@@ -135,7 +135,7 @@ extern const String emptyString;
 // #else
 // #include "SerialUSB.h"
 // #endif
-#include <earendil_arduino_compat.h>
+#include <Earendil_ArduinoCompat.h>
 
 #include "SerialUART.h"
 

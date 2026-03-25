@@ -1,4 +1,4 @@
-#include <earendil_altimeter.h>
+#include <Earendil_Altimeter.h>
 
 Adafruit_BMP3XX bmp;
 
