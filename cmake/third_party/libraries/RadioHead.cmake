@@ -17,29 +17,26 @@
 # ---> Dependency of:
 #         * Earendil_Radio
 
-set(RADIOHEAD_SOURCES           "")
-set(RADIOHEAD_COMPILE_DEFS      "")
-set(RADIOHEAD_LINK_LIBS         "")
-set(RADIOHEAD_HEADER_DIRS       "")
-
-if (ENABLE_RADIOHEAD)
-set(RADIOHEAD_SOURCES
+add_library(RadioHead STATIC
         ./third_party/libraries/RadioHead/RH_RF95.cpp                                   # Unmodified
         ./third_party/libraries/RadioHead/RHSPIDriver.cpp                               # Unmodified
         ./third_party/libraries/RadioHead/RHGenericDriver.cpp                           # Unmodified
         ./third_party/libraries/RadioHead/RHHardwareSPI.cpp                             # Unmodified
         ./third_party/libraries/RadioHead/RHGenericSPI.cpp                              # Unmodified
 )
-set(RADIOHEAD_COMPILE_DEFS
+target_compile_definitions(RadioHead PUBLIC
         RH_PLATFORM=RH_PLATFORM_ARDUINO         # Use Arduino libraries.
         ARDUINO=20308                           # Dummy Arduino version (anything >= 100 would work).
         ARDUINO_ARCH_RP2040                     # Use the RP2040 architecture.
-        # RH_ARDUINO_ARCH_RP2040                  #
+        RH_ARDUINO_ARCH_RP2040                  # Needed for the modification to RHHardwareSPI.cpp
 )
-set(RADIOHEAD_LINK_LIBS         # Intended for pico-sdk / FreeRTOS library dependencies only.
+target_link_libraries(RadioHead PUBLIC         # Link all pico-sdk / FreeRTOS-Kernel dependencies
         # None.
 )
-set(RADIOHEAD_HEADER_DIRS
+target_link_libraries(RadioHead PUBLIC         # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+        arduino_pico
+)
+target_include_directories(RadioHead PUBLIC
         ./third_party/libraries/RadioHead
         # Comprehensive header list for documentation purposes:
         # ./third_party/libraries/RadioHead/RH_RF95.h                                   # Unmodified
@@ -49,10 +46,5 @@ set(RADIOHEAD_HEADER_DIRS
         # ./third_party/libraries/RadioHead/RHGenericSPI.h                              # Unmodified
         # ./third_party/libraries/RadioHead/RadioHead.h                                 # Unmodified
 )
-
-# Enable all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
-set(ENABLE_ARDUINO_PICO ON)     # Enables arduino-pico.
-
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

@@ -13,13 +13,27 @@
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
 
-#include <Earendil_Radio.h>
-#include <Earendil_GPS.h>
-#include <Earendil_Display.h>
-#include <Earendil_Altimeter.h>
-#include <Earendil_AccelGyro.h>
-// #include <Earendil_uSDReader.h>
-#include <Earendil_Magnetometer.h>
+#ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
+    #include <Earendil_Radio.h>
+#endif
+#ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
+    #include <Earendil_GPS.h>
+#endif
+#ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
+    #include <Earendil_Display.h>
+#endif
+#ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
+    #include <Earendil_Altimeter.h>
+#endif
+#ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
+    #include <Earendil_AccelGyro.h>
+#endif
+#ifdef EARENDIL_USDREADER_ENABLED       // Defined in Earendil_uSDReader.cmake, when linked to CMakeLists.txt.
+    #include <Earendil_uSDReader.h>
+#endif
+#ifdef EARENDIL_MAGNETOMETER_ENABLED    // Defined in Earendil_Magnetometer.cmake, when linked to CMakeLists.txt.
+    #include <Earendil_Magnetometer.h>
+#endif
 
 void vApplicationTickHook(void) {
     // Debug print (CAREFUL: Printing every tick will flood UART).
@@ -49,6 +63,7 @@ int main() {
         for (;;);
     }
 
+
     // Declare tasks
     TaskHandle_t 
         taskRadioTX, 
@@ -60,18 +75,18 @@ int main() {
         taskCompass
     ;
 
-    // xTaskCreate(vRadioTX, "TaskRadioTX", 512, (void*)g_printMutex, 2, &taskRadioTX);
+    xTaskCreate(vRadioTX, "TaskRadioTX", 512, (void*)g_printMutex, 2, &taskRadioTX);
     // xTaskCreate(vGPS, "TaskGPS", 512, (void*)g_printMutex, 1, &taskGPS);
-    xTaskCreate(vDisplay, "TaskDisplay", 512, NULL, 1, &taskDisplay);
+    // xTaskCreate(vDisplay, "TaskDisplay", 512, NULL, 1, &taskDisplay);
     // xTaskCreate(vAltimeter, "TaskAltimeter", 512, NULL, 1, &taskAltimeter);
     // xTaskCreate(vAccelGyro, "TaskAccelGyro", 512, NULL, 1, &taskAccelGyro);
     // xTaskCreate(vMicroSD, "TaskMicroSD", 512, NULL, 1, &taskMicroSD);
     // xTaskCreate(vCompass, "TaskCompass", 512, NULL, 1, &taskCompass);
     
     // Pin tasks to cores
-    // vTaskCoreAffinitySet(taskRadioTX, 1 << 0);     // Core 0
+    vTaskCoreAffinitySet(taskRadioTX, 1 << 0);     // Core 0
     // vTaskCoreAffinitySet(taskGPS, 1 << 0);         // etc.
-    vTaskCoreAffinitySet(taskDisplay, 1 << 0);      
+    // vTaskCoreAffinitySet(taskDisplay, 1 << 0);      
     // TaskCoreAffinitySet(taskAltimeter, 1 << 0);
     // vTaskCoreAffinitySet(taskAccelGyro, 1 << 0);
     // vTaskCoreAffinitySet(taskMicroSD, 1 << 0);

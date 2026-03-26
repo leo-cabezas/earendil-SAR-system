@@ -13,19 +13,22 @@
 # ---> Dependency of:
 #         *
 
-if (EARENDIL_ARDUINOCOMPAT)
-set(EARENDIL_ARDUINOCOMPAT_SOURCES
+add_library(Earendil_ArduinoCompat STATIC
         ./src/compat/Earendil_ArduinoCompat/Earendil_ArduinoCompat.cpp
 )
-set(EARENDIL_ARDUINOCOMPAT_COMPILE_DEFS
+target_compile_definitions(Earendil_ArduinoCompat PUBLIC
         # None.
 ) 
-set(EARENDIL_ARDUINOCOMPAT_LINK_LIBS
-
+target_link_libraries(Earendil_ArduinoCompat PUBLIC    # Link all pico-sdk / FreeRTOS-Kernel dependencies
+        # None.
 )
-set(EARENDIL_ARDUINOCOMPAT_HEADER_DIRS
+target_link_libraries(Earendil_ArduinoCompat PUBLIC    # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+        ArduinoCore_API
+)
+target_include_directories(Earendil_ArduinoCompat PUBLIC
         ./src/compat/Earendil_ArduinoCompat
+        # Comprehensive header list for documentation purposes:
+        # ./src/compat/Earendil_ArduinoCompat.h
 )
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

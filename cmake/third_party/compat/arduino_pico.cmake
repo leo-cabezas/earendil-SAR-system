@@ -20,7 +20,7 @@
 #         * RadioHead
 #         * 
 
-add_library(lean_arduino_pico STATIC
+add_library(arduino_pico STATIC
         # cores/rp2040
         ./third_party/compat/arduino-pico/cores/rp2040/_freertos.cpp
         ./third_party/compat/arduino-pico/cores/rp2040/Bootsel.cpp
@@ -40,12 +40,16 @@ add_library(lean_arduino_pico STATIC
         # libraries/Wire
         ./third_party/compat/arduino-pico/libraries/Wire/Wire.cpp
 )
-target_compile_definitions(lean_arduino_pico PRIVATE
+target_compile_definitions(arduino_pico PUBLIC
         # None.
 )
-target_link_libraries(lean_arduino_pico PRIVATE # !!!!!!!!!!!!!!!!!!! TEMPORARY !!!!!!!!!!!!!!!!!!!!!!
+target_link_libraries(arduino_pico PUBLIC # !!!!!!!!!!!!!!!!!!! TEMPORARY !!!!!!!!!!!!!!!!!!!!!!
+        FreeRTOS-Kernel
+        FreeRTOS-Kernel-Heap4
+
         pico_stdlib        
         pico_rand
+
         hardware_dma
         hardware_spi
         hardware_irq
@@ -58,21 +62,25 @@ target_link_libraries(lean_arduino_pico PRIVATE # !!!!!!!!!!!!!!!!!!! TEMPORARY 
         hardware_i2c
         hardware_pwm
         hardware_adc
-        FreeRTOS-Kernel
 )
-target_link_libraries(lean_arduino_pico PRIVATE  # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
-        lean_ArduinoCore_API
-        lean_Earendil_ArduinoCompat
+target_link_libraries(arduino_pico PUBLIC  # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+        ArduinoCore_API
+        Earendil_ArduinoCompat
 )
-target_include_directories(lean_arduino_pico PRIVATE
+target_include_directories(arduino_pico PUBLIC
         ./third_party/compat/arduino-pico/cores/rp2040        
         ./third_party/compat/arduino-pico/variants/adafruit_feather_rfm
         ./third_party/compat/arduino-pico/libraries/SPI
         ./third_party/compat/arduino-pico/libraries/Wire
         # Comprehensive header list for documentation purposes:
         # cores/rp2040
+
         # variants/adafruit_feather_rfm
+
         # libraries/SPI
+
         # libraries/Wire
+
 )
+
 # ---------------------------------------------------------------------------------------------------------------

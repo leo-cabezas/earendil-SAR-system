@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Stream.h>
+#include <cstdio>
 
 class EarendilSerial : public Stream {
   public:
