@@ -1,21 +1,16 @@
-#pragma once
+#pragma once    // To prevent duplicate library imports.
 
-// Third-party libraries
-// FreeRTOS libraries
-#include <FreeRTOS.h>
-#include <task.h>
-#include <semphr.h>
-// pico-sdk libraries
-#include <pico/stdlib.h>
-#include <pico/multicore.h>
-// arduino-pico-lean libraries
-#include <Arduino.h>
-
-// Adafruit_GPS_Library libraries
-#include <Adafruit_GPS.h>
+// --- DEPENDENCIES // FreeRTOS-Kernel ---
+#include <FreeRTOS.h>           // For pdMS_TO_TICKS(), etc. Needed for task.h, semphr.h, etc.
+#include <task.h>               // For vTaskDelay(), etc.
+#include <semphr.h>             // For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
+// --- DEPENDENCIES // pico-sdk ---
+#include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
+// #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
+// --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
+#include <Adafruit_GPS.h>       // Adafruit_GPS library.
 
 #define GPSSerial Serial1
-
 #define GPSECHO false
 
 void vGPS(void* pvParameters);

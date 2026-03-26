@@ -1,7 +1,4 @@
-#include <Earendil_uSDReader.h>
-
-#define DISABLE_FS_H_WARNING
-#include <SdFat.h>
+#include <Earendil_uSDReader.h> // ATTENTION: Add all library dependencies to this header.
 
 SdExFat sd;
 ExFile file;   // or file_t depending on your setup

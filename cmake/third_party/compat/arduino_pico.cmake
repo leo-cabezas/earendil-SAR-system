@@ -8,22 +8,19 @@
 # ---> Name: arduino-pico
 # ---> Metadata:
 #         * Source:     https://github.com/earlephilhower/arduino-pico
-#         * Version: 
-#         * License: 
-#         * State:
-#         * Used in:    
+#         * Version:    
+#         * License:    
+#         * State:      Lean, Modified
+#         * Used in:    Handheld, Node
 # ---> Dependencies (libs):
-#         * 
+#         * Earendil_ArduinoCompat (due to modification)
+#         * ArduinoCore-API
 # ---> Dependency of (libs):
+#         * ??????????????????????
+#         * RadioHead
 #         * 
 
-set(ARDUINO_PICO_SOURCES        "")
-set(ARDUINO_PICO_COMPILE_DEFS   "")
-set(ARDUINO_PICO_LINK_LIBS      "")
-set(ARDUINO_PICO_HEADER_DIRS    "")
-
-if (ENABLE_ARDUINO_PICO)
-set(ARDUINO_PICO_SOURCES
+add_library(lean_arduino_pico STATIC
         # cores/rp2040
         ./third_party/compat/arduino-pico/cores/rp2040/_freertos.cpp
         ./third_party/compat/arduino-pico/cores/rp2040/Bootsel.cpp
@@ -43,24 +40,39 @@ set(ARDUINO_PICO_SOURCES
         # libraries/Wire
         ./third_party/compat/arduino-pico/libraries/Wire/Wire.cpp
 )
-set(ARDUINO_PICO_COMPILE_DEFS
+target_compile_definitions(lean_arduino_pico PRIVATE
         # None.
 )
-set(ARDUINO_PICO_LINK_LIBS
-
+target_link_libraries(lean_arduino_pico PRIVATE # !!!!!!!!!!!!!!!!!!! TEMPORARY !!!!!!!!!!!!!!!!!!!!!!
+        pico_stdlib        
+        pico_rand
+        hardware_dma
+        hardware_spi
+        hardware_irq
+        hardware_sync
+        hardware_clocks
+        hardware_pio
+        hardware_exception
+        hardware_watchdog
+        hardware_claim
+        hardware_i2c
+        hardware_pwm
+        hardware_adc
+        FreeRTOS-Kernel
 )
-set(ARDUINO_PICO_HEADER_DIRS
-        # cores/rp2040
-        ./third_party/compat/arduino-pico/cores/rp2040
-        # cores/rp2040/api
-        
-        # variants/adafruit_feather_rfm
+target_link_libraries(lean_arduino_pico PRIVATE  # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+        lean_ArduinoCore_API
+        lean_Earendil_ArduinoCompat
+)
+target_include_directories(lean_arduino_pico PRIVATE
+        ./third_party/compat/arduino-pico/cores/rp2040        
         ./third_party/compat/arduino-pico/variants/adafruit_feather_rfm
-        # libraries/SPI
         ./third_party/compat/arduino-pico/libraries/SPI
-        # libraries/Wire
         ./third_party/compat/arduino-pico/libraries/Wire
+        # Comprehensive header list for documentation purposes:
+        # cores/rp2040
+        # variants/adafruit_feather_rfm
+        # libraries/SPI
+        # libraries/Wire
 )
-endif()
-
 # ---------------------------------------------------------------------------------------------------------------

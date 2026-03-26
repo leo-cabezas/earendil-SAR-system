@@ -36,6 +36,7 @@ set(ADAFRUIT_BMP3XX_LINK_LIBS
 set(ADAFRUIT_BMP3XX_HEADER_DIRS
         ./third_party/libraries/Adafruit_BMP3XX_Library
 )
+
 endif()
 
 # ---------------------------------------------------------------------------------------------------------------

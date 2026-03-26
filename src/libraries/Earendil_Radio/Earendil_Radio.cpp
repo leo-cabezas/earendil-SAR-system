@@ -1,6 +1,4 @@
-// Simple test RX radio task.
-
-#include <Earendil_Radio.h>
+#include <Earendil_Radio.h> // ATTENTION: Add all library dependencies to this header.
 
 RH_RF95 rf95(RFM95_CS_PIN, RFM95_IRQ_PIN);
 

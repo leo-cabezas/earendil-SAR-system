@@ -36,6 +36,7 @@ set(ADAFRUIT_LSM6DS_LINK_LIBS
 set(ADAFRUIT_LSM6DS_HEADER_DIRS
         ./third_party/libraries/Adafruit_LSM6DS
 )
+
 endif()
 
 # ---------------------------------------------------------------------------------------------------------------

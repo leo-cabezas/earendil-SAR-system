@@ -1,4 +1,4 @@
-#include <Earendil_AccelGyro.h>
+#include <Earendil_AccelGyro.h> // ATTENTION: Add all library dependencies to this header.
 
 Adafruit_LSM6DSOX sox;
 

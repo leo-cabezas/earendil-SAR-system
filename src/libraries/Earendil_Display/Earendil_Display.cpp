@@ -1,4 +1,4 @@
-#include <Earendil_Display.h>
+#include <Earendil_Display.h> // ATTENTION: Add all library dependencies to this header.
 
 Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 

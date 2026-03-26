@@ -35,6 +35,7 @@ set(ADAFRUIT_MMC56X3_LINK_LIBS
 set(ADAFRUIT_MMC56X3_HEADER_DIRS
         ./third_party/libraries/Adafruit_MMC56x3
 )
+
 endif()
 
 # ---------------------------------------------------------------------------------------------------------------

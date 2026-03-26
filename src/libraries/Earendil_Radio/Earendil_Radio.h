@@ -1,27 +1,22 @@
-#pragma once
+#pragma once    // To prevent duplicate library imports.
 
-// Third-party libraries
-// FreeRTOS libraries
-#include <FreeRTOS.h>
-#include <task.h>
-#include <semphr.h>
-// pico-sdk libraries
-#include <pico/stdlib.h>
-#include <pico/multicore.h>
-// arduino-pico-lean libraries
-#include <Arduino.h>
+// --- DEPENDENCIES // FreeRTOS-Kernel ---
+#include <FreeRTOS.h>           // For pdMS_TO_TICKS(), etc. Needed for task.h, semphr.h, etc.
+#include <task.h>               // For vTaskDelay(), etc.
+#include <semphr.h>             // For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
+// --- DEPENDENCIES // pico-sdk ---
+#include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
+// #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
+// --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
+#include <RH_RF95.h>            // RadioHead library.
 
-// RadioHead libraries
-#include <RH_RF95.h>
-
-// Adafruit Feather RP2040 RFM95 default pins for the radio module
-#define RFM95_CS_PIN     16
-#define RFM95_IRQ_PIN    21
-#define RFM95_RST_PIN    17
-
-#define RFM95_SPI_BUS  spi1
-#define RFM95_SPI_MOSI   15
-#define RFM95_SPI_MISO    8
-#define RFM95_SPI_SCLK   14
+// --- RADIO TRANSCEIVER PINOUT CONFIGURATION ---
+#define RFM95_CS_PIN     16     // SPI chip-select
+#define RFM95_IRQ_PIN    21     // Interrupt pin
+#define RFM95_RST_PIN    17     // RESET pin
+#define RFM95_SPI_BUS  spi1     // Specify SPI bus (does not work with spi0)
+#define RFM95_SPI_MOSI   15     // SPI MOSI (Master-Out, Slave-In)
+#define RFM95_SPI_MISO    8     // SPI MISO (Master-In, Slave-Out)
+#define RFM95_SPI_SCLK   14     // SPI clock
 
 void vRadioTX(void* pvParameters);

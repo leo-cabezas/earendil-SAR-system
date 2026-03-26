@@ -38,6 +38,7 @@ set(ADAFRUIT_GPS_LINK_LIBS
 set(ADAFRUIT_GPS_HEADER_DIRS
         ./third_party/libraries/Adafruit_GPS_Library/src
 )
+
 endif()
 
 # ---------------------------------------------------------------------------------------------------------------

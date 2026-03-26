@@ -14,7 +14,8 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Import include paths for pico-sdk
-include(cmake/pico_sdk_import.cmake)
+include(pico_sdk_import.cmake)
+include(FreeRTOS_Kernel_import.cmake)           # Import include paths for FreeRTOS
 
 # Define C/C++ standards
 project(example C CXX ASM)
@@ -32,23 +33,21 @@ pico_sdk_init()
 
 # ---------------------------------------------------------------------------------------------------------------
 set(VALID_OUTPUT_OPTS ALL HANDHELD NODE)
-if(NOT DEFINED OUTPUT)
+if (NOT DEFINED OUTPUT)
         message(WARNING "OUTPUT was not defined, defaulting to ALL. Use -DOUTPUT=<option> (options: ${VALID_OUTPUT_OPTS}).")
         set(OUTPUT "ALL")
-elseif(NOT OUTPUT IN_LIST VALID_OUTPUT_OPTS)
+elseif (NOT OUTPUT IN_LIST VALID_OUTPUT_OPTS)
         message(FATAL_ERROR "Unknown OUTPUT: ${OUTPUT}. Please try again (options: ${VALID_OUTPUT_OPTS}).")
 endif()
 
-# ____[OPTION NAME]_____________[DESCRIPTION]________________________________________________[DEFAULT]___________
-# option(ENABLE_RADIO             "Enables the Radio subsystem"                                   ON)
-# option(ENABLE_GPS               "Enables the GPS subsystem"                                     ON)
-# option(ENABLE_ALTIMETER         "Enables the Altimeter subsystem"                               ON)
-# option(ENABLE_USDREADER         "Enables the MicroSD Reader subsystem"                          ON)
-# option(ENABLE_MAGNETOMETER      "Enables the Magnetometer subsystem"                            ON)
-# option(ENABLE_DISPLAY           "Enables the Display subsystem"                                 ON)
-# option(ENABLE_ACCELGYRO         "Enables the Accelerometer + Gyroscope subsystem"               ON)
-
+# ____[OPTION NAME]_____________________[DESCRIPTION]________________________________________[DEFAULT]___________
+option(EARENDIL_DISABLE_ALL             "Disables all Earendil libraries"                      OFF)
 # _______________________________________________________________________________________________________________
+
+set(ENABLE_DEFAULT ON)
+if (EARENDIL_DISABLE_ALL)
+        set(ENABLE_DEFAULT OFF)
+endif()
 # ---------------------------------------------------------------------------------------------------------------
 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,18 +56,17 @@ endif()
 # ===============================================================================================================
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-# ---------------------------------------------------------------------------------------------------------------
-# ____[OPTION NAME]_____________________[DESCRIPTION]________________________________________[DEFAULT]___________
+# ____[OPTION NAME]_____________________[DESCRIPTION]___________________________________[DEFAULT]________________
 # cmake/earendil/libraries
-option(ENABLE_EARENDIL_RADIO            "Enables the Earendil_Radio library"                    ON)
-option(ENABLE_EARENDIL_GPS              "Enables the Earendil_GPS library"                      ON)
-option(ENABLE_EARENDIL_ALTIMETER        "Enables the Earendil_Altimeter library"                ON)
-option(ENABLE_EARENDIL_USDREADER        "Enables the Earendil_uSDReader library"                ON)
-option(ENABLE_EARENDIL_MAGNETOMETER     "Enables the Earendil_Magnetometer library"             ON)
-option(ENABLE_EARENDIL_DISPLAY          "Enables the Earendil_Display library"                  ON)
-option(ENABLE_EARENDIL_ACCELGYRO        "Enables the Earendil_AccelGyro library"                ON)
+option(EARENDIL_RADIO            "Enables the Earendil_Radio subsystem"                 ${ENABLE_DEFAULT})
+option(EARENDIL_GPS              "Enables the Earendil_GPS subsystem"                   ${ENABLE_DEFAULT})
+option(EARENDIL_ALTIMETER        "Enables the Earendil_Altimeter subsystem"             ${ENABLE_DEFAULT})
+option(EARENDIL_USDREADER        "Enables the Earendil_uSDReader subsystem"             ${ENABLE_DEFAULT})
+option(EARENDIL_MAGNETOMETER     "Enables the Earendil_Magnetometer subsystem"          ${ENABLE_DEFAULT})
+option(EARENDIL_DISPLAY          "Enables the Earendil_Display subsystem"               ${ENABLE_DEFAULT})
+option(EARENDIL_ACCELGYRO        "Enables the Earendil_AccelGyro subsystem"             ${ENABLE_DEFAULT})
 # cmake/earendil/compat
-option(ENABLE_EARENDIL_ARDUINOCOMPAT    "Enables the Earendil_ArduinoCompat library"            ON)
+option(EARENDIL_ARDUINOCOMPAT    "Enables the Earendil_ArduinoCompat subsystem"         ${ENABLE_DEFAULT})
 # _______________________________________________________________________________________________________________
 
 # cmake/earendil/libraries
@@ -79,8 +77,7 @@ include(cmake/earendil/libraries/Earendil_uSDReader.cmake)
 include(cmake/earendil/libraries/Earendil_Magnetometer.cmake)
 include(cmake/earendil/libraries/Earendil_Display.cmake)
 include(cmake/earendil/libraries/Earendil_AccelGyro.cmake)
-# cmake/earendil/compat
-include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
+
 # ---------------------------------------------------------------------------------------------------------------
 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,12 +120,10 @@ include(cmake/third_party/compat/arduino_pico.cmake)
 include(cmake/third_party/compat/ArduinoCore_API.cmake)
 # ---------------------------------------------------------------------------------------------------------------
 
-message(STATUS "===== Build Configuration =====")
-message(STATUS "OUTPUT: ${OUTPUT}")
-message(STATUS )
-message(STATUS "---> RADIO:  ${ENABLE_EARENDIL_RADIO}")
-message(STATUS "================================")
-message(STATUS "")
+# INCLUDES HAVE TO GO IN THE ORDER OF DEPENDENCY
+# cmake/earendil/compat
+include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
+
 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # ===============================================================================================================
@@ -137,10 +132,8 @@ message(STATUS "")
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 # ---------------------------------------------------------------------------------------------------------------
-include(cmake/FreeRTOS_Kernel_import.cmake)           # Import include paths for FreeRTOS
-
 set(EARENDIL_FREERTOSCONFIG_HEADER_DIR
-        ./include
+        ./config
 )
 set(EARENDIL_HANDHELD_ENTRY_SOURCE
         ./src/FreeRTOS_Handheld.cpp             # Original (attr. Leo Cabezas)
@@ -156,7 +149,7 @@ set(EARENDIL_NODE_ENTRY_SOURCE
 # ===============================================================================================================
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-set(COMPILE_OPTS
+set(GLOBAL_COMPILE_OPTS
         $<$<COMPILE_LANG_AND_ID:C,GNU>:-fdiagnostics-color=always>
         $<$<COMPILE_LANG_AND_ID:C,Clang>:-fcolor-diagnostics>
         $<$<COMPILE_LANG_AND_ID:C,Clang,GNU>:-Wall>
@@ -165,34 +158,40 @@ set(COMPILE_OPTS
         $<$<COMPILE_LANG_AND_ID:C,Clang>:-Weverything>
 )
 
-set(LINK_LIBS
-        # Link relevant pico-sdk libraries
-        pico_stdlib # Actually an aggregate of libraries. CHECK OUT LATER ON!!!
-
-        pico_rand
-        
-        hardware_dma
-        hardware_spi
-        hardware_gpio
-        hardware_irq
-        hardware_sync
-        hardware_clocks
-        hardware_pio
-        hardware_exception
-        hardware_watchdog
-        hardware_claim
-        hardware_uart
-        hardware_i2c
-        hardware_pwm
-        hardware_adc
-        # hardware_flash
-        
-        # Link relevant FreeRTOS libraries
-        FreeRTOS-Kernel
-        FreeRTOS-Kernel-Heap4
-)
-
 # ---------------------------------------------------------------------------------------------------------------
+
+message(STATUS "\n")
+message(STATUS "===== EARENDIL LIBRARIES // CONFIGURATION =====")
+# cmake/earendil/libraries
+message(STATUS "EARENDIL_RADIO:                 ${EARENDIL_RADIO}")
+message(STATUS "EARENDIL_GPS:                   ${EARENDIL_GPS}")
+message(STATUS "EARENDIL_ALTIMETER:             ${EARENDIL_ALTIMETER}")
+message(STATUS "EARENDIL_USDREADER:             ${EARENDIL_USDREADER}")
+message(STATUS "EARENDIL_MAGNETOMETER:          ${EARENDIL_MAGNETOMETER}")
+message(STATUS "EARENDIL_DISPLAY:               ${EARENDIL_DISPLAY}")
+message(STATUS "EARENDIL_ACCELGYRO:             ${EARENDIL_ACCELGYRO}")
+# cmake/earendil/compat
+message(STATUS "EARENDIL_ARDUINOCOMPAT:         ${EARENDIL_ARDUINOCOMPAT}")
+message(STATUS "\n")
+
+message(STATUS "\n")
+message(STATUS "===== THIRD-PARTY LIBRARIES // CONFIGURATION =====")
+# cmake/third_party/libraries
+message(STATUS "ENABLE_RADIOHEAD:               ${ENABLE_RADIOHEAD}")
+message(STATUS "ENABLE_ADAFRUIT_GPS:            ${ENABLE_ADAFRUIT_GPS}")
+message(STATUS "ENABLE_ADAFRUIT_BMP3XX:         ${ENABLE_ADAFRUIT_BMP3XX}")
+message(STATUS "ENABLE_SDFAT:                   ${ENABLE_SDFAT}")
+message(STATUS "ENABLE_ADAFRUIT_MMC56X3:        ${ENABLE_ADAFRUIT_MMC56X3}")
+message(STATUS "ENABLE_ADAFRUIT_GC9A01A:        ${ENABLE_ADAFRUIT_GC9A01A}")
+message(STATUS "ENABLE_ADAFRUIT_GFX_LIBRARY:    ${ENABLE_ADAFRUIT_GFX_LIBRARY}")
+message(STATUS "ENABLE_ADAFRUIT_LSM6DS:         ${ENABLE_ADAFRUIT_LSM6DS}")
+message(STATUS "ENABLE_ADAFRUIT_BUSIO:          ${ENABLE_ADAFRUIT_BUSIO}")
+message(STATUS "ENABLE_ADAFRUIT_SENSOR:         ${ENABLE_ADAFRUIT_SENSOR}")
+# cmake/third_party/compat
+message(STATUS "ENABLE_ARDUINO_PICO:            ${ENABLE_ARDUINO_PICO}")
+message(STATUS "ENABLE_ARDUINOCORE_API:         ${ENABLE_ARDUINOCORE_API}")
+message(STATUS "\n")
+
 # EARENDIL // HANDHELD BUILD
 set(VALID_OUTPUT_OPTS_HANDHELD ALL HANDHELD)
 if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
@@ -226,7 +225,7 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         add_executable(Earendil_Handheld ${EARENDIL_HANDHELD_SOURCES})
         
         set(EARENDIL_HANDHELD_COMPILE_OPTS
-                ${COMPILE_OPTS}
+                ${GLOBAL_COMPILE_OPTS}
         )
         list(REMOVE_DUPLICATES EARENDIL_HANDHELD_COMPILE_OPTS)
         target_compile_options(Earendil_Handheld PUBLIC ${EARENDIL_HANDHELD_COMPILE_OPTS})
@@ -263,9 +262,6 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         )
 
         set(EARENDIL_HANDHELD_LINK_LIBS
-                # !!!!!!!!!!!!! TEMPORARY !!!!!!!!!!!!!!
-                ${LINK_LIBS}
-
                 # EARENDIL LIBRARIES // LINK LIBRARIES
                 ${EARENDIL_RADIO_LINK_LIBS}
                 ${EARENDIL_GPS_LINK_LIBS}

@@ -13,9 +13,9 @@
 #         * State:      Lean, 
 #         * Used in:    Handheld, Node
 # ---> Dependencies:
-#         * arduino-pico (Arduino.h, SPI.h)
+#         * arduino-pico
 # ---> Dependency of:
-#         * Earendil_Radio (Earendil_Radio.h)
+#         * Earendil_Radio
 
 set(RADIOHEAD_SOURCES           "")
 set(RADIOHEAD_COMPILE_DEFS      "")
@@ -49,6 +49,10 @@ set(RADIOHEAD_HEADER_DIRS
         # ./third_party/libraries/RadioHead/RHGenericSPI.h                              # Unmodified
         # ./third_party/libraries/RadioHead/RadioHead.h                                 # Unmodified
 )
+
+# Enable all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+set(ENABLE_ARDUINO_PICO ON)     # Enables arduino-pico.
+
 endif()
 
 # ---------------------------------------------------------------------------------------------------------------

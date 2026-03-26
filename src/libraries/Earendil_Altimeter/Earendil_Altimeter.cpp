@@ -1,4 +1,4 @@
-#include <Earendil_Altimeter.h>
+#include <Earendil_Altimeter.h> // ATTENTION: Add all library dependencies to this header.
 
 Adafruit_BMP3XX bmp;
 

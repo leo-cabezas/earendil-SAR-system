@@ -1,4 +1,4 @@
-#include <Earendil_GPS.h>
+#include <Earendil_GPS.h> // ATTENTION: Add all library dependencies to this header.
 
 Adafruit_GPS GPS(&GPSSerial);
 

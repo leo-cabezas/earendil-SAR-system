@@ -1,4 +1,4 @@
-#include <Earendil_Magnetometer.h>
+#include <Earendil_Magnetometer.h>  // ATTENTION: Add all library dependencies to this header.
 
 Adafruit_MMC5603 mag = Adafruit_MMC5603();
 
