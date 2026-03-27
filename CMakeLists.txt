@@ -69,7 +69,7 @@ option(EARENDIL_ACCELGYRO        "Enables the Earendil_AccelGyro subsystem"     
 # ---------------------------------------------------------------------------------------------------------------
 # cmake/earendil/libraries
 include(cmake/earendil/libraries/Earendil_Radio.cmake)
-# include(cmake/earendil/libraries/Earendil_GPS.cmake)
+include(cmake/earendil/libraries/Earendil_GPS.cmake)
 # include(cmake/earendil/libraries/Earendil_Altimeter.cmake)
 # include(cmake/earendil/libraries/Earendil_uSDReader.cmake)
 # include(cmake/earendil/libraries/Earendil_Magnetometer.cmake)
@@ -88,7 +88,7 @@ include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
 # ---------------------------------------------------------------------------------------------------------------
 # cmake/earendil/libraries
 include(cmake/third_party/libraries/RadioHead.cmake)
-# include(cmake/third_party/libraries/Adafruit_GPS.cmake)
+include(cmake/third_party/libraries/Adafruit_GPS.cmake)
 # include(cmake/third_party/libraries/Adafruit_BMP3XX.cmake)
 # include(cmake/third_party/libraries/SdFat.cmake)
 # include(cmake/third_party/libraries/Adafruit_MMC56x3.cmake)
@@ -123,34 +123,29 @@ message(STATUS "EARENDIL_ACCELGYRO:             ${EARENDIL_ACCELGYRO}")
 set(VALID_OUTPUT_OPTS_HANDHELD ALL HANDHELD)
 if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         add_executable(Earendil_Handheld ./src/FreeRTOS_Handheld.cpp)
-        
+        # Include FreeRTOS
+
         if (EARENDIL_RADIO)
                 target_link_libraries(Earendil_Handheld PUBLIC Earendil_Radio)
         endif()
-        
-        # if (ENABLE_GPS)
-
-        # endif()
-
-        # if (ENABLE_ALTIMETER)
-
-        # endif()
-
-        # if (ENABLE_USDREADER)
-
-        # endif()
-
-        # if (ENABLE_MAGNETOMETER)
-
-        # endif()
-
-        # if (ENABLE_DISPLAY)
-
-        # endif()
-
-        # if (ENABLE_ACCELGYRO)
-
-        # endif()
+        if (ENABLE_GPS)
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_GPS)
+        endif()
+        if (ENABLE_ALTIMETER)
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Altimeter)
+        endif()
+        if (ENABLE_USDREADER)
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_uSDReader)
+        endif()
+        if (ENABLE_MAGNETOMETER)
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Magnetometer)
+        endif()
+        if (ENABLE_DISPLAY)
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Display)
+        endif()
+        if (ENABLE_ACCELGYRO)
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_AccelGyro)
+        endif()
         
         target_compile_options(Earendil_Handheld PUBLIC 
                 $<$<COMPILE_LANG_AND_ID:C,GNU>:-fdiagnostics-color=always>

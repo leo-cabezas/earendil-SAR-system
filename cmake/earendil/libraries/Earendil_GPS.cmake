@@ -16,31 +16,24 @@
 #         * FreeRTOS_Handheld.cpp
 #         * FreeRTOS_Node.cpp
 
-set(EARENDIL_GPS_SOURCES        "")
-set(EARENDIL_GPS_COMPILE_DEFS   "")
-set(EARENDIL_GPS_LINK_LIBS      "")
-set(EARENDIL_GPS_HEADER_DIRS    "")
-
-if (EARENDIL_GPS)
-set(EARENDIL_GPS_SOURCES
+add_library(Earendil_GPS STATIC
         ./src/libraries/Earendil_GPS/Earendil_GPS.cpp
 )
-set(EARENDIL_GPS_COMPILE_DEFS
+target_compile_definitions(Earendil_GPS PUBLIC
         EARENDIL_GPS_ENABLED    # Compile definition to enable Earendil_GPS within the source code.
 ) 
-set(EARENDIL_GPS_LINK_LIBS      # ATTENTION: Intended ONLY for pico-sdk or FreeRTOS-Kernel DIRECT dependencies.
+target_link_libraries(Earendil_GPS PUBLIC       # Link all pico-sdk / FreeRTOS-Kernel dependencies
+        FreeRTOS-Kernel
+        FreeRTOS-Kernel-Heap4
         pico_stdlib             # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
-        FreeRTOS-Kernel         # Includes all relevant FreeRTOS libraries.
 )
-set(EARENDIL_GPS_HEADER_DIRS
+target_link_libraries(Earendil_GPS PUBLIC       # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+        Adafruit_GPS
+)
+target_include_directories(Earendil_GPS PUBLIC
         ./src/libraries/Earendil_GPS
         # Comprehensive header list for documentation purposes:
         # ./src/libraries/Earendil_GPS.h
 )
-
-# Enable all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
-set(ENABLE_ADAFRUIT_GPS ON)     # Enables Adafruit_GPS.
-
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

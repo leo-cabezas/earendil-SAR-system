@@ -33,14 +33,19 @@ void vRadioTX(void* pvParameters) {
 
     uint8_t count = 0;
     while (1) {
-        char buf[64];
-        int len = snprintf(buf, sizeof(buf), "Hello from FreeRTOS! #%d END_OF_MESSAGE", count++);
+        uint8_t buf[64];
+        buf[0] = (uint8_t) 40;
+        buf[1] = (uint8_t) 42;
+        buf[2] = (uint8_t) 61;
+        buf[3] = (uint8_t) 92;
+        buf[4] = (uint8_t) 'N';
+        int len = 5;
 
         // Send packet
         if (rf95.send((uint8_t*)buf, len + 1)) {
             rf95.waitPacketSent();
             if (xSemaphoreTake(g_printMutex, pdMS_TO_TICKS(100))) {
-                printf("TX: %s\n", buf);
+                printf("TX: %s\n", (char*)buf);
                 xSemaphoreGive(g_printMutex);
             }
         } else {
