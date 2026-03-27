@@ -159,7 +159,10 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         # WARNING TEMPORARY --- WARNING TEMPORARY --- WARNING TEMPORARY
         PICO_STDIO_STACK_BUFFER_SIZE=64 # use a small printf on stack buffer
         )
-        target_include_directories(FreeRTOS-Kernel INTERFACE ./config)
+        target_include_directories(FreeRTOS-Kernel INTERFACE 
+                ./config 
+                ./src/libraries
+        )
 
         # Enable USB, UART for debugging (TEMPORARY)
         pico_enable_stdio_usb(Earendil_Handheld 1)
