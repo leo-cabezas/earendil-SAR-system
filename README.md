@@ -57,6 +57,8 @@ git clone [pico_sdk_repo]
 - [**FreeRTOS-Kernel (11.2.0)**](https://github.com/FreeRTOS/FreeRTOS-Kernel)
 - [**CMake (minimum 3.13)**](https://github.com/Kitware/CMake) => Must be available in your $PATH
 - [**arm-none-eabi-gcc (version?)**]() => Must be available in your $PATH
+- [**arm-none-eabi-binutils**]
+- [**arm-none-eabi-newlib**]
 
 In Debian based systems, do
 ```
