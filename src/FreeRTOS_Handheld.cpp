@@ -35,6 +35,8 @@
     #include <Earendil_Magnetometer.h>
 #endif
 
+#include <Earendil_Types.h>
+
 void vApplicationTickHook(void) {
     // Debug print (CAREFUL: Printing every tick will flood UART).
 }
@@ -51,7 +53,16 @@ void vApplicationMallocFailedHook(void) {
     while(1);
 }
 
-SemaphoreHandle_t g_printMutex;                                                                                                 
+
+SemaphoreHandle_t g_printMutex;
+ModuleData_t sensorData;
+RadioData_t radioData;
+GPSData_t gpsData;
+Handheld_Shared_t handheldShared;
+handheldShared.sensorData = &sensorData;
+handheldShared.radioData = &radioData;
+handheldShared.gpsData = &gpsData;
+handheldShared.g_printMutex = &g_printMutex;
 
 int main() {
     stdio_init_all();
@@ -65,37 +76,37 @@ int main() {
 
     #ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskRadioTX;
-        xTaskCreate(vRadioTX, "TaskRadioTX", 512, (void*)g_printMutex, 2, &taskRadioTX);
+        xTaskCreate(vRadioTX, "TaskRadioTX", 512, (void*)handheldShared, 2, &taskRadioTX);
         vTaskCoreAffinitySet(taskRadioTX, 1 << 0);     // Core 0
     #endif
     #ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskGPS;
-        xTaskCreate(vGPS, "TaskGPS", 512, (void*)g_printMutex, 1, &taskGPS);
+        xTaskCreate(vGPS, "TaskGPS", 512, (void*)handheldShared, 1, &taskGPS);
         vTaskCoreAffinitySet(taskGPS, 1 << 0);
     #endif
     #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskDisplay;
-        xTaskCreate(vDisplay, "TaskDisplay", 512, NULL, 1, &taskDisplay);
+        xTaskCreate(vDisplay, "TaskDisplay", 512, (void*)handheldShared, 1, &taskDisplay);
         vTaskCoreAffinitySet(taskDisplay, 1 << 0);
     #endif
     #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskAltimeter;
-        xTaskCreate(vAltimeter, "TaskAltimeter", 512, NULL, 1, &taskAltimeter);
+        xTaskCreate(vAltimeter, "TaskAltimeter", 512, (void*)handheldShared, 1, &taskAltimeter);
         vTaskCoreAffinitySet(taskAltimeter, 1 << 0);
     #endif
     #ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskAccelGyro;
-        xTaskCreate(vAccelGyro, "TaskAccelGyro", 512, NULL, 1, &taskAccelGyro);
+        xTaskCreate(vAccelGyro, "TaskAccelGyro", 512, (void*)handheldShared, 1, &taskAccelGyro);
         vTaskCoreAffinitySet(taskAccelGyro, 1 << 0);
     #endif
     #ifdef EARENDIL_USDREADER_ENABLED       // Defined in Earendil_uSDReader.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskMicroSD;
-        xTaskCreate(vMicroSD, "TaskMicroSD", 512, NULL, 1, &taskMicroSD);
+        xTaskCreate(vMicroSD, "TaskMicroSD", 512, (void*)handheldShared, 1, &taskMicroSD);
         vTaskCoreAffinitySet(taskMicroSD, 1 << 0);
     #endif
     #ifdef EARENDIL_MAGNETOMETER_ENABLED    // Defined in Earendil_Magnetometer.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskCompass;
-        xTaskCreate(vCompass, "TaskCompass", 512, NULL, 1, &taskCompass);
+        xTaskCreate(vCompass, "TaskCompass", 512, (void*)handheldShared, 1, &taskCompass);
         vTaskCoreAffinitySet(taskCompass, 1 << 0);
     #endif
     

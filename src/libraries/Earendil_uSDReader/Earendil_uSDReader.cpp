@@ -6,7 +6,7 @@ ExFile file;   // or file_t depending on your setup
 void vMicroSD() {
   (void) pvParameters;
 
-  if (!sd.begin(13)) {
+  if (!sd.begin(USD_CS)) {
     Serial.println("SD init failed!");
     return;
   }

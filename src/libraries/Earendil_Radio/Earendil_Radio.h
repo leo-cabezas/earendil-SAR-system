@@ -20,3 +20,5 @@
 #define RFM95_SPI_SCLK   14     // SPI clock
 
 void vRadioTX(void* pvParameters);
+
+void vRadioRX(void* pvParameters);

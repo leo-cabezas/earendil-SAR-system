@@ -13,3 +13,5 @@
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 void vAltimeter(void* pvParameters);
+
+void vAltimeter_test(void* pvParameters);
