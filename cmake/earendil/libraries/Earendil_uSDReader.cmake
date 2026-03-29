@@ -15,29 +15,26 @@
 #         * FreeRTOS_Handheld.cpp
 #         * FreeRTOS_Node.cpp
 
-set(EARENDIL_USDREADER_SOURCES          "")
-set(EARENDIL_USDREADER_COMPILE_DEFS     "")
-set(EARENDIL_USDREADER_LINK_LIBS        "")
-set(EARENDIL_USDREADER_HEADER_DIRS      "")
+include_guard()
 
-if (EARENDIL_USDREADER)
-set(EARENDIL_USDREADER_SOURCES
+add_library(Earendil_uSDReader STATIC
         ./src/libraries/Earendil_uSDReader/Earendil_uSDReader.cpp
 )
-set(EARENDIL_USDREADER_COMPILE_DEFS
-        EARENDIL_USREADER_ENABLED       # Compile definition to enable Earendil_Radio within the source code.
+target_compile_definitions(Earendil_uSDReader PUBLIC
+        EARENDIL_USDREADER_ENABLED       # Compile definition to enable Earendil_Radio within the source code.
 )
-set(EARENDIL_USDREADER_LINK_LIBS        # ATTENTION: Intended ONLY for pico-sdk or FreeRTOS-Kernel DIRECT dependencies.
-        # Don't know yet.
+target_link_libraries(Earendil_uSDReader PUBLIC # Link all pico-sdk / FreeRTOS-Kernel dependencies.
+        FreeRTOS-Kernel
+        FreeRTOS-Kernel-Heap4
+        pico_stdlib             # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
 )
-set(EARENDIL_USDREADER_HEADER_DIRS
+target_link_libraries(Earendil_uSDReader PUBLIC # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        SdFat
+)
+target_include_directories(Earendil_uSDReader PUBLIC
         ./src/libraries/Earendil_uSDReader
         # Comprehensive header list for documentation purposes:
         # ./src/libraries/Earendil_uSDReader.h
 )
 
-# Enable all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
-set(ENABLE_SDFAT ON)                    # Enables SdFat.
-
-endif()
 # ---------------------------------------------------------------------------------------------------------------

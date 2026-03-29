@@ -8,34 +8,37 @@
 # ---> Name: Adafruit_MMC56x3
 # ---> Metadata:
 #         * Source:     https://github.com/adafruit/Adafruit_MMC56x3
-#         * Version:    
-#         * License: 
-#         * State:
-#         * Used in:    
+#         * Version:    1.0.2
+#         * License:    BSD License (???)
+#         * State:      Lean, Unmodified
+#         * Used in:    Handheld
 # ---> Dependencies (libs):
-#         * 
+#         * arduino_pico
+#         * Adafruit_BusIO
+#         * Adafruit_Sensor
 # ---> Dependency of (libs):
-#         * 
+#         * Earendil_Magnetometer
 
-set(ADAFRUIT_MMC56X3_SOURCES            "")
-set(ADAFRUIT_MMC56X3_COMPILE_DEFS       "")
-set(ADAFRUIT_MMC56X3_LINK_LIBS          "")
-set(ADAFRUIT_MMC56X3_HEADER_DIRS        "")
+include_guard()
 
-if (ENABLE_ADAFRUIT_MMC56X3)
-set(ADAFRUIT_MMC56X3_SOURCES
-        ./third_party/libraries/Adafruit_MMC56x3/Adafruit_MMC56x3.cpp                       # Unmodified
+add_library(Adafruit_MMC56x3 STATIC
+        ./third_party/libraries/Adafruit_MMC56x3/Adafruit_MMC56x3.cpp                   # Unmodified
 )
-set(ADAFRUIT_MMC56X3_COMPILE_DEFS
+target_compile_definitions(Adafruit_MMC56x3 PUBLIC
         # None.
 )
-set(ADAFRUIT_MMC56X3_LINK_LIBS
-
+target_link_libraries(Adafruit_MMC56x3 PUBLIC   # Link all pico-sdk / FreeRTOS-Kernel dependencies.
+        # None.
 )
-set(ADAFRUIT_MMC56X3_HEADER_DIRS
+target_link_libraries(Adafruit_MMC56x3 PUBLIC   # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        arduino_pico
+        Adafruit_BusIO
+        Adafruit_Sensor
+)
+target_include_directories(Adafruit_MMC56x3 PUBLIC
         ./third_party/libraries/Adafruit_MMC56x3
+        # Comprehensive header list for documentation purposes:
+        # ./third_party/libraries/Adafruit_MMC56x3/Adafruit_MMC56x3.h                   # Unmodified
 )
-
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

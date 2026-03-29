@@ -2,6 +2,7 @@
 
 Adafruit_BMP3XX bmp;
 
+
 //NEED TO VERIFY THESE EQUATIONS -- LIKELY WRONG
 static inline float hypsometric_altitude(float temp, float pressure){
   float altitude = (temp / LAPSE_RATE) * (pow(SEALEVELPRESSURE_HPA / pressure, HYPSOMETRIC_CONSTANT) - 1);
@@ -13,8 +14,9 @@ static inline float hypsometric_pressure(float temp, float pressure){
   return sealevelpressure;
 }
 
+
 void vAltimeter(void* pvParameters){
-  //(void) pvParameters;
+  // (void) pvParameters;
   moduleData_t* sensorData = (moduleData_t*)pvParameters;
   
   vTaskDelay(pdMS_TO_TICKS(10000));

@@ -10,14 +10,16 @@
 #         * Source:     https://github.com/greiman/SdFat
 #         * Version: 
 #         * License: 
-#         * State:
-#         * Used in:    
-# ---> Dependencies (libs):
-#         * 
+#         * State:      PENDING LEANIFICATION
+#         * Used in:    Handheld, Node    
+# ---> Dependencies:
+#         * ???
 # ---> Dependency of (libs):
-#         * 
+#         * Earendil_uSDReader
 
-set(SDFAT_SOURCES
+include_guard()
+
+add_library(SdFat STATIC
         ./third_party/libraries/SdFat/src/FreeStack.cpp
         ./third_party/libraries/SdFat/src/MinimumSerial.cpp
         ./third_party/libraries/SdFat/src/common/FmtNumber.cpp
@@ -61,13 +63,16 @@ set(SDFAT_SOURCES
         ./third_party/libraries/SdFat/src/SdCard/SdSpiCard/SpiDriver/SdSpiTeensy3.cpp
         ./third_party/libraries/SdFat/src/SdCard/TeensySdio/TeensySdio.cpp
 )
-set(SDFAT_COMPILE_DEFS
+target_compile_definitions(SdFat PUBLIC
+        ARDUINO
+)
+target_link_libraries(SdFat PUBLIC
         # None.
 )
-set(SDFAT_LINK_LIBS
-
+target_link_libraries(SdFat PUBLIC
+        arduino_pico
 )
-set(SDFAT_HEADER_DIRS
+target_include_directories(SdFat PUBLIC
         ./third_party/libraries/SdFat/src
         ./third_party/libraries/SdFat/src/common
         ./third_party/libraries/SdFat/src/ExFatLib
@@ -81,6 +86,8 @@ set(SDFAT_HEADER_DIRS
         ./third_party/libraries/SdFat/src/SdCard/SdSpiCard/SpiDriver/DigitalIO
         ./third_party/libraries/SdFat/src/SdCard/SdSpiCard/SpiDriver/DigitalIO/boards
         ./third_party/libraries/SdFat/src/SdCard/TeensySdio
+        # Comprehensive header list for documentation purposes:
+        # Pending leanification before a list can be made!!!
 )
 
 # ---------------------------------------------------------------------------------------------------------------

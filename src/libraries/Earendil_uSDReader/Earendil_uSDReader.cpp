@@ -3,18 +3,18 @@
 SdExFat sd;
 ExFile file;   // or file_t depending on your setup
 
-void vMicroSD() {
+void vMicroSD(void* pvParameters) {
   (void) pvParameters;
 
   if (!sd.begin(USD_CS)) {
     Serial.println("SD init failed!");
-    return;
+    while(1);
   }
 
   // Open file
   if (!file.open("test.txt", O_WRONLY | O_CREAT | O_APPEND)) {
     Serial.println("Open failed");
-    return;
+    while(1);
   }
 
   // Write data

@@ -3,7 +3,7 @@
 Adafruit_GPS GPS(&GPSSerial);
 
 void vGPS(void* pvParameters){
-  SemaphoreHandle_t g_printMutex = (SemaphoreHandle_t)pvParameters;
+  (void)pvParameters;
 
   vTaskDelay(pdMS_TO_TICKS(5000));
 

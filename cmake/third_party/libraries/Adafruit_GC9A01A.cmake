@@ -17,24 +17,25 @@
 # ---> Dependency of (libs):
 #         * 
 
-set(ADAFRUIT_GC9A01A_SOURCES            "")
-set(ADAFRUIT_GC9A01A_COMPILE_DEFS       "")
-set(ADAFRUIT_GC9A01A_LINK_LIBS          "")
-set(ADAFRUIT_GC9A01A_HEADER_DIRS        "")
+include_guard()
 
-if(ENABLE_ADAFRUIT_GC9A01A)
-set(ADAFRUIT_GC9A01A_SOURCES
+add_library(Adafruit_GC9A01A STATIC
         ./third_party/libraries/Adafruit_GC9A01A/Adafruit_GC9A01A.cpp                       # Unmodified
 )
-set(ADAFRUIT_GC9A01A_COMPILE_DEFS
+target_compile_definitions(Adafruit_GC9A01A PUBLIC
         # None.
 )
-set(ADAFRUIT_GC9A01A_LINK_LIBS
-
+target_link_libraries(Adafruit_GC9A01A PUBLIC   # Link all pico-sdk / FreeRTOS-Kernel dependencies.
+        # None.
 )
-set(ADAFRUIT_GC9A01A_HEADER_DIRS
+target_link_libraries(Adafruit_GC9A01A PUBLIC   # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        arduino_pico
+        Adafruit_GFX_Library
+)
+target_include_directories(Adafruit_GC9A01A PUBLIC
         ./third_party/libraries/Adafruit_GC9A01A
+        # Comprehensive header list for documentation purposes:
+        # ./third_party/libraries/Adafruit_GC9A01A/Adafruit_GC9A01A.h
 )
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

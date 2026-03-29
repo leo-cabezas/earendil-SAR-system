@@ -13,11 +13,13 @@
 # ---> Dependency of:
 #         *
 
+include_guard()
+
 add_library(Earendil_ArduinoCompat STATIC
         ./src/compat/Earendil_ArduinoCompat/Earendil_ArduinoCompat.cpp
 )
 target_compile_definitions(Earendil_ArduinoCompat PUBLIC
-        # None.
+        EARENDIL_ARDUINOCOMPAT_ENABLED  # Compile definition to enable Earendil_ArduinoCompat within the source code.
 ) 
 target_link_libraries(Earendil_ArduinoCompat PUBLIC    # Link all pico-sdk / FreeRTOS-Kernel dependencies
         # None.

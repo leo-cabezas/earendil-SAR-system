@@ -10,6 +10,8 @@
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <RH_RF95.h>            // RadioHead library.
 
+#include <Earendil_Types.h>
+
 // --- RADIO TRANSCEIVER PINOUT CONFIGURATION ---
 #define RFM95_CS_PIN     16     // SPI chip-select
 #define RFM95_IRQ_PIN    21     // Interrupt pin

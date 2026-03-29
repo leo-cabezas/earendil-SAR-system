@@ -16,6 +16,8 @@
 #         * FreeRTOS_Handheld.cpp
 #         * FreeRTOS_Node.cpp
 
+include_guard()
+
 add_library(Earendil_GPS STATIC
         ./src/libraries/Earendil_GPS/Earendil_GPS.cpp
 )

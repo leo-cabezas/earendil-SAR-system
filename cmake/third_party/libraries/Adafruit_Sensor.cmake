@@ -8,34 +8,34 @@
 # ---> Name: Adafruit_Sensor
 # ---> Metadata:
 #         * Source:     https://github.com/adafruit/Adafruit_Sensor
-#         * Version: 
-#         * License: 
-#         * State:
-#         * Used in:    
-# ---> Dependencies (libs):
-#         * 
-# ---> Dependency of (libs):
-#         * 
+#         * Version:    1.1.15
+#         * License:    Apache License (???)
+#         * State:      Lean, Unmodified
+#         * Used in:    Handheld, Node
+# ---> Dependencies:
+#         * arduino_pico
+# ---> Dependency of:
+#         * Adafruit_BMP3XX
+#         * Adafruit_MMC56x3 (???)
 
-set(ADAFRUIT_SENSOR_SOURCES             "")
-set(ADAFRUIT_SENSOR_COMPILE_DEFS        "")
-set(ADAFRUIT_SENSOR_LINK_LIBS           "")
-set(ADAFRUIT_SENSOR_HEADER_DIRS         "")
+include_guard()
 
-if (ENABLE_ADAFRUIT_SENSOR)
-set(ADAFRUIT_SENSOR_SOURCES
-        ./third_party/libraries/Adafruit_Unified_Sensor/Adafruit_Sensor.cpp                 # Unmodified
+add_library(Adafruit_Sensor STATIC
+        ./third_party/libraries/Adafruit_Unified_Sensor/Adafruit_Sensor.cpp             # Unmodified
 )
-set(ADAFRUIT_SENSOR_COMPILE_DEFS
+target_compile_definitions(Adafruit_Sensor PUBLIC
+        ARDUINO=20308                           # Dummy Arduino version (anything >= 100 would work).
+)
+target_link_libraries(Adafruit_Sensor PUBLIC    # Link all pico-sdk / FreeRTOS-Kernel dependencies.
         # None.
 )
-set(ADAFRUIT_SENSOR_LINK_LIBS
-
+target_link_libraries(Adafruit_Sensor PUBLIC    # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        arduino_pico
 )
-set(ADAFRUIT_SENSOR_HEADER_DIRS
+target_include_directories(Adafruit_Sensor PUBLIC
         ./third_party/libraries/Adafruit_Unified_Sensor
+        # Comprehensive header list for documentation purposes:
+        # ./third_party/libraries/Adafruit_Unified_Sensor/Adafruit_Sensor.h             # Unmodified
 )
-
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

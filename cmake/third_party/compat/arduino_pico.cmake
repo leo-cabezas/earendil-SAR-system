@@ -12,13 +12,15 @@
 #         * License:    
 #         * State:      Lean, Modified
 #         * Used in:    Handheld, Node
-# ---> Dependencies (libs):
+# ---> Dependencies:
 #         * Earendil_ArduinoCompat (due to modification)
 #         * ArduinoCore-API
-# ---> Dependency of (libs):
+# ---> Dependency of:
 #         * ??????????????????????
 #         * RadioHead
 #         * 
+
+include_guard()
 
 add_library(arduino_pico STATIC
         # cores/rp2040

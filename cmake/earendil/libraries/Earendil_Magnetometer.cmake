@@ -15,31 +15,26 @@
 # ---> Dependency of:
 #         * FreeRTOS_Handheld.cpp
 
-set(EARENDIL_MAGNETOMETER_SOURCES       "")
-set(EARENDIL_MAGNETOMETER_COMPILE_DEFS  "")
-set(EARENDIL_MAGNETOMETER_LINK_LIBS     "")
-set(EARENDIL_MAGNETOMETER_HEADER_DIRS   "")
+include_guard()
 
-if (EARENDIL_MAGNETOMETER)
-set(EARENDIL_MAGNETOMETER_SOURCES
+add_library(Earendil_Magnetometer STATIC
         ./src/libraries/Earendil_Magnetometer/Earendil_Magnetometer.cpp
 )
-set(EARENDIL_MAGNETOMETER_COMPILE_DEFS
+target_compile_definitions(Earendil_Magnetometer PUBLIC
         EARENDIL_MAGNETOMETER_ENABLED   # Compile definition to enable Earendil_Radio within the source code.
 ) 
-set(EARENDIL_MAGNETOMETER_LINK_LIBS     # ATTENTION: Intended ONLY for pico-sdk or FreeRTOS-Kernel DIRECT dependencies.
-        pico_stdlib                     # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
-        FreeRTOS-Kernel                 # Includes all relevant FreeRTOS libraries.
+target_link_libraries(Earendil_Magnetometer PUBLIC      # Link all pico-sdk / FreeRTOS-Kernel dependencies.
+        FreeRTOS-Kernel
+        FreeRTOS-Kernel-Heap4
+        pico_stdlib             # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
 )
-set(EARENDIL_MAGNETOMETER_HEADER_DIRS
+target_link_libraries(Earendil_Magnetometer PUBLIC      # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        Adafruit_MMC56x3
+)
+target_include_directories(Earendil_Magnetometer PUBLIC
         ./src/libraries/Earendil_Magnetometer
         # Comprehensive header list for documentation purposes:
         # ./src/libraries/Earendil_Magnetometer.h
 )
-
-# Enable all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
-set(ENABLE_ADAFRUIT_MMC56X3 ON)         # Enables Adafruit_MMC56x3.
-
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

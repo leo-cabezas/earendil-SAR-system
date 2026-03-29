@@ -17,11 +17,13 @@
 # ---> Dependency of (libs):
 #         * 
 
+include_guard()
+
 add_library(Adafruit_GPS STATIC
-        ./third_party/libraries/Adafruit_GPS_Library/src/Adafruit_GPS.cpp                   # Unmodified
-        ./third_party/libraries/Adafruit_GPS_Library/src/NMEA_build.cpp                     # Unmodified
-        ./third_party/libraries/Adafruit_GPS_Library/src/NMEA_data.cpp                      # Unmodified
-        ./third_party/libraries/Adafruit_GPS_Library/src/NMEA_parse.cpp                     # Unmodified
+        ./third_party/libraries/Adafruit_GPS_Library/src/Adafruit_GPS.cpp               # Unmodified
+        ./third_party/libraries/Adafruit_GPS_Library/src/NMEA_build.cpp                 # Unmodified
+        ./third_party/libraries/Adafruit_GPS_Library/src/NMEA_data.cpp                  # Unmodified
+        ./third_party/libraries/Adafruit_GPS_Library/src/NMEA_parse.cpp                 # Unmodified
 )
 target_compile_definitions(Adafruit_GPS PUBLIC
         # None.
@@ -35,9 +37,9 @@ target_link_libraries(Adafruit_GPS PUBLIC       # Link all non-(pico-sdk / FreeR
 target_include_directories(Adafruit_GPS PUBLIC
         ./third_party/libraries/Adafruit_GPS_Library/src
         # Comprehensive header list for documentation purposes:
-        # ./third_party/libraries/Adafruit_GPS_Library/src/Adafruit_GPS.h
-        # ./third_party/libraries/Adafruit_GPS_Library/src/Adafruit_PMTK.h
-        # ./third_party/libraries/Adafruit_GPS_Library/src/NMEA_data.h
+        # ./third_party/libraries/Adafruit_GPS_Library/src/Adafruit_GPS.h               # Unmodified
+        # ./third_party/libraries/Adafruit_GPS_Library/src/Adafruit_PMTK.h              # Unmodified
+        # ./third_party/libraries/Adafruit_GPS_Library/src/NMEA_data.h                  # Unmodified
 )
 
 # ---------------------------------------------------------------------------------------------------------------
