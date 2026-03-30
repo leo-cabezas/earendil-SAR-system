@@ -16,8 +16,10 @@
 # ---> Dependency of (libs):
 #         * 
 
+include_guard()
+
 add_library(ArduinoCore_API STATIC
-        ./third_party/compat/arduino-pico/cores/rp2040/api/Common.cpp                       # Unmodified (???)
+        ./third_party/compat/arduino-pico/cores/rp2040/api/Common.cpp           # Unmodified (???)
         ./third_party/compat/arduino-pico/cores/rp2040/api/Print.cpp
         ./third_party/compat/arduino-pico/cores/rp2040/api/Stream.cpp
         ./third_party/compat/arduino-pico/cores/rp2040/api/String.cpp

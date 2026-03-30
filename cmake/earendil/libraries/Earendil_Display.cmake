@@ -15,31 +15,26 @@
 # ---> Dependency of:
 #         * FreeRTOS_Handheld.cpp
 
-set(EARENDIL_DISPLAY_SOURCES            "")
-set(EARENDIL_DISPLAY_COMPILE_DEFS       "")
-set(EARENDIL_DISPLAY_LINK_LIBS          "")
-set(EARENDIL_DISPLAY_HEADER_DIRS        "")
+include_guard()
 
-if (EARENDIL_DISPLAY)
-set(EARENDIL_DISPLAY_SOURCES
+add_library(Earendil_Display STATIC
         ./src/libraries/Earendil_Display/Earendil_Display.cpp
 )
-set(EARENDIL_DISPLAY_COMPILE_DEFS
+target_compile_definitions(Earendil_Display PUBLIC
         EARENDIL_DISPLAY_ENABLED        # Compile definition to enable Earendil_GPS within the source code.
 ) 
-set(EARENDIL_DISPLAY_LINK_LIBS          # ATTENTION: Intended ONLY for pico-sdk or FreeRTOS-Kernel DIRECT dependencies.
-        pico_stdlib                     # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
-        FreeRTOS-Kernel                 # Includes all relevant FreeRTOS libraries.
+target_link_libraries(Earendil_Display PUBLIC   # Link all pico-sdk / FreeRTOS-Kernel dependencies.
+        FreeRTOS-Kernel
+        FreeRTOS-Kernel-Heap4
+        pico_stdlib             # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
 )
-set(EARENDIL_DISPLAY_HEADER_DIRS
+target_link_libraries(Earendil_Display PUBLIC   # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        Adafruit_GC9A01A
+)
+target_include_directories(Earendil_Display PUBLIC
         ./src/libraries/Earendil_Display
         # Comprehensive header list for documentation purposes:
         # ./src/libraries/Earendil_Display.h
 )
-
-# Enable all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
-set(ENABLE_ADAFRUIT_GC9A01A ON)         # Enables Adafruit_GC9A01A.
-
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

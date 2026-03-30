@@ -16,18 +16,20 @@
 #         * FreeRTOS_Handheld.cpp
 #         * FreeRTOS_Node.cpp
 
+include_guard()
+
 add_library(Earendil_Radio STATIC
         ./src/libraries/Earendil_Radio/Earendil_Radio.cpp
 )
 target_compile_definitions(Earendil_Radio PUBLIC
         EARENDIL_RADIO_ENABLED  # Compile definition to enable Earendil_Radio within the source code.
 ) 
-target_link_libraries(Earendil_Radio PUBLIC    # Link all pico-sdk / FreeRTOS-Kernel dependencies
+target_link_libraries(Earendil_Radio PUBLIC    # Link all pico-sdk / FreeRTOS-Kernel dependencies.
         FreeRTOS-Kernel
         FreeRTOS-Kernel-Heap4
         pico_stdlib             # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
 )
-target_link_libraries(Earendil_Radio PUBLIC    # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+target_link_libraries(Earendil_Radio PUBLIC    # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
         RadioHead
 )
 target_include_directories(Earendil_Radio PUBLIC

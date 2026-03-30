@@ -10,33 +10,37 @@
 #         * Source:     https://github.com/adafruit/Adafruit_LSM6DS
 #         * Version: 
 #         * License: 
-#         * State:
-#         * Used in:    
+#         * State:      Lean, Unmodified
+#         * Used in:    Handheld
 # ---> Dependencies (libs):
-#         * 
+#         * arduino-pico
+#         * Adafruit_BusIO
+#         * Adafruit_Sensor
 # ---> Dependency of (libs):
-#         * 
+#         * Earendil_AccelGyro
 
-set(ADAFRUIT_LSM6DS_SOURCES             "")
-set(ADAFRUIT_LSM6DS_COMPILE_DEFS        "")
-set(ADAFRUIT_LSM6DS_LINK_LIBS           "")
-set(ADAFRUIT_LSM6DS_HEADER_DIRS         "")
+include_guard()
 
-if (ENABLE_ADAFRUIT_LSM6DS)
-set(ADAFRUIT_LSM6DS_SOURCES
-        ./third_party/libraries/Adafruit_LSM6DS/Adafruit_LSM6DS.cpp                         # Unmodified
-        ./third_party/libraries/Adafruit_LSM6DS/Adafruit_LSM6DSOX.cpp                       # Unmodified
+add_library(Adafruit_LSM6DS STATIC
+        ./third_party/libraries/Adafruit_LSM6DS/Adafruit_LSM6DS.cpp                     # Unmodified
+        ./third_party/libraries/Adafruit_LSM6DS/Adafruit_LSM6DSOX.cpp                   # Unmodified
 )
-set(ADAFRUIT_LSM6DS_COMPILE_DEFS
+target_compile_definitions(Adafruit_LSM6DS PUBLIC
         # None.
 )
-set(ADAFRUIT_LSM6DS_LINK_LIBS
-
+target_link_libraries(Adafruit_LSM6DS PUBLIC    # Link all pico-sdk / FreeRTOS-Kernel dependencies.
+        # None.
 )
-set(ADAFRUIT_LSM6DS_HEADER_DIRS
+target_link_libraries(Adafruit_LSM6DS PUBLIC    # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        arduino_pico
+        Adafruit_BusIO
+        Adafruit_Sensor
+)
+target_include_directories(Adafruit_LSM6DS PUBLIC
         ./third_party/libraries/Adafruit_LSM6DS
+        # Comprehensive header list for documentation purposes:
+        # ./third_party/libraries/Adafruit_LSM6DS/Adafruit_LSM6DS.h                     # Unmodified
+        # ./third_party/libraries/Adafruit_LSM6DS/Adafruit_LSM6DSOX.h                   # Unmodified
 )
-
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

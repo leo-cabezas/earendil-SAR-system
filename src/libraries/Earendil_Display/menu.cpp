@@ -1,7 +1,18 @@
-#include <Earendil_Display.h> // ATTENTION: Add all library dependencies to this header.
+#include <Arduino.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_GC9A01A.h>
+#include <SPI.h>
 
-Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
+#define TFT_CS    25
+#define TFT_DC     24
+#define TFT_RST    12
+#define TFT_MOSI 15
+#define TFT_MISO 8
+# define TFT_SCK 14
 
+#define X_MENU_OFFSET 60
+#define Y_MENU_OFFSET 60
+//Global Variables
 
 //Menu structure
 struct MenuItem
@@ -12,6 +23,39 @@ struct MenuItem
   uint8_t childCount;//this is used for the loop to keep track of array size that way when going into the array it knows how far to scroll
   void (*function)();  // pointer to a function that runs when selected
 };
+
+//Placeholder reset function
+void resetSystem()
+{
+  Serial.println("System resetting...");
+}
+
+//placeholder manual ping function
+void manualPing()
+{
+  Serial.println("Manual ping sent");
+}
+
+void calMagMeter()
+{
+  Serial.println("Magnetometer Calibrated");
+}
+
+void calAltMeter()
+{
+  Serial.println("Altimeter Calibrated");
+}
+
+void calGyro()
+{
+  Serial.println("Altimeter Calibrated");
+}
+
+void calTemp()
+{
+  Serial.println("Temp Calibrated");
+}
+
 
 MenuItem calibrateMenu[] =
 {
@@ -101,29 +145,27 @@ void goBack() {
   }
 }
 
-
-void vDisplay(void* pvParameters){
-  (void) pvParameters;
-
-  vTaskDelay(pdMS_TO_TICKS(5000));
-  
+void setup()
+{
+  Serial.begin(9600);
   for (uint8_t i = 0; i < sizeof(calibrateMenu) / sizeof(calibrateMenu[0]); i++)
   {
     calibrateMenu[i].parent = mainMenu;  // set parent pointer to the main menu. this will be used to go back
   }
   drawMenu();
-  
-  while (1){
-    if (Serial.available() > 0)//checks to make sure theres a character available to read inside of the buffer
+}
+
+void loop()
+{
+  if (Serial.available() > 0)//checks to make sure theres a character available to read inside of the buffer
+  {
+    char c = Serial.read(); //reads the keyboard input character from the serial monitor input
+    switch(c) 
     {
-      char c = Serial.read(); //reads the keyboard input character from the serial monitor input
-      switch(c) 
-      {
-        case 'w': moveUp(); drawMenu(); break;
-        case 's': moveDown(); drawMenu(); break;
-        case 'd': selectItem(); drawMenu(); break;
-        case 'a': goBack(); drawMenu(); break;
-      }
+      case 'w': moveUp(); drawMenu(); break;
+      case 's': moveDown(); drawMenu(); break;
+      case 'd': selectItem(); drawMenu(); break;
+      case 'a': goBack(); drawMenu(); break;
     }
   }
 }

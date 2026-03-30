@@ -10,33 +10,37 @@
 #         * Source:     https://github.com/adafruit/Adafruit-GFX-Library
 #         * Version: 
 #         * License: 
-#         * State:
-#         * Used in:    
+#         * State:      Lean, Unmodified
+#         * Used in:    Handheld
 # ---> Dependencies (libs):
-#         * 
+#         * arduino-pico
 # ---> Dependency of (libs):
-#         * 
+#         * Adafruit_GC9A01A
 
-set(ADAFRUIT_GFX_LIBRARY_SOURCES        "")
-set(ADAFRUIT_GFX_LIBRARY_COMPILE_DEFS   "")
-set(ADAFRUIT_GFX_LIBRARY_LINK_LIBS      "")
-set(ADAFRUIT_GFX_LIBRARY_HEADER_DIRS    "")
+include_guard()
 
-if(ENABLE_ADAFRUIT_GFX_LIBRARY)
-set(ADAFRUIT_GFX_LIBRARY_SOURCES
-        ./third_party/libraries/Adafruit_GFX_Library/Adafruit_GFX.cpp                       # Unmodified
-        ./third_party/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.cpp                    # Unmodified
-        ./third_party/libraries/Adafruit_GFX_Library/glcdfont.c                             # Unmodified
+add_library(Adafruit_GFX_Library STATIC
+        ./third_party/libraries/Adafruit_GFX_Library/Adafruit_GFX.cpp                   # Unmodified
+        ./third_party/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.cpp                # Unmodified
+        ./third_party/libraries/Adafruit_GFX_Library/glcdfont.c                         # Unmodified
 )
-set(ADAFRUIT_GFX_LIBRARY_COMPILE_DEFS
+target_compile_definitions(Adafruit_GFX_Library PUBLIC
+        ARDUINO=20308                           # Dummy Arduino version (anything >= 100 would work).
+)
+target_link_libraries(Adafruit_GFX_Library PUBLIC       # Link all pico-sdk / FreeRTOS-Kernel dependencies.
         # None.
 )
-set(ADAFRUIT_GFX_LIBRARY_LINK_LIBS
-
+target_link_libraries(Adafruit_GFX_Library PUBLIC       # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        arduino_pico
+        Adafruit_BusIO
 )
-set(ADAFRUIT_GFX_LIBRARY_HEADER_DIRS
+target_include_directories(Adafruit_GFX_Library PUBLIC
         ./third_party/libraries/Adafruit_GFX_Library
+        # Comprehensive header list for documentation purposes:
+        # ./third_party/libraries/Adafruit_GFX_Library/Adafruit_GFX.h                   # Unmodified  
+        # ./third_party/libraries/Adafruit_GFX_Library/Adafruit_SPITFT.h                # Unmodified
+        # ./third_party/libraries/Adafruit_GFX_Library/Adafruit_SPITFT_Macros.h         # Unmodified
+        # ./third_party/libraries/Adafruit_GFX_Library/glxfont.h                        # Unmodified
 )
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------

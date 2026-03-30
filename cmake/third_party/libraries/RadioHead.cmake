@@ -17,6 +17,8 @@
 # ---> Dependency of:
 #         * Earendil_Radio
 
+include_guard()
+
 add_library(RadioHead STATIC
         ./third_party/libraries/RadioHead/RH_RF95.cpp                                   # Unmodified
         ./third_party/libraries/RadioHead/RHSPIDriver.cpp                               # Unmodified
@@ -28,12 +30,12 @@ target_compile_definitions(RadioHead PUBLIC
         RH_PLATFORM=RH_PLATFORM_ARDUINO         # Use Arduino libraries.
         ARDUINO=20308                           # Dummy Arduino version (anything >= 100 would work).
         ARDUINO_ARCH_RP2040                     # Use the RP2040 architecture.
-        RH_ARDUINO_ARCH_RP2040                  # Needed for the modification to RHHardwareSPI.cpp
+        RH_ARDUINO_ARCH_RP2040                  # Needed for the small modification to RHHardwareSPI.cpp
 )
-target_link_libraries(RadioHead PUBLIC         # Link all pico-sdk / FreeRTOS-Kernel dependencies
+target_link_libraries(RadioHead PUBLIC         # Link all pico-sdk / FreeRTOS-Kernel dependencies.
         # None.
 )
-target_link_libraries(RadioHead PUBLIC         # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+target_link_libraries(RadioHead PUBLIC         # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
         arduino_pico
 )
 target_include_directories(RadioHead PUBLIC

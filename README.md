@@ -59,6 +59,7 @@ git clone [pico_sdk_repo]
 - [**arm-none-eabi-gcc (version?)**]() => Must be available in your $PATH
 - [**arm-none-eabi-binutils**]
 - [**arm-none-eabi-newlib**]
+- picotools (download precompiled executable from official repo)
 
 In Debian based systems, do
 ```

@@ -17,26 +17,28 @@
 # ---> Dependency of (libs):
 #         * 
 
-set(ADAFRUIT_BMP3XX_SOURCES             "")
-set(ADAFRUIT_BMP3XX_COMPILE_DEFS        "")
-set(ADAFRUIT_BMP3XX_LINK_LIBS           "")
-set(ADAFRUIT_BMP3XX_HEADER_DIRS         "")
+include_guard()
 
-if (ENABLE_ADAFRUIT_BMP3XX)
-set(ADAFRUIT_BMP3XX_SOURCES
+add_library(Adafruit_BMP3XX STATIC
         ./third_party/libraries/Adafruit_BMP3XX_Library/Adafruit_BMP3XX.cpp                 # Unmodified
         ./third_party/libraries/Adafruit_BMP3XX_Library/bmp3.c                              # Unmodified
 )
-set(ADAFRUIT_BMP3XX_COMPILE_DEFS
+target_compile_definitions(Adafruit_BMP3XX PUBLIC
         # None.
 )
-set(ADAFRUIT_BMP3XX_LINK_LIBS
-
+target_link_libraries(Adafruit_BMP3XX PUBLIC    # Link all pico-sdk / FreeRTOS-Kernel dependencies.
+        # None.
 )
-set(ADAFRUIT_BMP3XX_HEADER_DIRS
+target_link_libraries(Adafruit_BMP3XX PUBLIC    # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
+        arduino_pico
+        Adafruit_BusIO
+)
+target_include_directories(Adafruit_BMP3XX PUBLIC
         ./third_party/libraries/Adafruit_BMP3XX_Library
+        # Comprehensive header list for documentation purposes:
+        # ./third_party/libraries/Adafruit_BMP3XX_Library/Adafruit_BMP3XX.h
+        # ./third_party/libraries/Adafruit_BMP3XX_Library/bmp3.h
+        # ./third_party/libraries/Adafruit_BMP3XX_Library/bmp3_defs.h
 )
-
-endif()
 
 # ---------------------------------------------------------------------------------------------------------------
