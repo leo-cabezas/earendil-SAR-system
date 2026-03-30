@@ -15,11 +15,11 @@ static inline float hypsometric_pressure(float temp, float pressure){
 
 void vAltimeter(void* pvParameters){
   // (void) pvParameters;
-  moduleData_t* sensorData = (moduleData_t*)pvParameters;
+  // ModuleData_t* sensorData = (ModuleData_t*)pvParameters;
   
   vTaskDelay(pdMS_TO_TICKS(10000));
 
-  printf("Adafruit BMP388 / BMP390 test");
+  printf("Adafruit BMP390 test");
 
   if (! bmp.begin_I2C()) {   // hardware I2C mode, can pass in address & alt Wire
     printf("Could not find a valid BMP3 sensor, check wiring!");
@@ -64,7 +64,7 @@ void vAltimeter(void* pvParameters){
 }
 
 void vAltimeter_test(void* pvParameters){
-  moduleData_t* sensorData = (moduleData_t*)pvParameters;
+  ModuleData_t* sensorData = (ModuleData_t*)pvParameters;
   vTaskDelay(pdMS_TO_TICKS(7000));
 
   while(1){

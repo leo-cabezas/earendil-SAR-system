@@ -18,14 +18,14 @@ typedef struct GPSData {
   double altitude_node;
 } GPSData_t;
 
-typedef struct RadioData {
-  uint8_t RECV[RH_RF95_MAX_MESSAGE_LEN];
-  int16_t lastRSSI;
-} RadioData_t;
+// typedef struct RadioData {
+//   uint8_t RECV[RH_RF95_MAX_MESSAGE_LEN];
+//   int16_t lastRSSI;
+// } RadioData_t;
 
 typedef struct Handheld_Shared {
   ModuleData_t* sensorData;
   GPSData_t* gpsData;
-  RadioData_t* radioData;
+  //RadioData_t* radioData;
   SemaphoreHandle_t* g_printMutex;  
 } Handheld_Shared_t;
