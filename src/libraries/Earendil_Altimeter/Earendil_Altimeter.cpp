@@ -2,10 +2,8 @@
 
 Adafruit_BMP3XX bmp;
 
-
-//NEED TO VERIFY THESE EQUATIONS -- LIKELY WRONG
 static inline float hypsometric_altitude(float temp, float pressure){
-  float altitude = (temp / LAPSE_RATE) * (pow(SEALEVELPRESSURE_HPA / pressure, HYPSOMETRIC_CONSTANT) - 1);
+  float altitude = (temp / LAPSE_RATE) * (1 - pow(pressure / SEALEVELPRESSURE_HPA, HYPSOMETRIC_CONSTANT));
   return altitude;
 }
 
