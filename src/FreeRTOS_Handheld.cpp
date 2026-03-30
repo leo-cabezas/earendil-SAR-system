@@ -37,7 +37,7 @@
     #include <Earendil_Magnetometer.h>
 #endif
 
-// #include <Earendil_Types.h>
+#include <Earendil_Utils.h>
 
 void vApplicationTickHook(void) {
     // Debug print (CAREFUL: Printing every tick will flood UART).
@@ -55,7 +55,7 @@ void vApplicationMallocFailedHook(void) {
     while(1);
 }
 
-
+QueueHandle_t xQueue = xQueueCreate(10, sizeof(uint32_t));
 SemaphoreHandle_t g_printMutex;
 /*
 ModuleData_t* sensorData;
@@ -116,11 +116,21 @@ int main() {
             vAltimeter, 
             "TaskAltimeter", 
             512, 
-            NULL, 
+            (void*)xQueue,
             1, 
             &taskAltimeter
         );
         vTaskCoreAffinitySet(taskAltimeter, 1 << 0);
+        TaskHandle_t taskAltitudeUtility;
+        xTaskCreate(
+            vAltitudeUtility,
+            "TaskAltitudeUtility",
+            512,
+            (void*)xQueue,
+            1,
+            &taskAltitudeUtility
+        );
+        vTaskCoreAffinitySet(taskAltitudeUtility, 1 << 0);
     #endif
     #ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskAccelGyro;

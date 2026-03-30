@@ -100,7 +100,10 @@ message(STATUS "")
 # ---------------------------------------------------------------------------------------------------------------
 # EARENDIL // HANDHELD BUILD
 if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
-        add_executable(Earendil_Handheld ./src/FreeRTOS_Handheld.cpp)
+        add_executable(Earendil_Handheld 
+                ./src/FreeRTOS_Handheld.cpp
+                ./src/libraries/Earendil_Utils.cpp
+                )
         # Include FreeRTOS
         
         if (EARENDIL_RADIO STREQUAL "ON")
