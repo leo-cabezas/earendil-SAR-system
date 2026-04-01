@@ -24,3 +24,15 @@
 void vRadioTX(void* pvParameters);
 
 void vRadioRX(void* pvParameters);
+
+
+// TEST CODE: BUTTON DEBOUNCER
+
+void gpio_handler();
+
+void vInterrTest(void* pvParameters);
+
+
+// TEST CODE: INTERRUPT DRIVEN TRANSMISSION
+
+void vRadioInterrRX(void* pvParameters);

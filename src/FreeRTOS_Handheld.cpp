@@ -75,6 +75,7 @@ int main() {
     }
 
     #ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
+        /*
         TaskHandle_t taskRadioTX;
         xTaskCreate(
             vRadioTX, 
@@ -85,6 +86,43 @@ int main() {
             &taskRadioTX
         );
         vTaskCoreAffinitySet(taskRadioTX, 1 << 0);
+        */
+        /*
+        TaskHandle_t taskRadioRX;
+        xTaskCreate(
+            vRadioRX, 
+            "TaskRadioRX", 
+            512, 
+            (void*)g_printMutex, 
+            2, 
+            &taskRadioRX
+        );
+        vTaskCoreAffinitySet(taskRadioRX, 1 << 0);
+        */
+        /*
+        TaskHandle_t interrTest;
+        xTaskCreate(
+            vInterrTest, 
+            "interrTest", 
+            512, 
+            NULL, 
+            2, 
+            &interrTest
+        );
+        vTaskCoreAffinitySet(interrTest, 1 << 0);
+        */
+        
+        TaskHandle_t taskRadioInterrRX;
+        xTaskCreate(
+            vRadioInterrRX, 
+            "TaskRadioInterrRX", 
+            512, 
+            (void*)g_printMutex, 
+            2, 
+            &taskRadioInterrRX
+        );
+        vTaskCoreAffinitySet(taskRadioInterrRX, 1 << 0);
+        
     #endif
     #ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskGPS;
