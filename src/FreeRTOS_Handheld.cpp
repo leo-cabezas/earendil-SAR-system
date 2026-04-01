@@ -55,14 +55,9 @@ void vApplicationMallocFailedHook(void) {
     while(1);
 }
 
-QueueHandle_t xQueue = xQueueCreate(10, sizeof(uint32_t));
+QueueHandle_t uQueue = xQueueCreate(10, sizeof(SensorData_t));
 SemaphoreHandle_t g_printMutex;
-/*
-ModuleData_t* sensorData;
-RadioData_t* radioData;
-GPSData_t* gpsData;
-Handheld_Shared_t* handheldShared;
-*/
+
 
 int main() {
     stdio_init_all();
@@ -154,8 +149,8 @@ int main() {
             vAltimeter, 
             "TaskAltimeter", 
             512, 
-            (void*)xQueue,
-            1, 
+            NULL,
+            2, 
             &taskAltimeter
         );
         vTaskCoreAffinitySet(taskAltimeter, 1 << 0);
@@ -164,7 +159,7 @@ int main() {
             vAltitudeUtility,
             "TaskAltitudeUtility",
             512,
-            (void*)xQueue,
+            NULL,
             1,
             &taskAltitudeUtility
         );
