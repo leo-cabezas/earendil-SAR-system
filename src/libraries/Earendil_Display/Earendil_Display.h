@@ -18,7 +18,17 @@
 #define TFT_MISO     0      // SPI MISO (Master-In, Slave-Out)
 #define TFT_SCLK     2      // SPI clock
 
-#define X_OFFSET 60
-#define Y_OFFSET 60
+#define X_OFFSET_MENU 60
+#define Y_OFFSET 60_MENU
+
+# define MENU_BUTTON 69
+
+#define X_OFFSET 120
+#define Y_OFFSET 120
+
+#define OUTLINE_BLU 0x2CB6
+#define OUTLINE_DARKBLU 0x1188
+
+
 
 void vDisplay(void* pvParameters);
