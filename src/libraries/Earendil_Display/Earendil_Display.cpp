@@ -1,6 +1,7 @@
 #include <Earendil_Display.h> // ATTENTION: Add all library dependencies to this header.
 
 Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
+//Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_MOSI,TFT_SCLK, TFT_RST, TFT_MISO);//initialization for the adafruit screen structure
 
 //=================================MENU STUFF==============================================================
 //Menu structure
@@ -15,12 +16,12 @@ struct MenuItem
 
 MenuItem calibrateMenu[] =
 {
-  {"Magnetometer", NULL, NULL, 0, calMagMeter}, {"Temperature", NULL, NULL, 0, calTemp}, {"Altimeter", NULL, NULL, 0, calAltMeter}, {"Gyroscope", NULL, NULL, 0, calGyro}
+  {"Magnetometer", NULL, NULL, 0, NULL}, {"Temperature", NULL, NULL, 0, NULL}, {"Altimeter", NULL, NULL, 0, NULL}, {"Gyroscope", NULL, NULL, 0, NULL}
 };
 //Array of menu items
 MenuItem mainMenu[] =
 {
-  {"Calibration", NULL, calibrateMenu, 4, NULL}, {"Info", NULL, NULL, 0, NULL}, {"Reset", NULL, NULL, 0, resetSystem}, {"Manual Ping", NULL, NULL, 0, manualPing}, {"Off", NULL, NULL, 0, NULL}
+  {"Calibration", NULL, calibrateMenu, 4, NULL}, {"Info", NULL, NULL, 0, NULL}, {"Reset", NULL, NULL, 0, NULL}, {"Manual Ping", NULL, NULL, 0, NULL}, {"Off", NULL, NULL, 0, NULL}
 };
 
 MenuItem* currentMenu = mainMenu; //array pointer to the current menu to navigate parent and sub menus
@@ -129,16 +130,10 @@ handheld my_handheld{0.0, 0.0, 0.0, 0.0};//hardcoded handheld data structure
 node node_1{0.0005, 0.0005}; //Hardcoded node instance structure to play around with
 
 
-Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_MOSI,TFT_SCK, TFT_RST, TFT_MISO);//initialization for the adafruit screen structure
+
 GFXcanvas16 canvas(240, 240);
 int ui_state = 0; //0 for the compass, 1 for the menu
 bool lastState = HIGH; //checks last state of the button
-
-void setup() {
-  pinMode(MENU_BUTTON, INPUT_PULLUP);
-  tft.begin();
-  tft.setRotation(0);
-}
 
 void getDistNAngle()
 {
@@ -171,8 +166,8 @@ void drawDistance()
 
 void drawDirection()
 {
-  double relative_ang = my_handheld.angle_to_node - my_handheld.my_angle
-  if (relative_angle < 0) relative_angle += 360;
+  double relative_ang = my_handheld.angle_to_node - my_handheld.my_angle;
+  if (relative_ang < 0) relative_ang += 360;
 
   double x = 120 + 105*sin(relative_ang*3.1415/180);//120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
   double y = 120 - 105*cos(relative_ang*3.1415/180);//y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
@@ -181,7 +176,6 @@ void drawDirection()
 
 void drawHeading()
 {
-  if (relative_angle < 0) relative_angle += 360;
 
   double x = 120 + 90*sin(my_handheld.my_angle*3.1415/180);//120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
   double y = 120 - 90*cos(my_handheld.my_angle*3.1415/180);//y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
@@ -205,7 +199,7 @@ void drawNotch()
 
 ////=================================UI SWAPPING STUFF==============================================================
 
-void displayMenu();
+void menuControl()
 {
     if (Serial.available() > 0)//checks to make sure theres a character available to read inside of the buffer
     {
@@ -220,7 +214,7 @@ void displayMenu();
     }
 }
 
-void displayNav();
+void displayNav()
 {
   tft.fillScreen(GC9A01A_BLACK);
 
@@ -242,11 +236,74 @@ void checkMenuButton()
   lastState = currentState; //updates of its high or low
 }
 //=================================END OF UI SWAPPING STUFF==============================================================
-void vDisplay(void* pvParameters){
-  (void) pvParameters;
 
-  vTaskDelay(pdMS_TO_TICKS(5000));
+
+
+//================== INTERRUPT===============================================================
+
+// DEBOUNCER TEST
+TaskHandle_t displayControlHandle = NULL;
+
+void gpio_handler(){
+    if (gpio_get_irq_event_mask(13) & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
+        gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, false);
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        // Notify the task that the button was pressed
+        vTaskNotifyGiveFromISR(displayControlHandle, NULL);        // Yield to the task if it has higher priority
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+}
+
+//================== END OF INTERRUPT =============================
+
+void vDisplayControl(void* pvParameters){
+  TaskHandle_t displayMenuHandle = (TaskHandle_t)pvParameters;
   
+  displayControlHandle = xTaskGetCurrentTaskHandle();
+
+  const uint8_t inputPin = 13;
+  gpio_init(inputPin);
+  gpio_set_dir(inputPin, GPIO_IN);
+  gpio_pull_up(inputPin);
+  gpio_set_irq_enabled(inputPin, GPIO_IRQ_EDGE_FALL, true);
+
+  irq_add_shared_handler(IO_IRQ_BANK0, gpio_handler, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+  irq_set_enabled(IO_IRQ_BANK0, true);
+
+  tft.begin();
+  tft.setRotation(0);
+  tft.fillScreen(GC9A01A_BLACK);
+  tft.setCursor(120, 120);
+  tft.print("Setup");
+  
+  while (1){
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+      // checkMenuButton();
+
+      // Check stable state
+    if (gpio_get(13) == 0) {  // still pressed?
+      xTaskNotifyGive(displayMenuHandle);
+    }
+
+    // Wait until button is released (prevents retrigger)
+    while (gpio_get(13) == 0) {
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
+
+    // Small release debounce (optional but nice)
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    // Re-enable interrupt
+    gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, true);
+
+  }
+}
+
+void vDisplayMenu(void* pvParameters){
+  (void) pvParameters;
+  
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
   for (uint8_t i = 0; i < sizeof(calibrateMenu) / sizeof(calibrateMenu[0]); i++)
   {
     calibrateMenu[i].parent = mainMenu;  // set parent pointer to the main menu. this will be used to go back
@@ -254,14 +311,7 @@ void vDisplay(void* pvParameters){
   drawMenu();
   
   while (1){
-    checkMenuButton();
-    if (ui_state == 0)//ui state 0 is the compass
-    {
-      displayNav();
-    }
-    else
-    {
-      displayMenu();
-    }
+
+    menuControl();
   }
 }

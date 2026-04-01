@@ -62,7 +62,7 @@ elseif (NOT OUTPUT IN_LIST VALID_OUTPUT_OPTS)
 endif()
 
 # ____[OPTION NAME]_____________[DESCRIPTION]___________________________________________[DEFAULT]________________
-option(EARENDIL_DISABLE_ALL     "Disables all Earendil libraries by default"            OFF)
+option(EARENDIL_DEFAULT     "Disables all Earendil libraries by default"            OFF)
 # _______________________________________________________________________________________________________________
 
 if (NOT DEFINED EARENDIL_DEFAULT)

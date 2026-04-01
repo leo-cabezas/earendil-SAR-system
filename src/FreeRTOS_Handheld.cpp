@@ -137,16 +137,27 @@ int main() {
         vTaskCoreAffinitySet(taskGPS, 1 << 0);
     #endif
     #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
-        TaskHandle_t taskDisplay;
+        TaskHandle_t taskDisplayMenu;
         xTaskCreate(
-            vDisplay, 
-            "TaskDisplay", 
+            vDisplayMenu, 
+            "TaskDisplayMenu", 
             512, 
             NULL, 
             1, 
-            &taskDisplay
+            &taskDisplayMenu
         );
-        vTaskCoreAffinitySet(taskDisplay, 1 << 0);
+        vTaskCoreAffinitySet(taskDisplayMenu, 1 << 0);
+
+        TaskHandle_t taskDisplayControl;
+        xTaskCreate(
+            vDisplayControl, 
+            "TaskDisplayControl", 
+            512, 
+            (void*)taskDisplayMenu, 
+            1, 
+            &taskDisplayControl
+        );
+        vTaskCoreAffinitySet(taskDisplayControl, 1 << 0);
     #endif
     #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskAltimeter;
