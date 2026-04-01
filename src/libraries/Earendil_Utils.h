@@ -10,7 +10,9 @@
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 
 #include <Earendil_Types.h>
+#include <math.h>
+#include <cstdio>
 
-void vGetAltitude(void* pvParameters);
+void vAltitudeUtility(void* pvParameters);
 
-void vGetPressure(void* pvParameters);
+//void vGetPressure(void* pvParameters);

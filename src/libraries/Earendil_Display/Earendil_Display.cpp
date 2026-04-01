@@ -2,7 +2,7 @@
 
 Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 
-
+//=================================MENU STUFF==============================================================
 //Menu structure
 struct MenuItem
 {
@@ -102,6 +102,146 @@ void goBack() {
 }
 
 
+//=================================END OF MENU STUFF==============================================================
+
+
+
+
+//=================================COMPASS UI STUFF==============================================================
+struct handheld
+{
+  double my_lat; //this will pull the lattitude from the GPS module
+  double my_long; //this will pull the longitude from the GPS module
+
+  double my_angle; //stores the angle from north from the magnetometer
+  double distance_to_node;//distance from the handheld to the node
+  double angle_from_north; //gets the relative angle from north so the user can spin around and still get an accurate direction
+  double angle_to_node;//angle from the handheld face to the node
+};
+
+struct node //node structure
+{
+  double node_lat;//pulls the lattidude from the gps
+  double node_long;//same thing here
+};
+
+handheld my_handheld{0.0, 0.0, 0.0, 0.0};//hardcoded handheld data structure
+node node_1{0.0005, 0.0005}; //Hardcoded node instance structure to play around with
+
+
+Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_MOSI,TFT_SCK, TFT_RST, TFT_MISO);//initialization for the adafruit screen structure
+GFXcanvas16 canvas(240, 240);
+int ui_state = 0; //0 for the compass, 1 for the menu
+bool lastState = HIGH; //checks last state of the button
+
+void setup() {
+  pinMode(MENU_BUTTON, INPUT_PULLUP);
+  tft.begin();
+  tft.setRotation(0);
+}
+
+void getDistNAngle()
+{
+  double lat_diff;//difference in lattidude between node and handheld
+  double long_diff;//difference in longitude
+  double hypot;//hypoteneuse of the lattitude and longitude
+  double hypot_m;//hypoteneuse in meters
+  double angle_deg;
+  lat_diff = node_1.node_lat - my_handheld.my_lat;//stationary target - moving object
+  long_diff = node_1.node_long - my_handheld.my_long;
+
+  long_diff = long_diff*cos(my_handheld.my_lat * 3.14159/180);//scale by the reference point because the lattidude line distances shrink the further away from the equator
+
+  hypot = sqrt(sq(lat_diff)+sq(long_diff));//pythagorean theorem to find hypoteneuse
+
+  angle_deg = atan2(long_diff, lat_diff)*180/3.14159;//arctan to find theta, then find the angle
+
+  hypot_m = 111111*hypot;//conversion from coordinates to meters
+  my_handheld.distance_to_node = hypot_m;//stores the hypoteneuse in meters into the handheld data structure
+  my_handheld.angle_to_node = angle_deg;//stores the anglular direction
+}
+
+void drawDistance()
+{
+  tft.setCursor(75, 110);//sets the cursor to draw the text. x is from left to right byt a larger y is downward
+  tft.setTextColor(GC9A01A_WHITE);
+  tft.setTextSize(3);//scale the text to be bigger
+  tft.print(my_handheld.distance_to_node, 2);//prints out the distance to 2 decimal places
+}
+
+void drawDirection()
+{
+  double relative_ang = my_handheld.angle_to_node - my_handheld.my_angle
+  if (relative_angle < 0) relative_angle += 360;
+
+  double x = 120 + 105*sin(relative_ang*3.1415/180);//120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
+  double y = 120 - 105*cos(relative_ang*3.1415/180);//y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
+  tft.fillCircle(x, y, 5, GC9A01A_WHITE);//creates a circle on the edge of the screen to show off the angle
+}
+
+void drawHeading()
+{
+  if (relative_angle < 0) relative_angle += 360;
+
+  double x = 120 + 90*sin(my_handheld.my_angle*3.1415/180);//120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
+  double y = 120 - 90*cos(my_handheld.my_angle*3.1415/180);//y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
+  tft.fillCircle(x, y, 5, GC9A01A_WHITE);//creates a circle on the edge of the screen to show off the angle
+}
+
+
+void drawNotch()
+{
+  tft.fillCircle(120, 120, 115, OUTLINE_BLU);
+  tft.fillCircle(120, 120, 109, GC9A01A_BLACK);
+  tft.fillCircle(120, 120, 110, 0x1188);
+  tft.fillCircle(120, 120, 100, OUTLINE_BLU);
+  tft.fillCircle(120, 120, 95, GC9A01A_BLACK);
+}
+//=================================END OFCOMPASS UI STUFF==============================================================
+
+
+
+
+
+////=================================UI SWAPPING STUFF==============================================================
+
+void displayMenu();
+{
+    if (Serial.available() > 0)//checks to make sure theres a character available to read inside of the buffer
+    {
+      char c = Serial.read(); //reads the keyboard input character from the serial monitor input
+      switch(c) 
+      {
+        case 'w': moveUp(); drawMenu(); break;
+        case 's': moveDown(); drawMenu(); break;
+        case 'd': selectItem(); drawMenu(); break;
+        case 'a': goBack(); drawMenu(); break;
+      }
+    }
+}
+
+void displayNav();
+{
+  tft.fillScreen(GC9A01A_BLACK);
+
+  getDistNAngle();
+
+  drawDistance();
+  drawDirection();
+  drawHeading();
+  delay(1000);
+}
+void checkMenuButton()
+{
+  bool currentState = digitalRead(MENU_BUTTON);
+
+  if (lastState == HIGH && currentState == LOW) //if the previous state is not pressed and the new state is now pressed
+  {
+    ui_state = !ui_state; // toggle between 0 and 1
+  }
+  lastState = currentState; //updates of its high or low
+}
+//=================================END OF UI SWAPPING STUFF==============================================================
 void vDisplay(void* pvParameters){
   (void) pvParameters;
 
@@ -114,16 +254,14 @@ void vDisplay(void* pvParameters){
   drawMenu();
   
   while (1){
-    if (Serial.available() > 0)//checks to make sure theres a character available to read inside of the buffer
+    checkMenuButton();
+    if (ui_state == 0)//ui state 0 is the compass
     {
-      char c = Serial.read(); //reads the keyboard input character from the serial monitor input
-      switch(c) 
-      {
-        case 'w': moveUp(); drawMenu(); break;
-        case 's': moveDown(); drawMenu(); break;
-        case 'd': selectItem(); drawMenu(); break;
-        case 'a': goBack(); drawMenu(); break;
-      }
+      displayNav();
+    }
+    else
+    {
+      displayMenu();
     }
   }
 }
