@@ -3,8 +3,6 @@
 Adafruit_BMP3XX bmp;
 
 void vAltimeter(void* pvParameters){
-  // (void) pvParameters;
-  // QueueHandle_t utilsQueue = (QueueHandle_t)pvParameters;
   
   vTaskDelay(pdMS_TO_TICKS(10000));
 
@@ -35,11 +33,11 @@ void vAltimeter(void* pvParameters){
     temperature.eData = bmp.temperature;
     pressure.eData = bmp.pressure;
 
-    if (xQueueSend(uQueue, &temperature, 0) != pdPASS){
+    if (xQueueSend(auQueue, &temperature, 0) != pdPASS){
       printf("Failed to send temperature.");
       vTaskDelete(NULL);
     }
-    if (xQueueSend(uQueue, &pressure, 0) != pdPASS){
+    if (xQueueSend(auQueue, &pressure, 0) != pdPASS){
       printf("Failed to send temperature.");
       vTaskDelete(NULL);
     }

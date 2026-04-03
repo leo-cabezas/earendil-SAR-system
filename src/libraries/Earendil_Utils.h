@@ -18,25 +18,55 @@
 #define LAPSE_RATE (0.0065)//K/m
 #define HYPSOMETRIC_CONSTANT (0.190284)// GAS_CONSTANT * LAPSE_RATE / GRAVITY = (287.05 J/kg*K) * (0.0065 K/m) / (9.80665 m/s²)
 
+// --- GLOBALS // GPS ---
+#define EARTH_RADIUS 6371000.0f
+// #define TEST_LAT 38.971672f
+// #define TEST_LONG -95.229279f
+
 // --- GLOBALS // STRUCTS ---
-/* Define an enumerated type used to identify the source and type of the data. */
+/* Defines an enumerated type used to identify the source and type of the data. */
 typedef enum 
 { 
     altTemp, 
     altPress 
 } DataType_t;
 
-/* Define the structure type that will be passed on the queue.*/
+/* Defines an enumerated type used to identify the source of GPS data. */
+typedef enum
+{
+    eHandheld,
+    eNode
+} SysType_t;
+
+/* Defines the structure type that will be passed on the queue for sensor data.*/
 typedef struct 
 { 
     uint32_t eData; 
     DataType_t eSource;
-} SensorData_t; 
+} SensorData_t;
+
+/* Defines the structure type that will be passed on the queue for GPS data.*/
+typedef struct 
+{
+    SysType_t systemSource;
+    float latitudeDegrees;//Positive = N, Negative = S
+    float longitudeDegrees;//Positive = E, Negative = W
+    uint8_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t seconds;
+    //bool fix;// Fix validity
+} GPSData_t;
 
 
 // --- GLOBALS // QUEUES ---
-extern QueueHandle_t uQueue;
+extern QueueHandle_t auQueue; //Queue between altimeter and utils
+extern QueueHandle_t guQueue; //Queue between gps and utils
 
 void vAltitudeUtility(void* pvParameters);
 
 //void vGetPressure(void* pvParameters);
+
+void vGPSRXUtility(void* pvParameters);

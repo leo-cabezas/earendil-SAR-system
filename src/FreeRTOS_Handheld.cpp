@@ -55,8 +55,10 @@ void vApplicationMallocFailedHook(void) {
     while(1);
 }
 
-QueueHandle_t uQueue = xQueueCreate(10, sizeof(SensorData_t));
+QueueHandle_t auQueue = xQueueCreate(2, sizeof(SensorData_t));
+QueueHandle_t guQueue = xQueueCreate(2, sizeof(GPSData_t));
 SemaphoreHandle_t g_printMutex;
+SemaphoreHandle_t gpsDataMutex;
 
 
 int main() {
@@ -66,6 +68,13 @@ int main() {
     g_printMutex = xSemaphoreCreateMutex();
     if (g_printMutex == NULL){
         printf("Failed to create mutex!\n");
+        while(1);
+    }
+
+    // Intilialize GPS struct semaphore.
+    gpsDataMutex = xSemaphoreCreateMutex();
+    if (gpsDataMutex == NULL) {// Not enough heap
+        printf("Failed to create GPS mutex!\n");
         while(1);
     }
 
@@ -129,7 +138,26 @@ int main() {
             1, 
             &taskGPS
         );
-        vTaskCoreAffinitySet(taskGPS, 1 << 0);
+        vTaskCoreAffinitySet(taskGPS, 1 << 1);
+        xTaskCreate(
+            vGPSTX,
+            "TaskGPSTX",
+            512,
+            NULL,
+            1,
+            &taskGPSTX //This is declared as extern in Earendil_GPS.h, so that vGPS can see and notify it from within GPS.cpp
+        );
+        vTaskCoreAffinitySet(taskGPSTX, 1 << 1);
+        TaskHandle_t taskGPSRXUtility;
+        xTaskCreate(
+            vGPSRXUtility,
+            "TaskGPSRXUtility",
+            512,
+            NULL,
+            1,
+            &taskGPSRXUtility
+        );
+        vTaskCoreAffinitySet(taskGPSRXUtility, 1 << 0);
     #endif
     #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskDisplayMenu;
