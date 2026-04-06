@@ -9,8 +9,15 @@
 // #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_GPS.h>       // Adafruit_GPS library.
+#include <Earendil_Utils.h>
 
 #define GPSSerial Serial1
 #define GPSECHO false
 
+extern SemaphoreHandle_t gpsDataMutex;
+extern GPSData_t gpsBench;
+extern TaskHandle_t taskGPSTX;
+
 void vGPS(void* pvParameters);
+
+void vGPSTX(void* pvParameters);
