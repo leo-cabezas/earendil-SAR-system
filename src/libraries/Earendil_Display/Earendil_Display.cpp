@@ -1,5 +1,10 @@
 #include <Earendil_Display.h> // ATTENTION: Add all library dependencies to this header.
 
+TaskHandle_t taskDisplayNav;
+TaskHandle_t taskDisplayMenu;
+TaskHandle_t taskDisplayControl;
+
+
 Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 //Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_MOSI,TFT_SCLK, TFT_RST, TFT_MISO);//initialization for the adafruit screen structure
 
@@ -36,7 +41,7 @@ void drawMenu()
   tft.fillScreen(GC9A01A_BLACK);
   tft.setCursor(X_MENU_OFFSET-20, Y_MENU_OFFSET-40);//sets the cursor to draw the text. x is from left to right byt a larger y is downward
   tft.setTextColor(GC9A01A_WHITE);
-  tft.setTextSize(3);//scale the text to be bigger
+  tft.setTextSize(2);//scale the text to be bigger
   tft.print("------ MENU ------");//prints out menu icon
   tft.setCursor(X_MENU_OFFSET, Y_MENU_OFFSET); //back to its original spot
   uint8_t max_index = min(3, itemCount - topIndex);
@@ -196,22 +201,66 @@ void drawNotch()
 
 
 
+//================== INTERRUPT===============================================================
+
+// DEBOUNCER TEST
+
+void gpio_handler(){
+    if (gpio_get_irq_event_mask(13) & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
+        gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, false);
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        // Notify the task that the button was pressed
+        vTaskNotifyGiveFromISR(taskDisplayControl, NULL);        // Yield to the task if it has higher priority
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+    if (gpio_get_irq_event_mask(9) & GPIO_IRQ_EDGE_FALL) {
+        gpio_set_irq_enabled(9, GPIO_IRQ_EDGE_FALL, false);
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        // Notify the display control task
+        vTaskNotifyGiveFromISR(taskDisplayControl, NULL);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+
+    if (gpio_get_irq_event_mask(6) & GPIO_IRQ_EDGE_FALL) {
+        gpio_set_irq_enabled(6, GPIO_IRQ_EDGE_FALL, false);
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        // Notify the display control task
+        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+    if (gpio_get_irq_event_mask(5) & GPIO_IRQ_EDGE_FALL) {
+        gpio_set_irq_enabled(5, GPIO_IRQ_EDGE_FALL, false);
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        // Notify the display control task
+        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+}
+//================== END OF INTERRUPT =============================
+
+
 
 ////=================================UI SWAPPING STUFF==============================================================
 
 void menuControl()
 {
-    if (Serial.available() > 0)//checks to make sure theres a character available to read inside of the buffer
-    {
-      char c = Serial.read(); //reads the keyboard input character from the serial monitor input
-      switch(c) 
-      {
-        case 'w': moveUp(); drawMenu(); break;
-        case 's': moveDown(); drawMenu(); break;
-        case 'd': selectItem(); drawMenu(); break;
-        case 'a': goBack(); drawMenu(); break;
-      }
-    }
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+  //UP PRESSED
+  if(gpio_get(6) == 0){
+      moveUp();
+      drawMenu();
+      while(gpio_get(6) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+  }
+  // DOWN PRESSED
+  if(gpio_get(5) == 0){
+      moveDown();
+      drawMenu();
+      while(gpio_get(5) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+  }
+  vTaskDelay(pdMS_TO_TICKS(20)); // yield
+
+  gpio_set_irq_enabled(6, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(5, GPIO_IRQ_EDGE_FALL, true);
 }
 
 void displayNav()
@@ -225,93 +274,93 @@ void displayNav()
   drawHeading();
   delay(1000);
 }
-void checkMenuButton()
-{
-  bool currentState = digitalRead(MENU_BUTTON);
-
-  if (lastState == HIGH && currentState == LOW) //if the previous state is not pressed and the new state is now pressed
-  {
-    ui_state = !ui_state; // toggle between 0 and 1
-  }
-  lastState = currentState; //updates of its high or low
-}
 //=================================END OF UI SWAPPING STUFF==============================================================
 
 
-
-//================== INTERRUPT===============================================================
-
-// DEBOUNCER TEST
-TaskHandle_t displayControlHandle = NULL;
-
-void gpio_handler(){
-    if (gpio_get_irq_event_mask(13) & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
-        gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, false);
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        // Notify the task that the button was pressed
-        vTaskNotifyGiveFromISR(displayControlHandle, NULL);        // Yield to the task if it has higher priority
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+void vDisplayNav(void* pvParameters){
+  vTaskSuspend(NULL);
+  (void)pvParameters;
+    tft.print("Nav Flag");
+    vTaskDelay(pdMS_TO_TICKS(50));
+    while(1){
+      displayNav();
+      vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
 
-//================== END OF INTERRUPT =============================
+void vDisplayMenu(void* pvParameters){
+  vTaskSuspend(NULL);
+  (void)pvParameters;
+  tft.print("MENU FLAG");
+  vTaskDelay(pdMS_TO_TICKS(50));
+  drawMenu();
+  while(1){
+      menuControl();
+      vTaskDelay(pdMS_TO_TICKS(50));
+  }
+}
 
 void vDisplayControl(void* pvParameters){
-  TaskHandle_t displayMenuHandle = (TaskHandle_t)pvParameters;
-  
-  displayControlHandle = xTaskGetCurrentTaskHandle();
-
   const uint8_t inputPin = 13;
+  const uint8_t backPin = 9;
   gpio_init(inputPin);
+  gpio_init(backPin);
   gpio_set_dir(inputPin, GPIO_IN);
+  gpio_set_dir(backPin, GPIO_IN);
   gpio_pull_up(inputPin);
+  gpio_pull_up(backPin);
   gpio_set_irq_enabled(inputPin, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(backPin, GPIO_IRQ_EDGE_FALL, true);
+  
+  const uint8_t upPin = 6;
+  const uint8_t downPin = 5;
+  gpio_init(upPin);
+  gpio_init(downPin);
+  gpio_set_dir(upPin, GPIO_IN);
+  gpio_set_dir(downPin, GPIO_IN);
+  gpio_pull_up(upPin);
+  gpio_pull_up(downPin);
+  gpio_set_irq_enabled(upPin, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(downPin, GPIO_IRQ_EDGE_FALL, true);
+
 
   irq_add_shared_handler(IO_IRQ_BANK0, gpio_handler, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
   irq_set_enabled(IO_IRQ_BANK0, true);
-
   tft.begin();
   tft.setRotation(0);
   tft.fillScreen(GC9A01A_BLACK);
   tft.setCursor(120, 120);
-  tft.print("Setup");
-  
-  while (1){
-    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-      // checkMenuButton();
 
-      // Check stable state
-    if (gpio_get(13) == 0) {  // still pressed?
-      xTaskNotifyGive(displayMenuHandle);
-    }
-
-    // Wait until button is released (prevents retrigger)
-    while (gpio_get(13) == 0) {
-        vTaskDelay(pdMS_TO_TICKS(5));
-    }
-
-    // Small release debounce (optional but nice)
-    vTaskDelay(pdMS_TO_TICKS(10));
-
-    // Re-enable interrupt
-    gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, true);
-
-  }
-}
-
-void vDisplayMenu(void* pvParameters){
-  (void) pvParameters;
-  
-  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
   for (uint8_t i = 0; i < sizeof(calibrateMenu) / sizeof(calibrateMenu[0]); i++)
   {
     calibrateMenu[i].parent = mainMenu;  // set parent pointer to the main menu. this will be used to go back
   }
-  drawMenu();
-  
-  while (1){
+  vTaskSuspend(taskDisplayNav);  // pause nav
+  while(1){
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        // MENU button pressed
+        if(gpio_get(13) == 0){
 
-    menuControl();
-  }
+            vTaskSuspend(taskDisplayNav);  // pause nav
+            vTaskResume(taskDisplayMenu);  // resume menu
+
+            // wait until button released
+            while(gpio_get(13) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+        }
+        // BACK button pressed
+        if(gpio_get(9) == 0){
+
+            vTaskSuspend(taskDisplayMenu); // pause menu
+            vTaskResume(taskDisplayNav);   // resume nav
+
+
+            // wait until button released
+            while(gpio_get(9) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+        }
+        vTaskDelay(pdMS_TO_TICKS(20)); // yield
+
+        gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, true);
+        gpio_set_irq_enabled(9, GPIO_IRQ_EDGE_FALL, true);
+    }
 }

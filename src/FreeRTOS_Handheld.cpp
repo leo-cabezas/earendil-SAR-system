@@ -137,7 +137,19 @@ int main() {
         vTaskCoreAffinitySet(taskGPS, 1 << 0);
     #endif
     #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
-        TaskHandle_t taskDisplayMenu;
+    
+
+        xTaskCreate(
+            vDisplayNav, 
+            "TaskDisplayNav", 
+            512, 
+            NULL, 
+            1, 
+            &taskDisplayNav
+        );
+        vTaskCoreAffinitySet(taskDisplayNav, 1 << 0);
+    
+
         xTaskCreate(
             vDisplayMenu, 
             "TaskDisplayMenu", 
@@ -148,12 +160,12 @@ int main() {
         );
         vTaskCoreAffinitySet(taskDisplayMenu, 1 << 0);
 
-        TaskHandle_t taskDisplayControl;
+
         xTaskCreate(
             vDisplayControl, 
             "TaskDisplayControl", 
             512, 
-            (void*)taskDisplayMenu, 
+            NULL,
             1, 
             &taskDisplayControl
         );
