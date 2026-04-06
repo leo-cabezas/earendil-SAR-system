@@ -210,14 +210,15 @@ void gpio_handler(){
         gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the task that the button was pressed
-        vTaskNotifyGiveFromISR(taskDisplayControl, NULL);        // Yield to the task if it has higher priority
+        vTaskNotifyGiveFromISR(taskDisplayNav, NULL);        // Yield to the task if it has higher priority
+        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);        // Yield to the task if it has higher priority
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
     if (gpio_get_irq_event_mask(9) & GPIO_IRQ_EDGE_FALL) {
         gpio_set_irq_enabled(9, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the display control task
-        vTaskNotifyGiveFromISR(taskDisplayControl, NULL);
+        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
@@ -336,7 +337,7 @@ void vDisplayControl(void* pvParameters){
   {
     calibrateMenu[i].parent = mainMenu;  // set parent pointer to the main menu. this will be used to go back
   }
-  vTaskSuspend(taskDisplayNav);  // pause nav
+  vTaskSuspend(taskDisplayMenu);  // pause nav
   while(1){
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         // MENU button pressed
