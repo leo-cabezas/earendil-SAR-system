@@ -33,7 +33,7 @@ void vAltitudeUtility(void* pvParameters){
                 // printf("Received pressure: %f hPa\n", pressure);
             }
             altitude = hypsometricAltitude(temperature + 273.15, pressure);
-            printf("Temperature: %f *C\nPressure: %f hPa\nCalculated Altitude: %f m\n", temperature, pressure, altitude);
+            printf("Temperature: %.2f *C\nPressure: %.2f hPa\nCalculated Altitude: %.2f m\n", temperature, pressure, altitude);
         }
     }
 }
