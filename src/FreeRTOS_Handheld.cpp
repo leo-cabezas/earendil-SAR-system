@@ -139,6 +139,7 @@ int main() {
             &taskGPS
         );
         vTaskCoreAffinitySet(taskGPS, 1 << 1);
+
         xTaskCreate(
             vGPSTX,
             "TaskGPSTX",
@@ -148,6 +149,7 @@ int main() {
             &taskGPSTX //This is declared as extern in Earendil_GPS.h, so that vGPS can see and notify it from within GPS.cpp
         );
         vTaskCoreAffinitySet(taskGPSTX, 1 << 1);
+
         TaskHandle_t taskGPSRXUtility;
         xTaskCreate(
             vGPSRXUtility,
@@ -160,8 +162,7 @@ int main() {
         vTaskCoreAffinitySet(taskGPSRXUtility, 1 << 0);
     #endif
     #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
-    
-
+        
         xTaskCreate(
             vDisplayNav, 
             "TaskDisplayNav", 
@@ -171,8 +172,7 @@ int main() {
             &taskDisplayNav
         );
         vTaskCoreAffinitySet(taskDisplayNav, 1 << 0);
-    
-
+        
         xTaskCreate(
             vDisplayMenu, 
             "TaskDisplayMenu", 
@@ -182,7 +182,6 @@ int main() {
             &taskDisplayMenu
         );
         vTaskCoreAffinitySet(taskDisplayMenu, 1 << 0);
-
 
         xTaskCreate(
             vDisplayControl, 
@@ -205,6 +204,7 @@ int main() {
             &taskAltimeter
         );
         vTaskCoreAffinitySet(taskAltimeter, 1 << 0);
+        
         TaskHandle_t taskAltitudeUtility;
         xTaskCreate(
             vAltitudeUtility,

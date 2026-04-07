@@ -43,11 +43,7 @@ void my_gpio_irq_handler(void)
 
 RH_RF95 rf95(RFM95_CS_PIN, RFM95_IRQ_PIN);
 
-void vRadioTX(void* pvParameters) {
-    vTaskDelay(pdMS_TO_TICKS(5000));
-
-    SemaphoreHandle_t g_printMutex = (SemaphoreHandle_t)pvParameters;
-    
+static inline radioSetup(SemaphoreHandle_t g_printMutex){
     // Reset the LoRa module
     pinMode(RFM95_RST_PIN, OUTPUT);
     digitalWrite(RFM95_RST_PIN, LOW);
@@ -72,8 +68,26 @@ void vRadioTX(void* pvParameters) {
     // Set frequency (adjust for your region)
     rf95.setFrequency(915.0);
 
-    uint8_t count = 0;
-    while (1) {
+    // Should also set dBm!
+}
+
+void vHandheldRadioManager(void* pvParameters){
+    SemaphoreHandle_t g_printMutex = (SemaphoreHandle_t)pvParameters;
+
+    radioSetup();
+
+    while (1){
+        vTaskResume(taskHandheldRadioSendPing_TX);
+        vTaskResume(taskHandheldRadioListen_RX);
+    }
+}
+
+void vHandheldRadioSendPing_TX(void* pvParameters){
+    vTaskSuspend();
+    
+    uint32_t ping_delay = 1000; // 1 second.
+
+    while (1){
         uint8_t buf[64];
         buf[0] = (uint8_t) 88;
         buf[1] = (uint8_t) 88;
@@ -96,41 +110,22 @@ void vRadioTX(void* pvParameters) {
             }
         }
 
-        vTaskDelay(pdMS_TO_TICKS(2000)); // send every second
+        vTaskDelay(pdMS_TO_TICKS(ping_delay));  // Apply ping delay.
     }
 }
 
-void vRadioRX(void* pvParameters) {
-    vTaskDelay(pdMS_TO_TICKS(5000));
-
-    SemaphoreHandle_t g_printMutex = (SemaphoreHandle_t)pvParameters;
-
-   // Reset the LoRa module
-    pinMode(RFM95_RST_PIN, OUTPUT);
-    digitalWrite(RFM95_RST_PIN, LOW);
-    vTaskDelay(pdMS_TO_TICKS(50));
-    digitalWrite(RFM95_RST_PIN, HIGH);
-    vTaskDelay(pdMS_TO_TICKS(50));
-
-    // Initialize RF95
-    if (!rf95.init()) {
-        if (xSemaphoreTake(g_printMutex, pdMS_TO_TICKS(100))) {
-            printf("RH_RF95 init FAILED!\n");
-            xSemaphoreGive(g_printMutex);
-        }
-        vTaskSuspend(NULL);
-    } else {
-        if (xSemaphoreTake(g_printMutex, pdMS_TO_TICKS(100))) {
-            printf("RH_RF95 init succeeded!\n");
-            xSemaphoreGive(g_printMutex);
-        }
-    }
-
-    // Set frequency (adjust for your region)
-    rf95.setFrequency(915.0);
+void vHandheldRadioTransmitData_TX(void* pvParameters){
+    vTaskSuspend();
 
     while (1){
-        // Task wakes → read packet
+
+    }
+}
+
+void vHandheldRadioListen_RX(void* pvParameters){
+    vTaskSuspend();
+
+    while (1){
         uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
         uint8_t len = sizeof(buf);
 
@@ -203,6 +198,7 @@ void vInterrTest(void* pvParameters){
 }
 */
 
+/*
 // INTERRUPT DRIVEN TX TEST
 
 TaskHandle_t radioInterrRX = NULL;
@@ -292,70 +288,6 @@ void vRadioInterrRX(void* pvParameters) {
         }
 
         gpio_put(13, 0);
-    }
-}
-
-// NOT SURE WHAT THIS IS
-/*
-void vRadioRX(void* pvParameters) {
-    Handheld_Shared_t* handheldShared = (Handheld_Shared_t*)pvParameters;
-    SemaphoreHandle_t* g_printMutex = handheldShared->g_printMutex;
-    RadioData_t* radioData = handheldShared->radioData;
-
-    vTaskDelay(pdMS_TO_TICKS(5000));
-    
-   // Reset the LoRa module
-    pinMode(RFM95_RST_PIN, OUTPUT);
-    digitalWrite(RFM95_RST_PIN, LOW);
-    vTaskDelay(pdMS_TO_TICKS(50));
-    digitalWrite(RFM95_RST_PIN, HIGH);
-    vTaskDelay(pdMS_TO_TICKS(50));
-
-    // Initialize RF95
-    if (!rf95.init()) {
-        if (xSemaphoreTake(*g_printMutex, pdMS_TO_TICKS(100))) {
-            printf("RH_RF95 init FAILED!\n");
-            xSemaphoreGive(*g_printMutex);
-        }
-        vTaskSuspend(NULL);
-    } else {
-        if (xSemaphoreTake(*g_printMutex, pdMS_TO_TICKS(100))) {
-            printf("RH_RF95 init succeeded!\n");
-            xSemaphoreGive(*g_printMutex);
-        }
-    }
-
-    // Set frequency (adjust for your region)
-    rf95.setFrequency(915.0);
-
-    uint8_t count = 0;
-    while (1) {
-        if (rf95.available()) {
-            // Should be a message for us now
-            uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-            uint8_t len = sizeof(buf);
-
-            if (rf95.recv(buf, &len)) {
-                // radioData->RECV = buf;
-                // radioData->lastRSSI = rf95.lastRssi();
-                
-                digitalWrite(LED_BUILTIN, HIGH);
-                RH_RF95::printBuffer("Received: ", buf, len);
-                Serial.print("Got: ");
-                Serial.println((char*)buf);
-                Serial.print("RSSI: ");
-                Serial.println(rf95.lastRssi(), DEC);
-
-                // Send a reply
-                uint8_t data[] = "And hello back to you";
-                rf95.send(data, sizeof(data));
-                rf95.waitPacketSent();
-                Serial.println("Sent a reply");
-                digitalWrite(LED_BUILTIN, LOW);
-            } else {
-                Serial.println("Receive failed");
-            }
-        }
     }
 }
 */
