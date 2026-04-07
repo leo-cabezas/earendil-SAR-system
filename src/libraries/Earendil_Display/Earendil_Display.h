@@ -18,10 +18,13 @@
 #define TFT_MISO     0      // SPI MISO (Master-In, Slave-Out)
 #define TFT_SCLK     2      // SPI clock
 
-#define X_MENU_OFFSET 60
+#define X_MENU_OFFSET 40
 #define Y_MENU_OFFSET 60
 
 # define MENU_BUTTON 13
+# define BACK_BUTTON 9
+#define UP_BUTTON 6
+#define DOWN_BUTTON 5
 
 #define X_OFFSET 120
 #define Y_OFFSET 120
@@ -29,7 +32,10 @@
 #define OUTLINE_BLU 0x2CB6
 #define OUTLINE_DARKBLU 0x1188
 
-
+extern TaskHandle_t taskDisplayMenu;
+extern TaskHandle_t taskDisplayControl;
+extern TaskHandle_t taskDisplayNav;
 
 void vDisplayMenu(void* pvParameters);
 void vDisplayControl(void* pvParameters);
+void vDisplayNav(void* pvParameters);

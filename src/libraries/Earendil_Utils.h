@@ -11,7 +11,6 @@
 #include <math.h>
 #include <cstdio>
 
-
 // --- GLOBALS // ALTIMETER ---
 #define SEALEVELPRESSURE_HPA (1014.0)//Lawrence, KS local sea-level pressure: 202602221550
 #define LOCAL_ALTITUDE (289.0)//m
@@ -19,7 +18,7 @@
 #define HYPSOMETRIC_CONSTANT (0.190284)// GAS_CONSTANT * LAPSE_RATE / GRAVITY = (287.05 J/kg*K) * (0.0065 K/m) / (9.80665 m/s²)
 
 // --- GLOBALS // GPS ---
-#define EARTH_RADIUS 6371000.0f
+#define EARTH_RADIUS 6371000.0f // This is a global average with a +-0.3% (10km) error. Be mindful of that.
 // #define TEST_LAT 38.971672f
 // #define TEST_LONG -95.229279f
 
