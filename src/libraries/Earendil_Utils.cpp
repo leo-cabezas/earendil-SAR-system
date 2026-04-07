@@ -54,15 +54,31 @@ void vAltitudeUtility(void* pvParameters){
 //     *lon2 = *lon2 * 180.0f / M_PI;
 // }
 
-float getDistance(){
-    float hh_lat = GPS_Handheld.latitudeDegrees;
-    float hh_long = GPS_Handheld.longitudeDegrees;
-    float nd_lat = GPS_Node.latitudeDegrees;
-    float nd_long = GPS_Node.longitudeDegrees;
-    //math
-    float distance = 0; //meters
-    float direction = 0; //degrees
-    return distance;
+void updateDistanceHeading(float& distance, float& heading){    // Is float enough?
+    float handheld_latitude_rad = GPS_Handheld.latitudeDegrees;
+    float handheld_longitude_rad = GPS_Handheld.longitudeDegrees;
+    // float handheld_altitude = GPS_Handheld.;
+
+    float node_latitude_rad = GPS_Node.latitudeDegrees;
+    float node_longitude_rad = GPS_Node.longitudeDegrees;
+    // float node_altitude = GPS_Node.
+
+    /*
+    float handheld_X = (EARTH_RADIUS + handheld_altitude) * sin(handheld_longitude) * cos(handheld_latitude - 90.0);
+    float handheld_Y = (EARTH_RADIUS + handheld_altitude) * sin(handheld_longitude) * sin(handheld_latitude - 90.0);
+    float handheld_Z = handheld_altitude;
+
+    float node_X = (EARTH_RADIUS + node_altitude) * sin(node_longitude) * cos(node_latitude - 90.0);
+    float node_Y = (EARTH_RADIUS + node_altitude) * sin(node_longitude) * sin(node_latitude - 90.0);
+    float node_Z = node_altitude;
+    
+    float delta_X = node_X - handheld_X;
+    float delta_Y = node_Y - handheld_Y;
+    float delta_Z = node_Z - handheld_Z;
+
+    distance = sqrt(delta_X * delta_X + delta_Y * delta_Y + delta_Z * delta_Z);
+    heading = Still need to think about this one.
+    */
 }
 
 void vGPSRXUtility(void* pvParameters){
