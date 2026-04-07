@@ -221,7 +221,7 @@ int main() {
         xTaskCreate(
             vAccelGyro, 
             "TaskAccelGyro", 
-            512, 
+            1024, 
             NULL, 
             1, 
             &taskAccelGyro

@@ -33,7 +33,7 @@ void vAltitudeUtility(void* pvParameters){
                 // printf("Received pressure: %f hPa\n", pressure);
             }
             altitude = hypsometricAltitude(temperature + 273.15, pressure);
-            printf("Temperature: %.2f *C\nPressure: %.2f hPa\nCalculated Altitude: %.2f m\n", temperature, pressure, altitude);
+            printf("\n============ALTIMETER READING============\nTemperature: %.2f *C\nPressure: %.2f hPa\nCalculated Altitude: %.2f m\n=========================================\n", temperature, pressure, altitude);
         }
     }
 }
@@ -88,7 +88,7 @@ void vGPSRXUtility(void* pvParameters){
     while(1){
         if (xQueueReceive(guQueue, &gpsBench, portMAX_DELAY) == pdPASS) {
             if (gpsBench.systemSource == eHandheld){
-                printf("GPS Data Received from Handheld.\n%02u/%02u/%02u %02u:%02u:%02u UTC\nLatitude: %f, Longitude: %f\n",
+                printf("\n===============GPS READING===============GPS Data Received from Handheld.\n%02u/%02u/%02u %02u:%02u:%02u UTC\nLatitude: %f, Longitude: %f\n=========================================\n",
                     gpsBench.day,
                     gpsBench.month,
                     gpsBench.year,
