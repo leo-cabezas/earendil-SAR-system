@@ -1,12 +1,5 @@
 #include <Earendil_Display.h> // ATTENTION: Add all library dependencies to this header.
 
-TaskHandle_t taskDisplayNav;
-TaskHandle_t taskDisplayMenu;
-TaskHandle_t taskDisplayControl;
-EventGroupHandle_t gyroEventGroup;
-TaskHandle_t taskDisplayCalibration;
-
-
 Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 //Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_MOSI,TFT_SCLK, TFT_RST, TFT_MISO);//initialization for the adafruit screen structure
 

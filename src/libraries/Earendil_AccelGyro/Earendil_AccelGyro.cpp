@@ -15,10 +15,9 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
 
 static void lcdPrint(const char* msg)
 {
-    if (s_lcdQueue == NULL) return;
     char text[LCD_MSG_LEN];
     snprintf(text, LCD_MSG_LEN, "%s", msg);
-    xQueueSend(s_lcdQueue, &text, pdMS_TO_TICKS(50));
+    xQueueSend(calQueue, &text, pdMS_TO_TICKS(50));
 }
 
 // // Blocks until BTN_CONFIRM or BTN_CANCEL is received from the ISR queue.
@@ -150,7 +149,7 @@ static bool gyroCalibrate(void)
 
         snprintf(buf, LCD_MSG_LEN, "%.3f %.3f %.3f",
                  posData[p][0], posData[p][1], posData[p][2]);
-        lcdPrint(2, buf);
+        lcdPrint(buf);
         vTaskDelay(pdMS_TO_TICKS(3000));
     }
 
@@ -334,7 +333,7 @@ void vAccelGyro(void* pvParameters){
         // Normal operation: read and expose sensor data
         gyroReading(metrics);
         gyroShow(metrics); //For debugging
-    // }
+    }
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }

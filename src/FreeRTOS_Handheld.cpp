@@ -26,6 +26,7 @@ void vApplicationMallocFailedHook(void) {
 QueueHandle_t auQueue = xQueueCreate(2, sizeof(SensorData_t));
 QueueHandle_t guQueue = xQueueCreate(2, sizeof(GPSData_t));
 QueueHandle_t calQueue = xQueueCreate(6, 64);
+EventGroupHandle_t gyroEventGroup = xEventGroupCreate();
 SemaphoreHandle_t g_printMutex;
 SemaphoreHandle_t gpsDataMutex;
 

@@ -11,7 +11,6 @@
 // #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_LSM6DSOX.h>  // Adafruit_LSM6DS library.
-#include <Earendil_Display.h>
 #include <Earendil_Utils.h>
 
 // --- Calibration State ------------------------------------------------
@@ -35,15 +34,5 @@
 // [0..2] = accel X/Y/Z (m/s^2), [3..5] = gyro X/Y/Z (rad/s)
 typedef float GyroMetrics_t[6];
 
-// --- Shared handles (defined in gyro.cpp, extern'd for other tasks) ---
-
-
 // --- Public API ------------------------------------------------------
-// void gyroSetup(QueueHandle_t lcdQueue,
-//                QueueHandle_t buttonQueue,
-//                SemaphoreHandle_t i2cMutex);
-  
-// void gyroReading(GyroMetrics_t metrics);
-// void gyroShow(GyroMetrics_t metrics);
-
 void vAccelGyro(void* pvParameters); // FreeRTOS task entry point

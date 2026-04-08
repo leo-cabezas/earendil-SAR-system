@@ -4,6 +4,8 @@
 #include <FreeRTOS.h>           // For pdMS_TO_TICKS(), etc. Needed for task.h, semphr.h, etc.
 #include <task.h>               // For vTaskDelay(), etc.
 #include <semphr.h>             // For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
+#include <event_groups.h>
+#include <queue.h>
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
 // #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
@@ -65,6 +67,10 @@ typedef struct
 // --- GLOBALS // QUEUES ---
 extern QueueHandle_t auQueue; //Queue between altimeter and utils
 extern QueueHandle_t guQueue; //Queue between gps and utils
+extern QueueHandle_t calQueue; //Queue between accel/gyro/mag and display
+
+// --- GLOBALS // EVENTGROUPS ---
+extern EventGroupHandle_t gyroEventGroup;
 
 void vAltitudeUtility(void* pvParameters);
 
