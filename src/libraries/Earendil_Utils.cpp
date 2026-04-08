@@ -54,6 +54,7 @@ void vAltitudeUtility(void* pvParameters){
 //     *lon2 = *lon2 * 180.0f / M_PI;
 // }
 
+<<<<<<< HEAD
 // void updateDistance(float& distance){    // Is float enough precision?
 //     float handheld_latitude_rad = GPS_Handheld.latitudeRadians;
 //     float handheld_longitude_rad = GPS_Handheld.longitudeRadians;
@@ -62,6 +63,16 @@ void vAltitudeUtility(void* pvParameters){
 //     float node_latitude_rad = GPS_Node.latitudeRadians;
 //     float node_longitude_rad = GPS_Node.longitudeRadians;
 //     // float node_altitude = GPS_Node.
+=======
+void updateDistance(float& distance){    // Is float enough precision?
+    //float handheld_latitude_rad = GPS_Handheld.latitudeRadians;
+    //float handheld_longitude_rad = GPS_Handheld.longitudeRadians;
+    // float handheld_altitude = GPS_Handheld.;
+
+    //float node_latitude_rad = GPS_Node.latitudeRadians;
+    //float node_longitude_rad = GPS_Node.longitudeRadians;
+    // float node_altitude = GPS_Node.
+>>>>>>> 5120ffec7afcdeaeab4aa2f56daf3bf69c4b94cb
 
 //     /*
 //     float handheld_X = (EARTH_RADIUS + handheld_altitude) * sin(handheld_longitude) * cos(handheld_latitude - 90.0);
@@ -80,12 +91,21 @@ void vAltitudeUtility(void* pvParameters){
 //     */
 // }
 
+<<<<<<< HEAD
 // static inline void getBearingToNode(double& bearing_to_node_deg){
 //     // Need to take into account latitude difference w.r.t. spherical coordinates.
 //     double handheld_latitude_rad = GPS_Handheld.latitudeRad;
 //     double handheld_longitude_rad = GPS_Handheld.longitudeRad;
 //     double node_latitude_rad = GPS_Node.latitudeRad;
 //     double node_longitude_rad = GPS_Node.longitudeRad;
+=======
+void getBearingToNode(double& bearing_to_node_deg){
+    // Need to take into account latitude difference w.r.t. spherical coordinates.
+    double handheld_latitude_rad = 0.6;
+    double handheld_longitude_rad = 6.2;
+    double node_latitude_rad = 0.9;
+    double node_longitude_rad = 0.2;
+>>>>>>> 5120ffec7afcdeaeab4aa2f56daf3bf69c4b94cb
 
 //     double handheld_X = EARTH_RADIUS * sin(handheld_latitude_rad) * cos(handheld_longitude_rad);
 //     double handheld_Y = EARTH_RADIUS * sin(handheld_latitude_rad) * sin(handheld_longitude_rad);

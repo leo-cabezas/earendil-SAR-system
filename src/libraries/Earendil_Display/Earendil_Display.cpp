@@ -126,8 +126,8 @@ struct node //node structure
   double node_long;//same thing here
 };
 
-handheld my_handheld{0.0, 0.0, 0.0, 0.0};//hardcoded handheld data structure
-node node_1{0.0005, 0.0005}; //Hardcoded node instance structure to play around with
+handheld my_handheld{0.6, 6.2, 0.0, 0.0, 0.0, 0.0};//hardcoded handheld data structure
+node node_1{0.09, 0.0005}; //Hardcoded node instance structure to play around with
 
 
 
@@ -166,7 +166,9 @@ void drawDistance()
 
 void drawDirection()
 {
-  double relative_ang = my_handheld.angle_to_node - my_handheld.my_angle;
+  double bearing_to_node_deg;
+  getBearingToNode(bearing_to_node_deg);
+  double relative_ang = my_handheld.angle_from_north + bearing_to_node_deg;
   if (relative_ang < 0) relative_ang += 360;
 
   double x = 120 + 105*sin(relative_ang*3.1415/180);//120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
@@ -174,7 +176,7 @@ void drawDirection()
   tft.fillCircle(x, y, 5, GC9A01A_WHITE);//creates a circle on the edge of the screen to show off the angle
 }
 
-void drawHeading()
+void drawMagneticNorth()
 {
 
   double x = 120 + 90*sin(my_handheld.my_angle*3.1415/180);//120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
@@ -293,7 +295,7 @@ void displayNav()
 
   drawDistance();
   drawDirection();
-  drawHeading();
+  drawMagneticNorth();
   delay(1000);
 }
 //=================================END OF UI SWAPPING STUFF==============================================================
@@ -378,7 +380,9 @@ void vDisplayCalibration(void* pvParameters){
   vTaskDelay(pdMS_TO_TICKS(50));
 
   
-  xEventGroupSetBits(gyroEventGroup, GYRO_EVT_CALIBRATE_REQUEST);
+  xEventGroupSetBits(gyroEventGroup, GYRO_EVT_CALIBRATE_REQUEST); //This is breaking for some reason
+
+
   while(1)
   {
     tft.print("IN while loop");
@@ -386,7 +390,7 @@ void vDisplayCalibration(void* pvParameters){
     std::string calstep = "";
     tft.setCursor(X_OFFSET, Y_MENU_OFFSET+30);
     tft.print("Entering if block");
-    if (bits && GYRO_EVT_CALIBRATE_COMPLETE)
+    if (bits & GYRO_EVT_CALIBRATE_COMPLETE)
     {
       tft.print("Breaking");
       break;
