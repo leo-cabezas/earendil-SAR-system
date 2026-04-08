@@ -29,6 +29,8 @@ QueueHandle_t calQueue = xQueueCreate(6, 64);
 SemaphoreHandle_t g_printMutex;
 SemaphoreHandle_t gpsDataMutex;
 
+Earendil_Task_Handles_t Earendil_Task_Handles;
+
 int main() {
     stdio_init_all();
 
@@ -131,36 +133,34 @@ int main() {
         vTaskCoreAffinitySet(taskGPSRXUtility, 1 << 0);
     #endif
     #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
-        TaskHandle_t taskDisplayNav;
+        
         xTaskCreate(
             vDisplayNav, 
             "TaskDisplayNav", 
             512, 
-            NULL, 
+            (void*)Earendil_Task_Handles, 
             1, 
-            &taskDisplayNav
+            &Earendil_Task_Handles.taskDisplayNav
         );
         vTaskCoreAffinitySet(taskDisplayNav, 1 << 0);
         
-        TaskHandle_t taskDisplayMenu;
         xTaskCreate(
             vDisplayMenu, 
             "TaskDisplayMenu", 
             512, 
-            NULL, 
+            (void*)Earendil_Task_Handles, 
             1, 
-            &taskDisplayMenu
+            &Earendil_Task_Handles.taskDisplayMenu
         );
         vTaskCoreAffinitySet(taskDisplayMenu, 1 << 0);
 
-        TaskHandle_t taskDisplayControl;
         xTaskCreate(
             vDisplayControl, 
             "TaskDisplayControl", 
             512, 
-            NULL,
+            (void*)Earendil_Task_Handles,
             1, 
-            &taskDisplayControl
+            &Earendil_Task_Handles.taskDisplayControl
         );
         vTaskCoreAffinitySet(taskDisplayControl, 1 << 0);
 
@@ -168,9 +168,9 @@ int main() {
             vDisplayCalibration, 
             "TaskDisplayCalibration", 
             512, 
-            NULL, 
+            (void*)Earendil_Task_Handles, 
             1, 
-            &taskDisplayCalibration
+            &Earendil_Task_Handles.taskDisplayCalibration
         );
         vTaskCoreAffinitySet(taskDisplayCalibration, 1 << 0);
     #endif
