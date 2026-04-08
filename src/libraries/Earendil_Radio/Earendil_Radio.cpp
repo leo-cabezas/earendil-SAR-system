@@ -1,23 +1,6 @@
 #include <Earendil_Radio.h> // ATTENTION: Add all library dependencies to this header.
 
 /*
-static inline double getLatitude(uint8_t raw_latitude[5]){    // TEMPORARY. Used to decode radio-received
-  uint8_t degrees = raw_latitude[0];
-  double minutes =
-
-  return  ((double)(buf[1]) + (double)(buf[2]) / 100 + (double)(buf[3]) / 10000) / 60.0) * ;
-}
-
-static inline double getLongitude(uint8_t raw_longitude[6]){  // TEMPORARY. Used to decode radio-received GPS info.
-  // Leo: Message me if this doesn't work properly
-  return ((double)(raw_longitude[0]) * 100 + (double)(raw_longitude[0]) + ((double)(buf[2]) + (double)(buf[3]) / 100 + (double)(buf[4]) / 10000) / 60.0) * (buf[5] == 'E' ? 1 : -1);
-}
-
-static inline double getAltitude(uint8_t raw_altitude[]){
-  // Not implemented yet.
-  return;
-}
-
 void my_gpio_irq_handler(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -38,7 +21,6 @@ void my_gpio_irq_handler(void)
     // Request context switch if needed
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
-
 */
 
 RH_RF95 rf95(RFM95_CS_PIN, RFM95_IRQ_PIN);
@@ -93,6 +75,7 @@ static inline void encodePacket(    // TESTED, NEED TO INCLUDE ACTUAL SENT DATA.
     uint8_t*    packet,
     uint32_t    recipient_id,
     uint8_t     (&metadata)[METADATA_FIELD_COUNT * 4]
+    // add data here. Probably a good idea to use std::vector<uint8_t>
 ){
     const uint8_t recipient_id_index = 0;
     packet[recipient_id_index + 0] = (recipient_id >> 24) & 0xFF;
@@ -145,6 +128,32 @@ static inline void decodeMetadata(  // TESTED AND FUNCTIONAL.
         field_index += 4;
     }
 }
+
+/*
+static inline void encodeGPSData(){
+
+}
+
+static inline void decodeGPSData(){
+
+}
+
+static inline double getLatitude(uint8_t raw_latitude[5]){    // TEMPORARY. Used to decode radio-received
+  uint8_t degrees = raw_latitude[0];
+  double minutes =
+
+  return  ((double)(buf[1]) + (double)(buf[2]) / 100 + (double)(buf[3]) / 10000) / 60.0) * ;
+}
+
+static inline double getLongitude(uint8_t raw_longitude[6]){  // TEMPORARY. Used to decode radio-received GPS info.
+  return ((double)(raw_longitude[0]) * 100 + (double)(raw_longitude[0]) + ((double)(buf[2]) + (double)(buf[3]) / 100 + (double)(buf[4]) / 10000) / 60.0) * (buf[5] == 'E' ? 1 : -1);
+}
+
+static inline double getAltitude(uint8_t raw_altitude[]){
+  // Not implemented yet.
+  return;
+}
+*/k
 
 // ------------------------------------------------------------------------------------------
 
