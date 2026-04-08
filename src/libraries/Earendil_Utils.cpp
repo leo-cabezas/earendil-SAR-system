@@ -55,12 +55,12 @@ void vAltitudeUtility(void* pvParameters){
 // }
 
 void updateDistance(float& distance){    // Is float enough precision?
-    float handheld_latitude_rad = GPS_Handheld.latitudeRadians;
-    float handheld_longitude_rad = GPS_Handheld.longitudeRadians;
+    //float handheld_latitude_rad = GPS_Handheld.latitudeRadians;
+    //float handheld_longitude_rad = GPS_Handheld.longitudeRadians;
     // float handheld_altitude = GPS_Handheld.;
 
-    float node_latitude_rad = GPS_Node.latitudeRadians;
-    float node_longitude_rad = GPS_Node.longitudeRadians;
+    //float node_latitude_rad = GPS_Node.latitudeRadians;
+    //float node_longitude_rad = GPS_Node.longitudeRadians;
     // float node_altitude = GPS_Node.
 
     /*
@@ -80,12 +80,12 @@ void updateDistance(float& distance){    // Is float enough precision?
     */
 }
 
-static inline void getBearingToNode(double& bearing_to_node_deg){
+void getBearingToNode(double& bearing_to_node_deg){
     // Need to take into account latitude difference w.r.t. spherical coordinates.
-    double handheld_latitude_rad = GPS_Handheld.latitudeRad;
-    double handheld_longitude_rad = GPS_Handheld.longitudeRad;
-    double node_latitude_rad = GPS_Node.latitudeRad;
-    double node_longitude_rad = GPS_Node.longitudeRad;
+    double handheld_latitude_rad = 0.6;
+    double handheld_longitude_rad = 6.2;
+    double node_latitude_rad = 0.9;
+    double node_longitude_rad = 0.2;
 
     double handheld_X = EARTH_RADIUS * sin(handheld_latitude_rad) * cos(handheld_longitude_rad);
     double handheld_Y = EARTH_RADIUS * sin(handheld_latitude_rad) * sin(handheld_longitude_rad);

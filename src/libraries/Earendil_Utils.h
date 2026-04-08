@@ -71,3 +71,5 @@ void vAltitudeUtility(void* pvParameters);
 //void vGetPressure(void* pvParameters);
 
 void vGPSRXUtility(void* pvParameters);
+
+void getBearingToNode(double& bearing_to_node_deg);

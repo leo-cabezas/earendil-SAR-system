@@ -45,6 +45,9 @@
     extern TaskHandle_t taskDisplayMenu;
     extern TaskHandle_t taskDisplayControl;
     extern TaskHandle_t taskDisplayNav;
+    extern QueueHandle_t calQueue;
+    extern EventGroupHandle_t gyroEventGroup;
+    extern TaskHandle_t taskDisplayCalibration;
 #endif
 #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
     extern TaskHandle_t taskAltimeter;

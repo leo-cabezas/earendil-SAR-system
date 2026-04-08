@@ -164,6 +164,7 @@ int main() {
         );
         vTaskCoreAffinitySet(taskDisplayControl, 1 << 0);
 
+        TaskHandle_t taskDisplayCalibration;
         xTaskCreate(
             vDisplayCalibration, 
             "TaskDisplayCalibration", 

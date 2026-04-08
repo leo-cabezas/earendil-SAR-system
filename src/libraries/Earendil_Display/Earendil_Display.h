@@ -6,15 +6,17 @@
 #include <semphr.h>             // For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
 #include <queue.h>              // For IPC communication between the LCD and buttons.
 #include <event_groups.h>
-
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
 // #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_GC9A01A.h>   // Adafruit_GC9A01A library
 
-// --- ROUND LCD DISPLAY PINOUT CONFIGURATION ---
+#include <FreeRTOS_Handheld.h>
+#include <Earendil_Utils.h>
 #include <string>
+
+// --- ROUND LCD DISPLAY PINOUT CONFIGURATION ---
 #define TFT_CS       25     // SPI chip select
 #define TFT_DC       24     // DATA/COMMAND pin
 #define TFT_RST      12     // RESET pin
@@ -41,9 +43,7 @@
 #define GYRO_EVT_CALIBRATE_COMPLETE ( 1 << 1 )
 #define GYRO_EVT_CALIBRATE_CANCELLED ( 1 << 2 )
 
-extern QueueHandle_t calQueue;
-extern EventGroupHandle_t gyroEventGroup;
-extern TaskHandle_t taskDisplayCalibration;
+
 
 void vDisplayMenu(void* pvParameters);
 void vDisplayControl(void* pvParameters);
