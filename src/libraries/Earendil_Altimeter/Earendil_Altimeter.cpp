@@ -38,7 +38,7 @@ void vAltimeter(void* pvParameters){
       vTaskDelete(NULL);
     }
     if (xQueueSend(auQueue, &pressure, 0) != pdPASS){
-      printf("Failed to send temperature.");
+      printf("Failed to send pressure.");
       vTaskDelete(NULL);
     }
 

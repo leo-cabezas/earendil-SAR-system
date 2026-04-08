@@ -27,7 +27,8 @@
 typedef enum 
 { 
     altTemp, 
-    altPress 
+    altPress,
+    magHead
 } DataType_t;
 
 /* Defines an enumerated type used to identify the source of GPS data. */

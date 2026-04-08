@@ -5,9 +5,9 @@ Adafruit_LSM6DSOX sox;
 
 // ─── Shared handles ────────────────────────────────────────────────
 EventGroupHandle_t  gyroEventGroup = NULL;
-static QueueHandle_t    s_lcdQueue    = NULL;
-static QueueHandle_t    s_buttonQueue = NULL;
-static SemaphoreHandle_t s_i2cMutex  = NULL;
+// static QueueHandle_t    s_lcdQueue    = NULL;
+// static QueueHandle_t    s_buttonQueue = NULL;
+// static SemaphoreHandle_t s_i2cMutex  = NULL;
 
 // ─── Calibration state ─────────────────────────────────────────────
 static float gyroBias[3]    = {0.0f, 0.0f, 0.0f};
@@ -18,22 +18,34 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
 
 static void lcdPrint(uint8_t line, const char* msg)
 {
-    if (s_lcdQueue == NULL) return;
-    LCDMessage_t m;
-    m.line = line;
-    snprintf(m.text, LCD_MSG_LEN, "%s", msg);
-    xQueueSend(s_lcdQueue, &m, pdMS_TO_TICKS(50));
+    printf("%s\n", msg);
+    fflush(stdout);
+    // if (s_lcdQueue == NULL) return;
+    // LCDMessage_t m;
+    // m.line = line;
+    // snprintf(m.text, LCD_MSG_LEN, "%s", msg);
+    // xQueueSend(s_lcdQueue, &m, pdMS_TO_TICKS(50));
 }
 
-// Blocks until BTN_CONFIRM or BTN_CANCEL is received from the ISR queue.
-// Returns the button ID received.
-static uint8_t waitForButton(void)
-{
-    uint8_t btn = 0;
-    while (btn != BTN_CONFIRM && btn != BTN_CANCEL) {
-        xQueueReceive(s_buttonQueue, &btn, portMAX_DELAY);
+// // Blocks until BTN_CONFIRM or BTN_CANCEL is received from the ISR queue.
+// // Returns the button ID received.
+// static uint8_t waitForButton(void)
+// {
+//     uint8_t btn = 0;
+//     while (btn != BTN_CONFIRM && btn != BTN_CANCEL) {
+//         xQueueReceive(s_buttonQueue, &btn, portMAX_DELAY);
+//     }
+//     return btn;
+// }
+
+static void countdown(int n){
+    char cd_buf[32];
+    lcdPrint(0, "Sampling in ");
+    for (; n>0; n--){
+        snprintf(cd_buf, sizeof(cd_buf), "%d...\n", n);
+        lcdPrint(0, cd_buf);
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
-    return btn;
 }
 
 // Collects n averaged accel+gyro samples under the I2C mutex.
@@ -43,12 +55,12 @@ static bool collectSamples(float outAccel[3], float outGyro[3], int n)
     double sumG[3] = {0.0, 0.0, 0.0};
 
     for (int i = 0; i < n; i++) {
-        if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) != pdTRUE) {
-            return false; // I2C bus unavailable
-        }
+        //if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) != pdTRUE) {
+        //    return false; // I2C bus unavailable
+        //}
         sensors_event_t accel, gyro, temp;
         sox.getEvent(&accel, &gyro, &temp);
-        xSemaphoreGive(s_i2cMutex);
+        //xSemaphoreGive(s_i2cMutex);
 
         sumA[0] += accel.acceleration.x;
         sumA[1] += accel.acceleration.y;
@@ -77,20 +89,21 @@ static bool gyroCalibrate(void)
     // ── Gyro bias ──────────────────────────────────────────────────
     lcdPrint(0, "Gyro Calibration");
     lcdPrint(1, "Place flat+still");
-    lcdPrint(2, "Confirm/Cancel");
+    // lcdPrint(2, "Confirm/Cancel");
 
-    if (waitForButton() == BTN_CANCEL) {
-        lcdPrint(0, "Calibration");
-        lcdPrint(1, "Cancelled.");
-        lcdPrint(2, "");
-        return false;
-    }
+    // if (waitForButton() == BTN_CANCEL) {
+    //     lcdPrint(0, "Calibration");
+    //     lcdPrint(1, "Cancelled.");
+    //     lcdPrint(2, "");
+    //     return false;
+    // }
 
     lcdPrint(1, "Sampling gyro...");
     lcdPrint(2, "");
 
     if (!collectSamples(avgA, avgG, CALIB_SAMPLES)) {
-        lcdPrint(1, "I2C Error!");
+        //lcdPrint(1, "I2C Error!");
+        lcdPrint(1, "Collection Error!");
         return false;
     }
 
@@ -106,42 +119,46 @@ static bool gyroCalibrate(void)
     // ── Accel 6-position calibration ──────────────────────────────
     // Position order: +Z, -Z, +X, -X, +Y, -Y
     const char* posLabels[6] = {
-        "+Z UP: chip face up",
-        "-Z UP: chip face dn",
-        "+X UP: left edge dn",
-        "-X UP: rght edge dn",
-        "+Y UP: btm edge dn",
-        "-Y UP: top edge dn"
+        "+Z UP: put chip face up",
+        "-Z UP: put chip face dn",
+        "+X UP: put left edge dn",
+        "-X UP: put rght edge dn",
+        "+Y UP: put btm edge dn",
+        "-Y UP: put top edge dn"
     };
     const int   activeAxis[6] = { 2,  2,  0,  0,  1,  1 };
     const float expectSign[6] = {+1, -1, +1, -1, +1, -1 };
 
     float posData[6][3];
 
+    lcdPrint(0, "Get ready, Y arrow away, X arrow right");
+
     for (int p = 0; p < 6; p++) {
         snprintf(buf, LCD_MSG_LEN, "%d/6: %s", p + 1, posLabels[p]);
         lcdPrint(0, "Accel Calibration");
         lcdPrint(1, buf);
-        lcdPrint(2, "Confirm/Cancel");
+        vTaskDelay(pdMS_TO_TICKS(3000));
+        // lcdPrint(2, "Confirm/Cancel");
 
-        if (waitForButton() == BTN_CANCEL) {
-            lcdPrint(0, "Calibration");
-            lcdPrint(1, "Cancelled.");
-            lcdPrint(2, "");
-            return false;
-        }
+        // if (waitForButton() == BTN_CANCEL) {
+        //     lcdPrint(0, "Calibration");
+        //     lcdPrint(1, "Cancelled.");
+        //     lcdPrint(2, "");
+        //     return false;
+        // }
 
-        lcdPrint(2, "Sampling...");
+        countdown(5);
 
         if (!collectSamples(posData[p], avgG, CALIB_SAMPLES)) {
-            lcdPrint(1, "I2C Error!");
+            //lcdPrint(1, "I2C Error!");
+            lcdPrint(1, "Collection Error!");
             return false;
         }
 
         snprintf(buf, LCD_MSG_LEN, "%.3f %.3f %.3f",
                  posData[p][0], posData[p][1], posData[p][2]);
         lcdPrint(2, buf);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(3000));
     }
 
     // Compute offset and scale per axis
@@ -171,26 +188,31 @@ static bool gyroCalibrate(void)
 
 // ─── Setup ─────────────────────────────────────────────────────────
 
-void gyroSetup(QueueHandle_t lcdQueue,
-               QueueHandle_t buttonQueue,
-               SemaphoreHandle_t i2cMutex)
-{
-    s_lcdQueue    = lcdQueue;
-    s_buttonQueue = buttonQueue;
-    s_i2cMutex    = i2cMutex;
+// void gyroSetup(QueueHandle_t lcdQueue,
+//                QueueHandle_t buttonQueue,
+//                SemaphoreHandle_t i2cMutex)
+// {
+void gyroSetup(){
+    // printf("Accell-oscope setup initiating.\n");
+    // s_lcdQueue    = lcdQueue;
+    // s_buttonQueue = buttonQueue;
+    // s_i2cMutex    = i2cMutex;
 
-    gyroEventGroup = xEventGroupCreate();
-    configASSERT(gyroEventGroup != NULL);
+    // gyroEventGroup = xEventGroupCreate();
+    // configASSERT(gyroEventGroup != NULL);
 
-    if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) == pdTRUE) {
+    //if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) == pdTRUE) {
         bool found = sox.begin_I2C();
-        xSemaphoreGive(s_i2cMutex);
+        //xSemaphoreGive(s_i2cMutex);
         if (!found) {
             lcdPrint(0, "LSM6DSOX");
             lcdPrint(1, "NOT FOUND");
-            while (1) { vTaskDelay(pdMS_TO_TICKS(100)); }
+            while (1) { 
+                vTaskDelay(pdMS_TO_TICKS(100));
+                printf(":(");
+            }
         }
-    }
+    //}
 
     lcdPrint(0, "LSM6DSOX Found!");
     vTaskDelay(pdMS_TO_TICKS(1000));
@@ -259,11 +281,11 @@ void gyroSetup(QueueHandle_t lcdQueue,
 
 void gyroReading(GyroMetrics_t metrics)
 {
-    if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) != pdTRUE) return;
+    //if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) != pdTRUE) return;
 
     sensors_event_t accel, gyro, temp;
     sox.getEvent(&accel, &gyro, &temp);
-    xSemaphoreGive(s_i2cMutex);
+    //xSemaphoreGive(s_i2cMutex);
 
     metrics[0] = (accel.acceleration.x - accelOffset[0]) * accelScale[0];
     metrics[1] = (accel.acceleration.y - accelOffset[1]) * accelScale[1];
@@ -277,39 +299,50 @@ void gyroReading(GyroMetrics_t metrics)
 
 void gyroShow(GyroMetrics_t metrics)
 {
-    char buf[LCD_MSG_LEN];
-    snprintf(buf, LCD_MSG_LEN, "AX:%.2f AY:%.2f AZ:%.2f",
-             metrics[0], metrics[1], metrics[2]);
-    lcdPrint(0, buf);
-    snprintf(buf, LCD_MSG_LEN, "GX:%.2f GY:%.2f GZ:%.2f",
-             metrics[3], metrics[4], metrics[5]);
-    lcdPrint(1, buf);
+    printf("\n============ACCELL-OSCOPE READING===============\nAX:%.2f AY:%.2f AZ:%.2f\nGX:%.2f GY:%.2f GZ:%.2f\n================================================\n", 
+        metrics[0], 
+        metrics[1], 
+        metrics[2], 
+        metrics[3], 
+        metrics[4], 
+        metrics[5]
+    );
+    // char buf[LCD_MSG_LEN];
+    // snprintf(buf, LCD_MSG_LEN, "AX:%.2f AY:%.2f AZ:%.2f",
+    //          metrics[0], metrics[1], metrics[2]);
+    // lcdPrint(0, buf);
+    // snprintf(buf, LCD_MSG_LEN, "GX:%.2f GY:%.2f GZ:%.2f",
+    //          metrics[3], metrics[4], metrics[5]);
+    // lcdPrint(1, buf);
 }
 
 // ─── FreeRTOS task ─────────────────────────────────────────────────
 void vAccelGyro(void* pvParameters){
   (void) pvParameters;
+  vTaskDelay(pdMS_TO_TICKS(10000));
+  printf("Accell-oscope started!\n");
 
   GyroMetrics_t metrics;
-  EventBits_t   bits;
-
+//   EventBits_t   bits;
+  gyroSetup();
+  gyroCalibrate();
   
   while (1){
-    bits = xEventGroupGetBits(gyroEventGroup);
+    // bits = xEventGroupGetBits(gyroEventGroup);
 
-    if (bits & GYRO_EVT_CALIBRATE_REQUEST) {
-        // Clear the request bit before starting
-        xEventGroupClearBits(gyroEventGroup, GYRO_EVT_CALIBRATE_REQUEST);
+    // if (bits & GYRO_EVT_CALIBRATE_REQUEST) {
+    //     // Clear the request bit before starting
+    //     xEventGroupClearBits(gyroEventGroup, GYRO_EVT_CALIBRATE_REQUEST);
 
-        bool success = gyroCalibrate();
+    //     bool success = gyroCalibrate();
 
-        // Signal completion or cancellation back to the requester
-        xEventGroupSetBits(gyroEventGroup, success ? GYRO_EVT_CALIBRATE_COMPLETE : GYRO_EVT_CALIBRATE_CANCELLED);
-    } else {
-        // Normal operation: read and expose sensor data
+    //     // Signal completion or cancellation back to the requester
+    //     xEventGroupSetBits(gyroEventGroup, success ? GYRO_EVT_CALIBRATE_COMPLETE : GYRO_EVT_CALIBRATE_CANCELLED);
+    // } else {
+    //     // Normal operation: read and expose sensor data
         gyroReading(metrics);
-        // gyroShow(metrics); //For debugging
-    }
+        gyroShow(metrics); //For debugging
+    // }
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }

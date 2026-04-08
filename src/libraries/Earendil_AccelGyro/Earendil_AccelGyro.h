@@ -12,40 +12,42 @@
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_LSM6DSOX.h>  // Adafruit_LSM6DS library.
 
+#include <Earendil_Utils.h>
+
 // --- Calibration State ------------------------------------------------
 #define CALIB_SAMPLES 500
 #define GRAVITY 9.80665f
 
 // --- Event bits -------------------------------------------------------
-#define GYRO_EVT_CALIBRATE_REQUEST  ( 1 << 0 )
-#define GYRO_EVT_CALIBRATE_COMPLETE ( 1 << 1 )
-#define GYRO_EVT_CALIBRATE_CANCELLED ( 1 << 2 )
+// #define GYRO_EVT_CALIBRATE_REQUEST  ( 1 << 0 )
+// #define GYRO_EVT_CALIBRATE_COMPLETE ( 1 << 1 )
+// #define GYRO_EVT_CALIBRATE_CANCELLED ( 1 << 2 )
 
 // --- Button IDs -------------------------------------------------------
-#define BTN_CONFIRM  0x01
-#define BTN_CANCEL   0x02
+// #define BTN_CONFIRM  0x01
+// #define BTN_CANCEL   0x02
 
 // --- LCD message ------------------------------------------------------
 // Adapt this struct to match your existing LCD task's message format
 #define LCD_MSG_LEN 64
-typedef struct {
-    uint8_t line;           // LCD line number (0-based)
-    char    text[LCD_MSG_LEN];
-} LCDMessage_t;
+// typedef struct {
+//     uint8_t line;           // LCD line number (0-based)
+//     char    text[LCD_MSG_LEN];
+// } LCDMessage_t;
 
 // --- Gyro metrics -----------------------------------------------------
 // [0..2] = accel X/Y/Z (m/s^2), [3..5] = gyro X/Y/Z (rad/s)
 typedef float GyroMetrics_t[6];
 
 // --- Shared handles (defined in gyro.cpp, extern'd for other tasks) ---
-extern EventGroupHandle_t gyroEventGroup;
+//extern EventGroupHandle_t gyroEventGroup;
 
 // --- Public API ------------------------------------------------------
-void gyroSetup(QueueHandle_t lcdQueue,
-               QueueHandle_t buttonQueue,
-               SemaphoreHandle_t i2cMutex);
+// void gyroSetup(QueueHandle_t lcdQueue,
+//                QueueHandle_t buttonQueue,
+//                SemaphoreHandle_t i2cMutex);
   
-void gyroReading(GyroMetrics_t metrics);
-void gyroShow(GyroMetrics_t metrics);
+// void gyroReading(GyroMetrics_t metrics);
+// void gyroShow(GyroMetrics_t metrics);
 
 void vAccelGyro(void* pvParameters); // FreeRTOS task entry point
