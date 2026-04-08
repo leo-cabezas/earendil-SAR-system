@@ -11,7 +11,7 @@
 // #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_LSM6DSOX.h>  // Adafruit_LSM6DS library.
-
+#include <Earendil_Display.h>
 #include <Earendil_Utils.h>
 
 // --- Calibration State ------------------------------------------------
@@ -36,7 +36,7 @@
 typedef float GyroMetrics_t[6];
 
 // --- Shared handles (defined in gyro.cpp, extern'd for other tasks) ---
-extern EventGroupHandle_t gyroEventGroup;
+
 
 // --- Public API ------------------------------------------------------
 // void gyroSetup(QueueHandle_t lcdQueue,

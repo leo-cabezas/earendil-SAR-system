@@ -61,7 +61,6 @@ QueueHandle_t calQueue = xQueueCreate(6, 64);
 SemaphoreHandle_t g_printMutex;
 SemaphoreHandle_t gpsDataMutex;
 
-
 int main() {
     stdio_init_all();
 
@@ -193,6 +192,16 @@ int main() {
             &taskDisplayControl
         );
         vTaskCoreAffinitySet(taskDisplayControl, 1 << 0);
+
+        xTaskCreate(
+            vDisplayCalibration, 
+            "TaskDisplayCalibration", 
+            512, 
+            NULL, 
+            1, 
+            &taskDisplayCalibration
+        );
+        vTaskCoreAffinitySet(taskDisplayCalibration, 1 << 0);
     #endif
     #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskAltimeter;
