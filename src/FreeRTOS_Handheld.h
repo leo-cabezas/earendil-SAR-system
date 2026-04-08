@@ -47,6 +47,7 @@ typedef struct Earendil_Task_Handles {
         TaskHandle_t taskDisplayMenu;
         TaskHandle_t taskDisplayControl;
         TaskHandle_t taskDisplayNav;
+        TaskHandle_t taskDisplayCalibration;
     #endif
     #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskAltimeter;
@@ -62,3 +63,5 @@ typedef struct Earendil_Task_Handles {
         TaskHandle_t taskCompass;
     #endif
 } Earendil_Task_Handles_t;
+
+extern Earendil_Task_Handles_t Earendil_Task_Handles;

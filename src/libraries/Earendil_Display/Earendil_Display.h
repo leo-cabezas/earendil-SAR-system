@@ -43,7 +43,8 @@
 #define GYRO_EVT_CALIBRATE_COMPLETE ( 1 << 1 )
 #define GYRO_EVT_CALIBRATE_CANCELLED ( 1 << 2 )
 
-
+extern QueueHandle_t calQueue;
+extern EventGroupHandle_t gyroEventGroup;
 
 void vDisplayMenu(void* pvParameters);
 void vDisplayControl(void* pvParameters);

@@ -28,7 +28,7 @@ QueueHandle_t guQueue = xQueueCreate(2, sizeof(GPSData_t));
 QueueHandle_t calQueue = xQueueCreate(6, 64);
 SemaphoreHandle_t g_printMutex;
 SemaphoreHandle_t gpsDataMutex;
-
+EventGroupHandle_t gyroEventGroup = xEventGroupCreate();
 Earendil_Task_Handles_t Earendil_Task_Handles;
 
 int main() {
@@ -138,41 +138,41 @@ int main() {
             vDisplayNav, 
             "TaskDisplayNav", 
             512, 
-            (void*)Earendil_Task_Handles, 
+            (void*)&Earendil_Task_Handles, 
             1, 
             &Earendil_Task_Handles.taskDisplayNav
         );
-        vTaskCoreAffinitySet(taskDisplayNav, 1 << 0);
+        vTaskCoreAffinitySet(Earendil_Task_Handles.taskDisplayNav, 1 << 0);
         
         xTaskCreate(
             vDisplayMenu, 
             "TaskDisplayMenu", 
             512, 
-            (void*)Earendil_Task_Handles, 
+            (void*)&Earendil_Task_Handles, 
             1, 
             &Earendil_Task_Handles.taskDisplayMenu
         );
-        vTaskCoreAffinitySet(taskDisplayMenu, 1 << 0);
+        vTaskCoreAffinitySet(Earendil_Task_Handles.taskDisplayMenu, 1 << 0);
 
         xTaskCreate(
             vDisplayControl, 
             "TaskDisplayControl", 
             512, 
-            (void*)Earendil_Task_Handles,
+            (void*)&Earendil_Task_Handles,
             1, 
             &Earendil_Task_Handles.taskDisplayControl
         );
-        vTaskCoreAffinitySet(taskDisplayControl, 1 << 0);
+        vTaskCoreAffinitySet(Earendil_Task_Handles.taskDisplayControl, 1 << 0);
 
         xTaskCreate(
             vDisplayCalibration, 
             "TaskDisplayCalibration", 
             512, 
-            (void*)Earendil_Task_Handles, 
+            (void*)&Earendil_Task_Handles, 
             1, 
             &Earendil_Task_Handles.taskDisplayCalibration
         );
-        vTaskCoreAffinitySet(taskDisplayCalibration, 1 << 0);
+        vTaskCoreAffinitySet(Earendil_Task_Handles.taskDisplayCalibration, 1 << 0);
     #endif
     #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
         TaskHandle_t taskAltimeter;

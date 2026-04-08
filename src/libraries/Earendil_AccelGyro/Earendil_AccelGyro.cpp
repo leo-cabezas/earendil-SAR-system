@@ -15,10 +15,9 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
 
 static void lcdPrint(const char* msg)
 {
-    if (s_lcdQueue == NULL) return;
     char text[LCD_MSG_LEN];
     snprintf(text, LCD_MSG_LEN, "%s", msg);
-    xQueueSend(s_lcdQueue, &text, pdMS_TO_TICKS(50));
+    xQueueSend(calQueue, &text, pdMS_TO_TICKS(50));
 }
 
 // // Blocks until BTN_CONFIRM or BTN_CANCEL is received from the ISR queue.

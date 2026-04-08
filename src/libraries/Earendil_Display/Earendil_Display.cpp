@@ -1,11 +1,6 @@
 #include <Earendil_Display.h> // ATTENTION: Add all library dependencies to this header.
 
-TaskHandle_t taskDisplayNav;
-TaskHandle_t taskDisplayMenu;
-TaskHandle_t taskDisplayControl;
-EventGroupHandle_t gyroEventGroup;
-TaskHandle_t taskDisplayCalibration;
-
+//Earendil_Task_Handles_t Earendil_Task_Handles;
 
 Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 //Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_MOSI,TFT_SCLK, TFT_RST, TFT_MISO);//initialization for the adafruit screen structure
@@ -214,15 +209,15 @@ void gpio_handler(){
         gpio_set_irq_enabled(BUTTON2, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the task that the button was pressed
-        vTaskNotifyGiveFromISR(taskDisplayNav, NULL);        // Yield to the task if it has higher priority
-        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);        // Yield to the task if it has higher priority
+        vTaskNotifyGiveFromISR(Earendil_Task_Handles.taskDisplayNav, NULL);        // Yield to the task if it has higher priority
+        vTaskNotifyGiveFromISR(Earendil_Task_Handles.taskDisplayMenu, NULL);        // Yield to the task if it has higher priority
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
     if (gpio_get_irq_event_mask(BUTTON3) & GPIO_IRQ_EDGE_FALL) {
         gpio_set_irq_enabled(BUTTON3, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the display control task
-        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Task_Handles.taskDisplayMenu, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
@@ -230,14 +225,14 @@ void gpio_handler(){
         gpio_set_irq_enabled(BUTTON4, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the display control task
-        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Task_Handles.taskDisplayMenu, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
     if (gpio_get_irq_event_mask(BUTTON5) & GPIO_IRQ_EDGE_FALL) {
         gpio_set_irq_enabled(BUTTON5, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the display control task
-        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Task_Handles.taskDisplayMenu, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
@@ -245,7 +240,7 @@ void gpio_handler(){
         gpio_set_irq_enabled(BUTTON1, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the display control task
-        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Task_Handles.taskDisplayMenu, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
@@ -272,7 +267,7 @@ void menuControl()
   }
 
   if(gpio_get(BUTTON1) == 0){
-      vTaskResume(taskDisplayCalibration);
+      vTaskResume(Earendil_Task_Handles.taskDisplayCalibration);
       while(gpio_get(BUTTON1) == 0) vTaskDelay(pdMS_TO_TICKS(5));
   }
 
@@ -287,8 +282,8 @@ void controlNav(){
   ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
   //UP PRESSED
   if (gpio_get(BUTTON2) == 0){
-      vTaskResume(taskDisplayMenu);
-      vTaskSuspend(taskDisplayNav);
+      vTaskResume(Earendil_Task_Handles.taskDisplayMenu);
+      vTaskSuspend(Earendil_Task_Handles.taskDisplayNav);
       while(gpio_get(BUTTON2) == 0) vTaskDelay(pdMS_TO_TICKS(5));
   }
   gpio_set_irq_enabled(BUTTON2, GPIO_IRQ_EDGE_FALL, true);
@@ -333,6 +328,9 @@ void vDisplayMenu(void* pvParameters){
 }
 
 void vDisplayControl(void* pvParameters){
+
+  //Earendil_Task_Handles = *(Earendil_Task_Handles_t*)pvParameters;
+
   gpio_init(BUTTON1);
   gpio_init(BUTTON2);
   gpio_init(BUTTON3);
@@ -370,7 +368,7 @@ void vDisplayControl(void* pvParameters){
   {
     calibrateMenu[i].parent = mainMenu;  // set parent pointer to the main menu. this will be used to go back
   }
-  vTaskResume(taskDisplayNav);
+  vTaskResume(Earendil_Task_Handles.taskDisplayNav);
   while(1){
     }
 }
@@ -413,5 +411,7 @@ void vDisplayCalibration(void* pvParameters){
       }
     }
   }
-
+  tft.setTextSize(5);
+  tft.setCursor(120,120);
+  tft.print("FINISHED");
 }
