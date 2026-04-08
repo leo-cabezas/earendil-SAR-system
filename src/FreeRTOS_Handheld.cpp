@@ -5,39 +5,7 @@
 ####################################################################
 */
 
-// FreeRTOS libraries
-#include <FreeRTOS.h>
-#include <task.h>
-#include <semphr.h>
-// pico-sdk libraries
-#include <pico/stdlib.h>
-#include <pico/multicore.h>
-
-#include <cstdio>   // Probably not needed here. Just in case.
-
-#ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
-    #include <Earendil_Radio.h>
-#endif
-#ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
-    #include <Earendil_GPS.h>
-#endif
-#ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
-    #include <Earendil_Display.h>
-#endif
-#ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
-    #include <Earendil_Altimeter.h>
-#endif
-#ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
-    #include <Earendil_AccelGyro.h>
-#endif
-#ifdef EARENDIL_USDREADER_ENABLED       // Defined in Earendil_uSDReader.cmake, when linked to CMakeLists.txt.
-    #include <Earendil_uSDReader.h>
-#endif
-#ifdef EARENDIL_MAGNETOMETER_ENABLED    // Defined in Earendil_Magnetometer.cmake, when linked to CMakeLists.txt.
-    #include <Earendil_Magnetometer.h>
-#endif
-
-#include <Earendil_Utils.h>
+#include <FreeRTOS_Handheld.h>
 
 void vApplicationTickHook(void) {
     // Debug print (CAREFUL: Printing every tick will flood UART).
@@ -141,6 +109,7 @@ int main() {
         );
         vTaskCoreAffinitySet(taskGPS, 1 << 1);
 
+        TaskHandle_t taskGPSTX;
         xTaskCreate(
             vGPSTX,
             "TaskGPSTX",
@@ -163,7 +132,7 @@ int main() {
         vTaskCoreAffinitySet(taskGPSRXUtility, 1 << 0);
     #endif
     #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
-        
+        TaskHandle_t taskDisplayNav;
         xTaskCreate(
             vDisplayNav, 
             "TaskDisplayNav", 
@@ -174,6 +143,7 @@ int main() {
         );
         vTaskCoreAffinitySet(taskDisplayNav, 1 << 0);
         
+        TaskHandle_t taskDisplayMenu;
         xTaskCreate(
             vDisplayMenu, 
             "TaskDisplayMenu", 
@@ -184,6 +154,7 @@ int main() {
         );
         vTaskCoreAffinitySet(taskDisplayMenu, 1 << 0);
 
+        TaskHandle_t taskDisplayControl;
         xTaskCreate(
             vDisplayControl, 
             "TaskDisplayControl", 

@@ -32,9 +32,6 @@
 #define OUTLINE_BLU 0x2CB6
 #define OUTLINE_DARKBLU 0x1188
 
-extern TaskHandle_t taskDisplayMenu;
-extern TaskHandle_t taskDisplayControl;
-extern TaskHandle_t taskDisplayNav;
 extern QueueHandle_t calQueue;
 
 void vDisplayMenu(void* pvParameters);
