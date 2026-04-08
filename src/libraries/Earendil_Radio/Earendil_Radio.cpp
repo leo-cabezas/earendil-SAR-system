@@ -76,11 +76,77 @@ void vHandheldRadioManager(void* pvParameters){
 
     radioSetup();
 
+    vTaskResume(taskHandheldRadioSendPing_TX);
+    vTaskResume(taskHandheldRadioListen_RX);
+
     while (1){
-        vTaskResume(taskHandheldRadioSendPing_TX);
-        vTaskResume(taskHandheldRadioListen_RX);
+        
     }
 }
+
+
+// 
+// ATTENTION: MIGHT BE A GOOD IDEA TO UPDATE THIS CODE TO USE C++ VECTORS. MORE MEMORY SAFE, WORTH.
+//
+#define METADATA_FIELD_COUNT 4
+static inline void encodePacket(    // TESTED, NEED TO INCLUDE ACTUAL SENT DATA.
+    uint8_t*    packet,
+    uint32_t    recipient_id,
+    uint8_t     (&metadata)[METADATA_FIELD_COUNT * 4]
+){
+    const uint8_t recipient_id_index = 0;
+    packet[recipient_id_index + 0] = (recipient_id >> 24) & 0xFF;
+    packet[recipient_id_index + 1] = (recipient_id >> 16) & 0xFF;
+    packet[recipient_id_index + 2] = (recipient_id >> 8)  & 0xFF;
+    packet[recipient_id_index + 3] = (recipient_id >> 0)  & 0xFF; 
+
+    const uint8_t metadata_index = 4;
+    for (size_t i = 0; i < METADATA_FIELD_COUNT * 4; i++){
+        packet[metadata_index + i] = metadata[i];
+    }
+}
+
+static inline void encodeMetadata(  // TESTED AND FUNCTIONAL.
+    uint8_t     (&metadata)[METADATA_FIELD_COUNT * 4],
+    uint32_t    sender_id, 
+    uint32_t    message_id,
+    uint32_t    message_attempt,
+    uint32_t    timestamp
+){  
+    uint32_t metadata_fields[METADATA_FIELD_COUNT] = {sender_id, message_id, message_attempt, timestamp};
+
+    uint8_t field_index = 0;
+    for (size_t i = 0; i < METADATA_FIELD_COUNT; i++){
+        metadata[field_index + 0] = (metadata_fields[i] >> 24) & 0xFF;
+        metadata[field_index + 1] = (metadata_fields[i] >> 16) & 0xFF;
+        metadata[field_index + 2] = (metadata_fields[i] >> 8)  & 0xFF;
+        metadata[field_index + 3] = (metadata_fields[i] >> 0)  & 0xFF;
+        field_index += 4;
+    }
+}
+
+static inline void decodeMetadata(  // TESTED AND FUNCTIONAL.
+    uint8_t     metadata[METADATA_FIELD_COUNT * 4],
+    uint32_t&   sender_id, 
+    uint32_t&   message_id,
+    uint32_t&   message_attempt,
+    uint32_t&   timestamp
+){
+    uint32_t* metadata_fields[METADATA_FIELD_COUNT] = {&sender_id, &message_id, &message_attempt, &timestamp};
+
+    uint8_t field_index = 0;
+    for (size_t i = 0; i < METADATA_FIELD_COUNT; i++){
+        uint32_t retrieved_value = 0;
+        retrieved_value |= metadata[field_index + 0] << 24;
+        retrieved_value |= metadata[field_index + 1] << 16;
+        retrieved_value |= metadata[field_index + 2] << 8;
+        retrieved_value |= metadata[field_index + 3] << 0;
+        *metadata_fields[i] = retrieved_value;
+        field_index += 4;
+    }
+}
+
+// ------------------------------------------------------------------------------------------
 
 void vHandheldRadioSendPing_TX(void* pvParameters){
     vTaskSuspend();
@@ -125,10 +191,10 @@ void vHandheldRadioTransmitData_TX(void* pvParameters){
 void vHandheldRadioListen_RX(void* pvParameters){
     vTaskSuspend();
 
-    while (1){
-        uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-        uint8_t len = sizeof(buf);
+    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t len = sizeof(buf);
 
+    while (1){
         if (rf95.recv(buf, &len)) {
             // Process packet
             Serial.print("Got: "); Serial.println((char*)buf);
