@@ -35,6 +35,7 @@
 extern TaskHandle_t taskDisplayMenu;
 extern TaskHandle_t taskDisplayControl;
 extern TaskHandle_t taskDisplayNav;
+extern QueueHandle_t calQueue;
 
 void vDisplayMenu(void* pvParameters);
 void vDisplayControl(void* pvParameters);
