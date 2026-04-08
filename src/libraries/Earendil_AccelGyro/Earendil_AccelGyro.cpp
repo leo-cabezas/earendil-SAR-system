@@ -317,7 +317,7 @@ void vAccelGyro(void* pvParameters){
   GyroMetrics_t metrics;
   EventBits_t   bits;
   gyroSetup();
-  gyroCalibrate();
+  // gyroCalibrate();
   
   while (1){
     bits = xEventGroupGetBits(gyroEventGroup);

@@ -220,6 +220,7 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         )
         target_include_directories(FreeRTOS-Kernel INTERFACE 
                 ./config 
+                ./src
                 ./src/libraries
         )
 

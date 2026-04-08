@@ -11,6 +11,7 @@
 #include <math.h>
 #include <cstdio>
 
+
 // --- GLOBALS // ALTIMETER ---
 #define SEALEVELPRESSURE_HPA (1014.0)//Lawrence, KS local sea-level pressure: 202602221550
 #define LOCAL_ALTITUDE (289.0)//m

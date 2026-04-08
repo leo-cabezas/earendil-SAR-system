@@ -3,6 +3,8 @@
 TaskHandle_t taskDisplayNav;
 TaskHandle_t taskDisplayMenu;
 TaskHandle_t taskDisplayControl;
+EventGroupHandle_t gyroEventGroup;
+TaskHandle_t taskDisplayCalibration;
 
 
 Adafruit_GC9A01A tft = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
@@ -206,31 +208,39 @@ void drawNotch()
 // DEBOUNCER TEST
 
 void gpio_handler(){
-    if (gpio_get_irq_event_mask(13) & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
-        gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, false);
+    if (gpio_get_irq_event_mask(BUTTON2) & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
+        gpio_set_irq_enabled(BUTTON2, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the task that the button was pressed
         vTaskNotifyGiveFromISR(taskDisplayNav, NULL);        // Yield to the task if it has higher priority
         vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);        // Yield to the task if it has higher priority
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
-    if (gpio_get_irq_event_mask(9) & GPIO_IRQ_EDGE_FALL) {
-        gpio_set_irq_enabled(9, GPIO_IRQ_EDGE_FALL, false);
+    if (gpio_get_irq_event_mask(BUTTON3) & GPIO_IRQ_EDGE_FALL) {
+        gpio_set_irq_enabled(BUTTON3, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the display control task
         vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
-    if (gpio_get_irq_event_mask(6) & GPIO_IRQ_EDGE_FALL) {
-        gpio_set_irq_enabled(6, GPIO_IRQ_EDGE_FALL, false);
+    if (gpio_get_irq_event_mask(BUTTON4) & GPIO_IRQ_EDGE_FALL) {
+        gpio_set_irq_enabled(BUTTON4, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the display control task
         vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
-    if (gpio_get_irq_event_mask(5) & GPIO_IRQ_EDGE_FALL) {
-        gpio_set_irq_enabled(5, GPIO_IRQ_EDGE_FALL, false);
+    if (gpio_get_irq_event_mask(BUTTON5) & GPIO_IRQ_EDGE_FALL) {
+        gpio_set_irq_enabled(BUTTON5, GPIO_IRQ_EDGE_FALL, false);
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        // Notify the display control task
+        vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+
+    if (gpio_get_irq_event_mask(BUTTON1) & GPIO_IRQ_EDGE_FALL) {
+        gpio_set_irq_enabled(BUTTON1, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         // Notify the display control task
         vTaskNotifyGiveFromISR(taskDisplayMenu, NULL);
@@ -247,21 +257,39 @@ void menuControl()
 {
   ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
   //UP PRESSED
-  if(gpio_get(6) == 0){
+  if(gpio_get(BUTTON5) == 0){
       moveUp();
       drawMenu();
-      while(gpio_get(6) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+      while(gpio_get(BUTTON5) == 0) vTaskDelay(pdMS_TO_TICKS(5));
   }
   // DOWN PRESSED
-  if(gpio_get(5) == 0){
+  if(gpio_get(BUTTON4) == 0){
       moveDown();
       drawMenu();
-      while(gpio_get(5) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+      while(gpio_get(BUTTON4) == 0) vTaskDelay(pdMS_TO_TICKS(5));
   }
-  vTaskDelay(pdMS_TO_TICKS(20)); // yield
 
-  gpio_set_irq_enabled(6, GPIO_IRQ_EDGE_FALL, true);
-  gpio_set_irq_enabled(5, GPIO_IRQ_EDGE_FALL, true);
+  if(gpio_get(BUTTON1) == 0){
+      vTaskResume(taskDisplayCalibration);
+      while(gpio_get(BUTTON1) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+  }
+
+  vTaskDelay(pdMS_TO_TICKS(20));
+
+  gpio_set_irq_enabled(BUTTON5, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(BUTTON4, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(BUTTON1, GPIO_IRQ_EDGE_FALL, true);
+}
+
+void controlNav(){
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+  //UP PRESSED
+  if (gpio_get(BUTTON2) == 0){
+      vTaskResume(taskDisplayMenu);
+      vTaskSuspend(taskDisplayNav);
+      while(gpio_get(BUTTON2) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+  }
+  gpio_set_irq_enabled(BUTTON2, GPIO_IRQ_EDGE_FALL, true);
 }
 
 void displayNav()
@@ -283,8 +311,9 @@ void vDisplayNav(void* pvParameters){
   (void)pvParameters;
     tft.print("Nav Flag");
     vTaskDelay(pdMS_TO_TICKS(50));
+    displayNav();
     while(1){
-      displayNav();
+      controlNav();
       vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
@@ -302,27 +331,29 @@ void vDisplayMenu(void* pvParameters){
 }
 
 void vDisplayControl(void* pvParameters){
-  const uint8_t inputPin = 13;
-  const uint8_t backPin = 9;
-  gpio_init(inputPin);
-  gpio_init(backPin);
-  gpio_set_dir(inputPin, GPIO_IN);
-  gpio_set_dir(backPin, GPIO_IN);
-  gpio_pull_up(inputPin);
-  gpio_pull_up(backPin);
-  gpio_set_irq_enabled(inputPin, GPIO_IRQ_EDGE_FALL, true);
-  gpio_set_irq_enabled(backPin, GPIO_IRQ_EDGE_FALL, true);
-  
-  const uint8_t upPin = 6;
-  const uint8_t downPin = 5;
-  gpio_init(upPin);
-  gpio_init(downPin);
-  gpio_set_dir(upPin, GPIO_IN);
-  gpio_set_dir(downPin, GPIO_IN);
-  gpio_pull_up(upPin);
-  gpio_pull_up(downPin);
-  gpio_set_irq_enabled(upPin, GPIO_IRQ_EDGE_FALL, true);
-  gpio_set_irq_enabled(downPin, GPIO_IRQ_EDGE_FALL, true);
+  gpio_init(BUTTON1);
+  gpio_init(BUTTON2);
+  gpio_init(BUTTON3);
+  gpio_init(BUTTON4);
+  gpio_init(BUTTON5);
+
+  gpio_set_dir(BUTTON1, GPIO_IN);
+  gpio_set_dir(BUTTON2, GPIO_IN);
+  gpio_set_dir(BUTTON3, GPIO_IN);
+  gpio_set_dir(BUTTON4, GPIO_IN);
+  gpio_set_dir(BUTTON5, GPIO_IN);
+
+  gpio_pull_up(BUTTON1);
+  gpio_pull_up(BUTTON2);
+  gpio_pull_up(BUTTON3);
+  gpio_pull_up(BUTTON4);
+  gpio_pull_up(BUTTON5);
+
+  gpio_set_irq_enabled(BUTTON1, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(BUTTON2, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(BUTTON3, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(BUTTON4, GPIO_IRQ_EDGE_FALL, true);
+  gpio_set_irq_enabled(BUTTON5, GPIO_IRQ_EDGE_FALL, true);
 
 
   irq_add_shared_handler(IO_IRQ_BANK0, gpio_handler, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
@@ -337,31 +368,46 @@ void vDisplayControl(void* pvParameters){
   {
     calibrateMenu[i].parent = mainMenu;  // set parent pointer to the main menu. this will be used to go back
   }
-  vTaskSuspend(taskDisplayMenu);  // pause nav
+  vTaskResume(taskDisplayNav);
   while(1){
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        // MENU button pressed
-        if(gpio_get(13) == 0){
-
-            vTaskSuspend(taskDisplayNav);  // pause nav
-            vTaskResume(taskDisplayMenu);  // resume menu
-
-            // wait until button released
-            while(gpio_get(13) == 0) vTaskDelay(pdMS_TO_TICKS(5));
-        }
-        // BACK button pressed
-        if(gpio_get(9) == 0){
-
-            vTaskSuspend(taskDisplayMenu); // pause menu
-            vTaskResume(taskDisplayNav);   // resume nav
-
-
-            // wait until button released
-            while(gpio_get(9) == 0) vTaskDelay(pdMS_TO_TICKS(5));
-        }
-        vTaskDelay(pdMS_TO_TICKS(20)); // yield
-
-        gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL, true);
-        gpio_set_irq_enabled(9, GPIO_IRQ_EDGE_FALL, true);
     }
+}
+
+void vDisplayCalibration(void* pvParameters){
+  vTaskSuspend(NULL);
+  (void)pvParameters;
+  tft.fillScreen(GC9A01A_BLACK);
+  tft.setCursor(X_MENU_OFFSET, Y_MENU_OFFSET);
+  tft.setTextSize(1.5);
+  tft.print("Gyro Calibration");
+  EventBits_t bits;
+  tft.setCursor(X_OFFSET-50, Y_OFFSET);
+  vTaskDelay(pdMS_TO_TICKS(50));
+
+  
+  xEventGroupSetBits(gyroEventGroup, GYRO_EVT_CALIBRATE_REQUEST);
+  while(1)
+  {
+    tft.print("IN while loop");
+    bits = xEventGroupGetBits(gyroEventGroup);
+    std::string calstep = "";
+    tft.setCursor(X_OFFSET, Y_MENU_OFFSET+30);
+    tft.print("Entering if block");
+    if (bits && GYRO_EVT_CALIBRATE_COMPLETE)
+    {
+      tft.print("Breaking");
+      break;
+    }
+    else
+    {
+      tft.setCursor(X_OFFSET, Y_OFFSET);
+      tft.print("Going into calibration");
+      if (xQueueReceive(calQueue, &calstep, 0) == pdPASS)
+      {
+        printf("%s", calstep.c_str());
+        tft.print(calstep.c_str());
+      }
+    }
+  }
+
 }
