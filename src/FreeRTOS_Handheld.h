@@ -1,3 +1,5 @@
+#pragma once
+
 // FreeRTOS libraries
 #include <FreeRTOS.h>
 #include <task.h>
@@ -32,33 +34,31 @@
 
 #include <Earendil_Utils.h>
 
-
-#ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
-    extern TaskHandle_t taskRadioTX;
-#endif
-#ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
-    extern TaskHandle_t taskGPS;
-    extern TaskHandle_t taskGPSTX;
-    extern TaskHandle_t taskGPSRXUtility;
-#endif
-#ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
-    extern TaskHandle_t taskDisplayMenu;
-    extern TaskHandle_t taskDisplayControl;
-    extern TaskHandle_t taskDisplayNav;
-    extern QueueHandle_t calQueue;
-    extern EventGroupHandle_t gyroEventGroup;
-    extern TaskHandle_t taskDisplayCalibration;
-#endif
-#ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
-    extern TaskHandle_t taskAltimeter;
-    extern TaskHandle_t taskAltitudeUtility;
-#endif
-#ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
-    extern TaskHandle_t taskAccelGyro;
-#endif
-#ifdef EARENDIL_USDREADER_ENABLED       // Defined in Earendil_uSDReader.cmake, when linked to CMakeLists.txt.
-    extern TaskHandle_t taskMicroSD;
-#endif
-#ifdef EARENDIL_MAGNETOMETER_ENABLED    // Defined in Earendil_Magnetometer.cmake, when linked to CMakeLists.txt.
-    extern TaskHandle_t taskCompass;
-#endif
+typedef struct Earendil_Task_Handles {
+    #ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
+        TaskHandle_t taskRadioTX;
+    #endif
+    #ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
+        TaskHandle_t taskGPS;
+        TaskHandle_t taskGPSTX;
+        TaskHandle_t taskGPSRXUtility;
+    #endif
+    #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
+        TaskHandle_t taskDisplayMenu;
+        TaskHandle_t taskDisplayControl;
+        TaskHandle_t taskDisplayNav;
+    #endif
+    #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
+        TaskHandle_t taskAltimeter;
+        TaskHandle_t taskAltitudeUtility;
+    #endif
+    #ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
+        TaskHandle_t taskAccelGyro;
+    #endif
+    #ifdef EARENDIL_USDREADER_ENABLED       // Defined in Earendil_uSDReader.cmake, when linked to CMakeLists.txt.
+        TaskHandle_t taskMicroSD;
+    #endif
+    #ifdef EARENDIL_MAGNETOMETER_ENABLED    // Defined in Earendil_Magnetometer.cmake, when linked to CMakeLists.txt.
+        TaskHandle_t taskCompass;
+    #endif
+} Earendil_Task_Handles_t;
