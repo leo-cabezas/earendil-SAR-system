@@ -406,6 +406,7 @@ void vDisplayCalibration(void* pvParameters){
       tft.print("Going into calibration");
       if (xQueueReceive(calQueue, &calstep, 0) == pdPASS)
       {
+        tft.print("Reahed Calstep Finish");
         printf("%s", calstep.c_str());
         tft.print(calstep.c_str());
       }
