@@ -11,7 +11,6 @@
 #include <math.h>
 #include <cstdio>
 
-
 // --- GLOBALS // ALTIMETER ---
 #define SEALEVELPRESSURE_HPA (1014.0)//Lawrence, KS local sea-level pressure: 202602221550
 #define LOCAL_ALTITUDE (289.0)//m
@@ -25,30 +24,26 @@
 
 // --- GLOBALS // STRUCTS ---
 /* Defines an enumerated type used to identify the source and type of the data. */
-typedef enum 
-{ 
+typedef enum { 
     altTemp, 
     altPress,
     magHead
 } DataType_t;
 
 /* Defines an enumerated type used to identify the source of GPS data. */
-typedef enum
-{
+typedef enum {
     eHandheld,
     eNode
 } SysType_t;
 
 /* Defines the structure type that will be passed on the queue for sensor data.*/
-typedef struct 
-{ 
+typedef struct { 
     uint32_t eData; 
     DataType_t eSource;
 } SensorData_t;
 
 /* Defines the structure type that will be passed on the queue for GPS data.*/
-typedef struct 
-{
+typedef struct {
     SysType_t systemSource;
     float latitudeDegrees;//Positive = N, Negative = S
     float longitudeDegrees;//Positive = E, Negative = W
