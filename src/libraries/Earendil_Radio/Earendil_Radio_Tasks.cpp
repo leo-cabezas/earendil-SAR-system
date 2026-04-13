@@ -3,8 +3,16 @@
 
 namespace Earendil_Radio {
 
-    Earendil::Earendil_TaskHandles_t* Earendil_Handles = nullptr;   // Pointer assigned in FreeRTOS_Handheld.cpp
+    Earendil::Earendil_TaskHandles_t*   Earendil_Handles    = nullptr; 
+    Earendil::Earendil_SharedData_t*    Earendil_Data       = nullptr;
 
+    void linkSharedStructs(
+        Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+    ){
+        Earendil_Handles    = global_Earendil_Handles;
+        Earendil_Data       = global_Earendil_Data;
+    }
     void createTasks(void){
         createTask_vRadio_Ping_TX();
     }
