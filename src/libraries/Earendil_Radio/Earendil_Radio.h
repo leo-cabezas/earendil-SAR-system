@@ -10,29 +10,35 @@
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <RH_RF95.h>            // RadioHead library.
 
-#include <Earendil_Types.h>
-
 // --- RADIO TRANSCEIVER PINOUT CONFIGURATION ---
-#define RFM95_CS_PIN     16     // SPI chip-select
-#define RFM95_IRQ_PIN    21     // Interrupt pin
-#define RFM95_RST_PIN    17     // RESET pin
-#define RFM95_SPI_BUS  spi1     // Specify SPI bus (does not work with spi0)
-#define RFM95_SPI_MOSI   15     // SPI MOSI (Master-Out, Slave-In)
-#define RFM95_SPI_MISO    8     // SPI MISO (Master-In, Slave-Out)
-#define RFM95_SPI_SCLK   14     // SPI clock
+#define RFM95_CS_PIN        16      // SPI chip-select
+#define RFM95_IRQ_PIN       21      // Interrupt pin
+#define RFM95_RST_PIN       17      // RESET pin
+// #define RFM95_SPI_BUS       spi1    // Specify SPI bus (does not work with spi0)
+// #define RFM95_SPI_MOSI      15      // SPI MOSI (Master-Out, Slave-In)
+// #define RFM95_SPI_MISO      8       // SPI MISO (Master-In, Slave-Out)
+// #define RFM95_SPI_SCLK      14      // SPI clock
 
-void vRadioTX(void* pvParameters);
+#include <Earendil_TaskHandles.h>
 
-void vRadioRX(void* pvParameters);
+namespace Earendil_Radio {
+    // --------------------------------- TASKS ---------------------------------
+    extern Earendil::Earendil_TaskHandles_t* Earendil_Handles;
+
+    void createTasks(void);
+
+    void createTask_vRadio_Ping_TX(void);
+    void vRadio_Ping_TX(void* pvParameters);
 
 
-// TEST CODE: BUTTON DEBOUNCER
+    // --------------------------------- UTILS ---------------------------------
+    extern RH_RF95 radio;
 
-void gpio_handler();
+    void setup(void);
 
-void vInterrTest(void* pvParameters);
+    void setupRadio(void);
+
+    void sendPing_TX(void);
 
 
-// TEST CODE: INTERRUPT DRIVEN TRANSMISSION
-
-void vRadioInterrRX(void* pvParameters);
+}

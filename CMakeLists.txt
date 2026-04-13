@@ -102,14 +102,15 @@ message(STATUS "")
 if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         add_executable(Earendil_Handheld 
                 ./src/FreeRTOS_Handheld.cpp
-                ./src/libraries/Earendil_Utils.cpp
-                )
-        # Include FreeRTOS
+        )
+        
+        # Include FreeRTOS here (???)
         
         if (EARENDIL_RADIO STREQUAL "ON")
                 message(STATUS "Including Earendil_Radio and its dependencies...")
                 # cmake/earendil
                 include(cmake/earendil/libraries/Earendil_Radio.cmake)
+                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
                 include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
                 # cmake/third_party
                 include(cmake/third_party/libraries/RadioHead.cmake)
@@ -161,13 +162,19 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         endif()
         if (EARENDIL_MAGNETOMETER STREQUAL "ON")
                 message(STATUS "Including Earendil_Magnetometer and its dependencies...")
-                # cmake/earendil
-                include(cmake/earendil/libraries/Earendil_Magnetometer.cmake)
+                # cmake/earendil/compat/
                 include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
-                # cmake/third_party
+                # cmake/earendil/core/
+                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
+                include(cmake/earendil/core/Earendil_SharedData.cmake)
+                # cmake/earendil/libraries/
+                include(cmake/earendil/libraries/Earendil_Magnetometer.cmake)
+                
+                # cmake/third_party/libraries/
                 include(cmake/third_party/libraries/Adafruit_MMC56x3.cmake)
                 include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
                 include(cmake/third_party/libraries/Adafruit_Sensor.cmake)
+                # cmake/third_party/compat/
                 include(cmake/third_party/compat/arduino_pico.cmake)
                 include(cmake/third_party/compat/ArduinoCore_API.cmake)
 
@@ -176,13 +183,19 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         endif()
         if (EARENDIL_DISPLAY STREQUAL "ON")
                 message(STATUS "Including Earendil_Display and its dependencies...")
-                # cmake/earendil
-                include(cmake/earendil/libraries/Earendil_Display.cmake)
+                # cmake/earendil/compat/
                 include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
-                # cmake/third_party
+                # cmake/earendil/core/
+                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
+                include(cmake/earendil/core/Earendil_SharedData.cmake)
+                # cmake/earendil/libraries/
+                include(cmake/earendil/libraries/Earendil_Display.cmake)
+
+                # cmake/third_party/libraries/
                 include(cmake/third_party/libraries/Adafruit_GC9A01A.cmake)
                 include(cmake/third_party/libraries/Adafruit_GFX_Library.cmake)
                 include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
+                # cmake/third_party/compat/
                 include(cmake/third_party/compat/arduino_pico.cmake)
                 include(cmake/third_party/compat/ArduinoCore_API.cmake)
 
@@ -215,11 +228,14 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
                 $<$<COMPILE_LANG_AND_ID:C,Clang>:-Weverything>
         )
         target_compile_definitions(Earendil_Handheld PUBLIC 
-        # WARNING TEMPORARY --- WARNING TEMPORARY --- WARNING TEMPORARY
-        PICO_STDIO_STACK_BUFFER_SIZE=64 # use a small printf on stack buffer
+                # WARNING TEMPORARY --- WARNING TEMPORARY --- WARNING TEMPORARY
+                PICO_STDIO_STACK_BUFFER_SIZE=64 # use a small printf on stack buffer
         )
         target_include_directories(FreeRTOS-Kernel INTERFACE 
-                ./config 
+                ./config
+        )
+
+        target_include_directories(Earendil_Handheld PUBLIC
                 ./src
                 ./src/libraries
         )

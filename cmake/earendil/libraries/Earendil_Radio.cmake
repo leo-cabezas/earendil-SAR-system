@@ -19,7 +19,8 @@
 include_guard()
 
 add_library(Earendil_Radio STATIC
-        ./src/libraries/Earendil_Radio/Earendil_Radio.cpp
+        ./src/libraries/Earendil_Radio/Earendil_Radio_Tasks.cpp
+        ./src/libraries/Earendil_Radio/Earendil_Radio_Utils.cpp
 )
 target_compile_definitions(Earendil_Radio PUBLIC
         EARENDIL_RADIO_ENABLED  # Compile definition to enable Earendil_Radio within the source code.
@@ -31,6 +32,7 @@ target_link_libraries(Earendil_Radio PUBLIC    # Link all pico-sdk / FreeRTOS-Ke
 )
 target_link_libraries(Earendil_Radio PUBLIC    # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
         RadioHead
+        Earendil_TaskHandles
 )
 target_include_directories(Earendil_Radio PUBLIC
         ./src/libraries/Earendil_Radio

@@ -7,6 +7,7 @@
 
 #include <FreeRTOS_Handheld.h>
 
+// ---------------------------------------------- Required by FreeRTOS ----------------------------------------------
 void vApplicationTickHook(void) {
     // Debug print (CAREFUL: Printing every tick will flood UART).
 }
@@ -22,219 +23,91 @@ void vApplicationMallocFailedHook(void) {
     printf("ERROR: Malloc failed!\n");
     while(1);
 }
+// -----------------------------------------------------------------------------------------------------------------
 
+namespace Earendil {
+    
+    void setup(){
+        #ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
+            Earendil_Radio::setup();
+        #endif
+        #ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
+            
+        #endif
+        #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
+            Earendil_Display::setup();
+        #endif
+        #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
+            
+        #endif
+        #ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
+            
+        #endif
+        #ifdef EARENDIL_USDREADER_ENABLED       // Defined in Earendil_uSDReader.cmake, when linked to CMakeLists.txt.
+            
+        #endif
+        #ifdef EARENDIL_MAGNETOMETER_ENABLED    // Defined in Earendil_Magnetometer.cmake, when linked to CMakeLists.txt.
+            Earendil_Magnetometer::setup();
+        #endif    
+    }
+
+    void createTasks(){
+        static Earendil_TaskHandles_t   Earendil_Handles; // MAYBE BETTER AS AN EXTERNED GLOBAL??? Something like Earendil_Radio::Earendil_Handles = Earendil::Earendil_Handles;
+        static Earendil_SharedData_t    Earendil_Data;
+
+        #ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
+            Earendil_Radio::linkSharedStructs(
+                &Earendil_Handles,
+                &Earendil_Data
+            );
+            Earendil_Radio::createTasks();
+        #endif
+        #ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
+            
+        #endif
+        #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
+            Earendil_Display::linkSharedStructs(
+                &Earendil_Handles,
+                &Earendil_Data
+            );
+            Earendil_Display::createTasks();
+        #endif
+        #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
+            
+        #endif
+        #ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
+            
+        #endif
+        #ifdef EARENDIL_USDREADER_ENABLED       // Defined in Earendil_uSDReader.cmake, when linked to CMakeLists.txt.
+            
+        #endif
+        #ifdef EARENDIL_MAGNETOMETER_ENABLED    // Defined in Earendil_Magnetometer.cmake, when linked to CMakeLists.txt.
+            Earendil_Magnetometer::linkSharedStructs(
+                &Earendil_Handles,
+                &Earendil_Data
+            );
+            Earendil_Magnetometer::createTasks();
+        #endif
+    }
+    
+}
+
+int main() {
+    stdio_init_all();
+
+    Earendil::setup();
+    Earendil::createTasks();
+    
+    vTaskStartScheduler();
+
+    while(1); // Must not return from main() in FreeRTOS.
+}
+
+/*
 QueueHandle_t auQueue = xQueueCreate(2, sizeof(SensorData_t));
 QueueHandle_t guQueue = xQueueCreate(2, sizeof(GPSData_t));
 QueueHandle_t calQueue = xQueueCreate(6, 64);
 SemaphoreHandle_t g_printMutex;
 SemaphoreHandle_t gpsDataMutex;
 EventGroupHandle_t gyroEventGroup = xEventGroupCreate();
-Earendil_Task_Handles_t Earendil_Task_Handles;
-
-int main() {
-    stdio_init_all();
-
-    // Initialize printf() semaphore.
-    g_printMutex = xSemaphoreCreateMutex();
-    if (g_printMutex == NULL){
-        printf("Failed to create mutex!\n");
-        while(1);
-    }
-
-    // Intilialize GPS struct semaphore.
-    gpsDataMutex = xSemaphoreCreateMutex();
-    if (gpsDataMutex == NULL) {// Not enough heap
-        printf("Failed to create GPS mutex!\n");
-        while(1);
-    }
-
-    #ifdef EARENDIL_RADIO_ENABLED           // Defined in Earendil_Radio.cmake, when linked to CMakeLists.txt.
-        /*
-        TaskHandle_t taskRadioTX;
-        xTaskCreate(
-            vRadioTX, 
-            "TaskRadioTX", 
-            512, 
-            (void*)g_printMutex, 
-            2, 
-            &taskRadioTX
-        );
-        vTaskCoreAffinitySet(taskRadioTX, 1 << 0);
-        */
-        /*
-        TaskHandle_t taskRadioRX;
-        xTaskCreate(
-            vRadioRX, 
-            "TaskRadioRX", 
-            512, 
-            (void*)g_printMutex, 
-            2, 
-            &taskRadioRX
-        );
-        vTaskCoreAffinitySet(taskRadioRX, 1 << 0);
-        */
-        /*
-        TaskHandle_t interrTest;
-        xTaskCreate(
-            vInterrTest, 
-            "interrTest", 
-            512, 
-            NULL, 
-            2, 
-            &interrTest
-        );
-        vTaskCoreAffinitySet(interrTest, 1 << 0);
-        */
-        
-        TaskHandle_t taskRadioInterrRX;
-        xTaskCreate(
-            vRadioInterrRX, 
-            "TaskRadioInterrRX", 
-            512, 
-            (void*)g_printMutex, 
-            2, 
-            &taskRadioInterrRX
-        );
-        vTaskCoreAffinitySet(taskRadioInterrRX, 1 << 0);
-        
-    #endif
-    #ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
-        TaskHandle_t taskGPS;
-        xTaskCreate(
-            vGPS, 
-            "TaskGPS", 
-            512, 
-            NULL, 
-            1, 
-            &taskGPS
-        );
-        vTaskCoreAffinitySet(taskGPS, 1 << 1);
-
-        TaskHandle_t taskGPSTX;
-        xTaskCreate(
-            vGPSTX,
-            "TaskGPSTX",
-            512,
-            NULL,
-            1,
-            &taskGPSTX //This is declared as extern in Earendil_GPS.h, so that vGPS can see and notify it from within GPS.cpp
-        );
-        vTaskCoreAffinitySet(taskGPSTX, 1 << 1);
-
-        TaskHandle_t taskGPSRXUtility;
-        xTaskCreate(
-            vGPSRXUtility,
-            "TaskGPSRXUtility",
-            512,
-            NULL,
-            1,
-            &taskGPSRXUtility
-        );
-        vTaskCoreAffinitySet(taskGPSRXUtility, 1 << 0);
-    #endif
-    #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
-        
-        xTaskCreate(
-            vDisplayNav, 
-            "TaskDisplayNav", 
-            512, 
-            (void*)&Earendil_Task_Handles, 
-            1, 
-            &Earendil_Task_Handles.taskDisplayNav
-        );
-        vTaskCoreAffinitySet(Earendil_Task_Handles.taskDisplayNav, 1 << 0);
-        
-        xTaskCreate(
-            vDisplayMenu, 
-            "TaskDisplayMenu", 
-            512, 
-            (void*)&Earendil_Task_Handles, 
-            1, 
-            &Earendil_Task_Handles.taskDisplayMenu
-        );
-        vTaskCoreAffinitySet(Earendil_Task_Handles.taskDisplayMenu, 1 << 0);
-
-        xTaskCreate(
-            vDisplayControl, 
-            "TaskDisplayControl", 
-            512, 
-            (void*)&Earendil_Task_Handles,
-            1, 
-            &Earendil_Task_Handles.taskDisplayControl
-        );
-        vTaskCoreAffinitySet(Earendil_Task_Handles.taskDisplayControl, 1 << 0);
-
-        xTaskCreate(
-            vDisplayCalibration, 
-            "TaskDisplayCalibration", 
-            512, 
-            (void*)&Earendil_Task_Handles, 
-            1, 
-            &Earendil_Task_Handles.taskDisplayCalibration
-        );
-        vTaskCoreAffinitySet(Earendil_Task_Handles.taskDisplayCalibration, 1 << 0);
-    #endif
-    #ifdef EARENDIL_ALTIMETER_ENABLED       // Defined in Earendil_Altimeter.cmake, when linked to CMakeLists.txt.
-        TaskHandle_t taskAltimeter;
-        xTaskCreate(
-            vAltimeter, 
-            "TaskAltimeter", 
-            512, 
-            NULL,
-            2, 
-            &taskAltimeter
-        );
-        vTaskCoreAffinitySet(taskAltimeter, 1 << 0);
-        
-        TaskHandle_t taskAltitudeUtility;
-        xTaskCreate(
-            vAltitudeUtility,
-            "TaskAltitudeUtility",
-            512,
-            NULL,
-            1,
-            &taskAltitudeUtility
-        );
-        vTaskCoreAffinitySet(taskAltitudeUtility, 1 << 0);
-    #endif
-    #ifdef EARENDIL_ACCELGYRO_ENABLED       // Defined in Earendil_AccelGyro.cmake, when linked to CMakeLists.txt.
-        TaskHandle_t taskAccelGyro;
-        xTaskCreate(
-            vAccelGyro, 
-            "TaskAccelGyro", 
-            1024, 
-            NULL, 
-            1, 
-            &taskAccelGyro
-        );
-        vTaskCoreAffinitySet(taskAccelGyro, 1 << 0);
-    #endif
-    #ifdef EARENDIL_USDREADER_ENABLED       // Defined in Earendil_uSDReader.cmake, when linked to CMakeLists.txt.
-        TaskHandle_t taskMicroSD;
-        xTaskCreate(
-            vMicroSD, 
-            "TaskMicroSD", 
-            512, 
-            NULL, 
-            1, 
-            &taskMicroSD
-        );
-        vTaskCoreAffinitySet(taskMicroSD, 1 << 0);
-    #endif
-    #ifdef EARENDIL_MAGNETOMETER_ENABLED    // Defined in Earendil_Magnetometer.cmake, when linked to CMakeLists.txt.
-        TaskHandle_t taskCompass;
-        xTaskCreate(
-            vCompass, 
-            "TaskCompass", 
-            512, 
-            NULL, 
-            1, 
-            &taskCompass
-        );
-        vTaskCoreAffinitySet(taskCompass, 1 << 0);
-    #endif
-    
-    vTaskStartScheduler();
-
-    while(1); // Must not return from main() in FreeRTOS.
-}
+*/
