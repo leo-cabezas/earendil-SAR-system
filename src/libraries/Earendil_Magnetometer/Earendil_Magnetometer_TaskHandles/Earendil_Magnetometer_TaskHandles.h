@@ -7,5 +7,6 @@
 namespace Earendil_Magnetometer {
     typedef struct Magnetometer_TaskHandles {
         TaskHandle_t task_vMagnetometer_UpdateHeading;
+        TaskHandle_t task_vCalibrate_Magnetometer;
     } Magnetometer_TaskHandles_t;
 }

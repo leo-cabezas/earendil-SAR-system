@@ -72,8 +72,14 @@ namespace Earendil_Display {
     void createTask_vDisplay_MenuScreen(void);
     void vDisplay_MenuScreen(void* pvParameters);
 
-    void createTask_vDisplay_Calibration(void);
-    void vDisplay_Calibration(void* pvParameters);
+    //void createTask_vDisplay_Calibration(void);
+    //void vDisplay_Calibration(void* pvParameters);
+
+    void createTask_vDisplay_NavControl(void);
+    void vDisplay_NavControl(void* pvParameters);
+
+    void createTask_vDisplay_MenuControl(void);
+    void vDisplay_MenuControl(void* pvParameters);
 
     // --------------------------------- UTILS ---------------------------------
     extern Adafruit_GC9A01A display;

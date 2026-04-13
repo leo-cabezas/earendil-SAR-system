@@ -13,39 +13,11 @@ namespace Earendil_Magnetometer {
   }
   
   float getHeading(float calibrated[3]){
-    float heading = atan2(calibrated[1], calibrated[0]) * 180.0 / M_PI; //get the heading in degrees
-    // if (heading < 0) heading += 360;  // if negative, add 360 to keeep the value positive
+    float heading = (-1)*atan2(calibrated[0], calibrated[1]) * 180.0 / M_PI; //get the heading in degrees
+    //if (heading < 0) heading += 360;  // if negative, add 360 to keeep the value positive
     return heading;                   // return the heading angle
   }
-
   
-  /*
-  void vCompass(void* pvParameters){
-    Serial.println("Adafruit_MMC5603 Magnetometer Compass");
-    Serial.println("");
-
-    // Initialise the sensor 
-    if (!magnetometer.begin(MMC56X3_DEFAULT_ADDRESS, &Wire)) {  // I2C mode
-      // There was a problem detecting the MMC5603 ... check your connections
-      Serial.println("Ooops, no MMC5603 detected ... Check your wiring!");
-      while (1) delay(10);
-    }
-    calibrateMagnetometer(); //calibrate one singular time
-
-    while(1){
-      sensors_event_t event;
-      magnetometer.getEvent(&event);
-
-      float raw[3] = {event.magnetic.x, event.magnetic.y, event.magnetic.z}; //grabs the raw data from the magnetometer
-
-      float calibrated[3]; //empty array to store the calibrated data
-      applyCalibration(calibrated); //grab the calibration data
-
-      float heading = computeHeading(calibrated); //pass the calibrated data onto finding the heading
-      printData(heading); //function to print out the data
-    }
-  }
-
   const float FILTER_COEFF = 10.0; //low pass filter coefficient
   const int CALIBRATION_TIME = 30000; // 30 second Calibration time
   const int SAMPLE_DELAY = 200; // 200ms between samples
@@ -113,7 +85,9 @@ namespace Earendil_Magnetometer {
 
       float raw[3] = {event.magnetic.x, event.magnetic.y, event.magnetic.z};//this gets the raw x, y, and z values
       updateFilter(raw);//update the filter for this next set of raw data
-      updateHardIron(); //update the soft iron calibration shift
+      updateHardIron(
+        
+      ); //update the soft iron calibration shift
       delay(SAMPLE_DELAY);//delay by the sample delay to let the user move the magnetometer to a new position
     }
     Serial.println("\nCalibration Done");
@@ -131,6 +105,6 @@ namespace Earendil_Magnetometer {
     Serial.print("Heading: "); //label for the heading
     Serial.println(heading, 2); //prints out the actual heading
   }
-  */
+
 
 }

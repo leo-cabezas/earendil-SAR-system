@@ -10,7 +10,7 @@ namespace Earendil_Display {
 
     void setupDisplay(){
         display.begin();
-        display.setRotation(0);
+        display.setRotation(3);
         display.fillScreen(GC9A01A_RED);
         display.setCursor(120, 120);
         display.setTextColor(GC9A01A_WHITE);
@@ -37,29 +37,30 @@ namespace Earendil_Display {
     inline void interruptHandler_BUTTON_BACK(void){
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
         vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_NavControl, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
     inline void interruptHandler_BUTTON_SELECT(void){
         gpio_set_irq_enabled(BUTTON_SELECT, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
     inline void interruptHandler_BUTTON_DOWN(void){
         gpio_set_irq_enabled(BUTTON_DOWN, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
     inline void interruptHandler_BUTTON_UP(void){
         gpio_set_irq_enabled(BUTTON_UP, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
@@ -83,6 +84,9 @@ namespace Earendil_Display {
         xTaskNotify(Earendil_Handles->Radio_Handles.task_vRadio_Ping_TX, 0, eNoAction);
     }
 
+    void request_Magnetometer_Calibrate(){
+        xTaskNotify(Earendil_Handles->Magnetometer_Handles.task_vCalibrate_Magnetometer, 0, eNoAction);
+    }
     // =================================MENU STUFF==============================================================
     // Menu structure
     struct MenuItem {
@@ -102,6 +106,7 @@ namespace Earendil_Display {
 
     // Array of menu items
     MenuItem mainMenu[] = {
+        {"Calibrate Magnetometer", NULL, NULL, 0, &request_Magnetometer_Calibrate},
         {"Calibration", NULL, calibrateMenu, 4, NULL}, 
         {"Info", NULL, NULL, 0, NULL}, 
         {"Reset", NULL, NULL, 0, NULL}, 
@@ -193,7 +198,9 @@ namespace Earendil_Display {
                 drawMenu();
             } else {
                 vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen);
+                vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
                 vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
+                vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl);
             }
             
             while (gpio_get(BUTTON_BACK) == 0) vTaskDelay(pdMS_TO_TICKS(5));
@@ -231,8 +238,8 @@ namespace Earendil_Display {
     
     void drawMagneticNorth(){
         float heading = Earendil_Data->Magnetometer_Data.heading;   // Need to protect this with a mutex !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        float x = DISPLAY_CENTER_X + 90.0 * sin(heading * (M_PI / 180.0));    // 120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
-        float y = DISPLAY_CENTER_Y - 90.0 * cos(heading * (M_PI / 180.0));    // y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
+        float x = DISPLAY_CENTER_X + 90.0 * cos(heading * (M_PI / 180.0));    // 120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
+        float y = DISPLAY_CENTER_Y - 90.0 * sin(heading * (M_PI / 180.0));    // y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
         display.fillCircle(x, y, 5, GC9A01A_RED);//creates a circle on the edge of the screen to show off the angle
         
         display.setCursor(DISPLAY_CENTER_X - 30, DISPLAY_CENTER_Y);
@@ -301,31 +308,11 @@ namespace Earendil_Display {
         
         if (gpio_get(BUTTON_BACK) == 0){
             vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
+            vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl);
             vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen);
+            vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
             while (gpio_get(BUTTON_BACK) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, true);
     }
 }
-
-/*
-void getDistNAngle(){
-    double lat_diff;//difference in lattidude between node and handheld
-    double long_diff;//difference in longitude
-    double hypot;//hypoteneuse of the lattitude and longitude
-    double hypot_m;//hypoteneuse in meters
-    double angle_deg;
-    lat_diff = node_1.node_lat - my_handheld.my_lat;//stationary target - moving object
-    long_diff = node_1.node_long - my_handheld.my_long;
-
-    long_diff = long_diff*cos(my_handheld.my_lat * 3.14159/180);//scale by the reference point because the lattidude line distances shrink the further away from the equator
-
-    hypot = sqrt(sq(lat_diff)+sq(long_diff));//pythagorean theorem to find hypoteneuse
-
-    angle_deg = atan2(long_diff, lat_diff)*180/3.14159;//arctan to find theta, then find the angle
-
-    hypot_m = 111111*hypot;//conversion from coordinates to meters
-    my_handheld.distance_to_node = hypot_m;//stores the hypoteneuse in meters into the handheld data structure
-    my_handheld.angle_to_node = angle_deg;//stores the anglular direction
-}
-*/
