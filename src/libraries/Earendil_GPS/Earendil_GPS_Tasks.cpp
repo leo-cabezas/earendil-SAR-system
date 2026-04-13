@@ -1,17 +1,63 @@
 #include <Earendil_GPS.h> // ATTENTION: Add all library dependencies to this header.
 
-Adafruit_GPS GPS(&GPSSerial);
+namespace Earendil_GPS {
 
+    Earendil::Earendil_TaskHandles_t*   Earendil_Handles    = nullptr; 
+    Earendil::Earendil_SharedData_t*    Earendil_Data       = nullptr;
 
+    void linkSharedStructs(
+        Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+    ){
+        Earendil_Handles    = global_Earendil_Handles;
+        Earendil_Data       = global_Earendil_Data;
+    }
+
+    void createTasks(void){
+
+    }
+
+    // =======================================================================================
+    // vGPS_
+    // =======================================================================================
+
+    void createTask_vGPS_(void){
+        TaskHandle_t* task_handle_ptr = &Earendil_Handles->GPS_Handles.task_vDisplay_MenuScreen;
+        xTaskCreate(
+            vDisplay_MenuScreen,                             // Task function
+            "vDisplay_MenuScreen",                           // Task name (for debugging)
+            512,                                            // Task stack depth (in words, NOT bytes!)
+            NULL,                                           // Task parameters at creation
+            1,                                              // Real-time task priority
+            task_handle_ptr                                 // Task handle
+        );
+        vTaskCoreAffinitySet(*task_handle_ptr, 1 << 
+            0                                               // Assigned core (options: 0, 1)
+        );
+    }
+
+    void vDisplay_MenuScreen(void* pvParameters){
+        (void)pvParameters;     // Parameters unused.
+
+        vTaskSuspend(NULL); // Initially self-suspend.
+
+        setupMenu();
+        
+        while(1){
+            drawMenu();
+            menuControl();
+            // vTaskDelay(pdMS_TO_TICKS(50));
+        }
+    }
+}
+
+/*
 GPSData_t gpsBench;
-TaskHandle_t taskGPSTX;
 
 void vGPS(void* pvParameters){
   (void)pvParameters;
 
   vTaskDelay(pdMS_TO_TICKS(5000));
-
-  printf("============= BEGIN GPS TASK ==============\n");
   
   TickType_t lastNotify = xTaskGetTickCount();
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's- some use 4800
@@ -84,3 +130,5 @@ void vGPSTX(void* pvParameters){
         xQueueSend(guQueue, &snapshot, 0);
   }
 }
+
+*/

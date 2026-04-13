@@ -31,8 +31,11 @@ target_link_libraries(Earendil_Radio PUBLIC    # Link all pico-sdk / FreeRTOS-Ke
         pico_stdlib             # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
 )
 target_link_libraries(Earendil_Radio PUBLIC    # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies.
-        RadioHead
+        # cmake/earendil/core
         Earendil_TaskHandles
+        Earendil_SharedData
+        # cmake/earendil/libraries
+        RadioHead
 )
 target_include_directories(Earendil_Radio PUBLIC
         ./src/libraries/Earendil_Radio

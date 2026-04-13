@@ -30,9 +30,13 @@ target_link_libraries(Earendil_TaskHandles INTERFACE    # Link all non-(pico-sdk
 )
 target_include_directories(Earendil_TaskHandles INTERFACE
         ./src/core/Earendil_TaskHandles
+        ./src/libraries/Earendil_AccelGyro/Earendil_AccelGyro_TaskHandles
+        ./src/libraries/Earendil_Altimeter/Earendil_Altimeter_TaskHandles
         ./src/libraries/Earendil_Display/Earendil_Display_TaskHandles
-        ./src/libraries/Earendil_Radio/Earendil_Radio_TaskHandles
+        ./src/libraries/Earendil_GPS/Earendil_GPS_TaskHandles
         ./src/libraries/Earendil_Magnetometer/Earendil_Magnetometer_TaskHandles
+        ./src/libraries/Earendil_Radio/Earendil_Radio_TaskHandles
+        ./src/libraries/Earendil_uSDReader/Earendil_uSDReader_TaskHandles
         # Comprehensive header list for documentation purposes:
         # List here...
 )

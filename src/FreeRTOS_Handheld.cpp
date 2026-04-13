@@ -32,7 +32,7 @@ namespace Earendil {
             Earendil_Radio::setup();
         #endif
         #ifdef EARENDIL_GPS_ENABLED             // Defined in Earendil_GPS.cmake, when linked to CMakeLists.txt.
-            
+            Earendil_GPS::setup();
         #endif
         #ifdef EARENDIL_DISPLAY_ENABLED         // Defined in Earendil_Display.cmake, when linked to CMakeLists.txt.
             Earendil_Display::setup();

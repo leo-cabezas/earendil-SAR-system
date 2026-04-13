@@ -105,81 +105,47 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
         )
         
         # Include FreeRTOS here (???)
-        
-        if (EARENDIL_RADIO STREQUAL "ON")
-                message(STATUS "Including Earendil_Radio and its dependencies...")
-                # cmake/earendil
-                include(cmake/earendil/libraries/Earendil_Radio.cmake)
-                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
-                include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
-                # cmake/third_party
-                include(cmake/third_party/libraries/RadioHead.cmake)
-                include(cmake/third_party/compat/arduino_pico.cmake)
-                include(cmake/third_party/compat/ArduinoCore_API.cmake)
-
-                message(STATUS "Linking Earendil_Radio library...")
-                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Radio)
-        endif()
-        if (EARENDIL_GPS STREQUAL "ON")
-                message(STATUS "Including Earendil_GPS and its dependencies...")
-                # cmake/earendil
-                include(cmake/earendil/libraries/Earendil_GPS.cmake)
-                include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
-                # cmake/third_party
-                include(cmake/third_party/libraries/Adafruit_GPS.cmake)
-                include(cmake/third_party/compat/arduino_pico.cmake)
-                include(cmake/third_party/compat/ArduinoCore_API.cmake)
-
-                message(STATUS "Linking Earendil_GPS library...")
-                target_link_libraries(Earendil_Handheld PUBLIC Earendil_GPS)
-        endif()
-        if (EARENDIL_ALTIMETER STREQUAL "ON")
-                message(STATUS "Including Earendil_Altimeter and its dependencies...")
-                # cmake/earendil
-                include(cmake/earendil/libraries/Earendil_Altimeter.cmake)
-                include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
-                # cmake/third_party
-                include(cmake/third_party/libraries/Adafruit_BMP3XX.cmake)
-                include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
-                include(cmake/third_party/compat/arduino_pico.cmake)
-                include(cmake/third_party/compat/ArduinoCore_API.cmake)
-
-                message(STATUS "Linking Earendil_Altimeter module...")
-                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Altimeter)
-        endif()
-        if (EARENDIL_USDREADER STREQUAL "ON")
-                message(STATUS "Including Earendil_uSDReader and its dependencies...")
-                # cmake/earendil
-                include(cmake/earendil/libraries/Earendil_uSDReader.cmake)
-                include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
-                # cmake/third_party
-                include(cmake/third_party/libraries/SdFat.cmake)
-                include(cmake/third_party/compat/arduino_pico.cmake)
-                include(cmake/third_party/compat/ArduinoCore_API.cmake)
-
-                message(STATUS "Linking Earendil_uSDReader module...")
-                target_link_libraries(Earendil_Handheld PUBLIC Earendil_uSDReader)
-        endif()
-        if (EARENDIL_MAGNETOMETER STREQUAL "ON")
-                message(STATUS "Including Earendil_Magnetometer and its dependencies...")
+        if (EARENDIL_ACCELGYRO STREQUAL "ON")
+                message(STATUS "Including Earendil_AccelGyro and its dependencies...")
                 # cmake/earendil/compat/
                 include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
                 # cmake/earendil/core/
                 include(cmake/earendil/core/Earendil_TaskHandles.cmake)
                 include(cmake/earendil/core/Earendil_SharedData.cmake)
                 # cmake/earendil/libraries/
-                include(cmake/earendil/libraries/Earendil_Magnetometer.cmake)
-                
-                # cmake/third_party/libraries/
-                include(cmake/third_party/libraries/Adafruit_MMC56x3.cmake)
-                include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
-                include(cmake/third_party/libraries/Adafruit_Sensor.cmake)
+                include(cmake/earendil/libraries/Earendil_AccelGyro.cmake)
+
                 # cmake/third_party/compat/
                 include(cmake/third_party/compat/arduino_pico.cmake)
                 include(cmake/third_party/compat/ArduinoCore_API.cmake)
+                # cmake/third_party/libraries/
+                include(cmake/third_party/libraries/Adafruit_LSM6DS.cmake)
+                include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
+                include(cmake/third_party/libraries/Adafruit_Sensor.cmake)
+                
+                message(STATUS "Linking Earendil_AccelGyro module...")
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_AccelGyro)
+        endif()
+        if (EARENDIL_ALTIMETER STREQUAL "ON")
+                message(STATUS "Including Earendil_Altimeter and its dependencies...")
+                # cmake/earendil/compat/
+                include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
+                # cmake/earendil/core/
+                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
+                include(cmake/earendil/core/Earendil_SharedData.cmake)
+                # cmake/earendil/libraries/
+                include(cmake/earendil/libraries/Earendil_Altimeter.cmake)
 
-                message(STATUS "Linking Earendil_Magnetometer module...")
-                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Magnetometer)
+                # cmake/third_party/compat/
+                include(cmake/third_party/compat/arduino_pico.cmake)
+                include(cmake/third_party/compat/ArduinoCore_API.cmake)
+                # cmake/third_party/libraries/
+                include(cmake/third_party/libraries/Adafruit_BMP3XX.cmake)
+                include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
+                
+
+                message(STATUS "Linking Earendil_Altimeter module...")
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Altimeter)
         endif()
         if (EARENDIL_DISPLAY STREQUAL "ON")
                 message(STATUS "Including Earendil_Display and its dependencies...")
@@ -191,31 +157,94 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
                 # cmake/earendil/libraries/
                 include(cmake/earendil/libraries/Earendil_Display.cmake)
 
+                # cmake/third_party/compat/
+                include(cmake/third_party/compat/arduino_pico.cmake)
+                include(cmake/third_party/compat/ArduinoCore_API.cmake)
                 # cmake/third_party/libraries/
                 include(cmake/third_party/libraries/Adafruit_GC9A01A.cmake)
                 include(cmake/third_party/libraries/Adafruit_GFX_Library.cmake)
                 include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
-                # cmake/third_party/compat/
-                include(cmake/third_party/compat/arduino_pico.cmake)
-                include(cmake/third_party/compat/ArduinoCore_API.cmake)
 
                 message(STATUS "Linking Earendil_Display module...")
                 target_link_libraries(Earendil_Handheld PUBLIC Earendil_Display)
         endif()
-        if (EARENDIL_ACCELGYRO STREQUAL "ON")
-                message(STATUS "Including Earendil_AccelGyro and its dependencies...")
-                # cmake/earendil
-                include(cmake/earendil/libraries/Earendil_AccelGyro.cmake)
+        if (EARENDIL_GPS STREQUAL "ON")
+                message(STATUS "Including Earendil_GPS and its dependencies...")
+                # cmake/earendil/compat/
                 include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
-                # cmake/third_party
-                include(cmake/third_party/libraries/Adafruit_LSM6DS.cmake)
-                include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
-                include(cmake/third_party/libraries/Adafruit_Sensor.cmake)
+                # cmake/earendil/core/
+                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
+                include(cmake/earendil/core/Earendil_SharedData.cmake)
+                # cmake/earendil/libraries/
+                include(cmake/earendil/libraries/Earendil_GPS.cmake)
+
+                # cmake/third_party/compat/
                 include(cmake/third_party/compat/arduino_pico.cmake)
                 include(cmake/third_party/compat/ArduinoCore_API.cmake)
+                # cmake/third_party/libraries/
+                include(cmake/third_party/libraries/Adafruit_GPS.cmake)
 
-                message(STATUS "Linking Earendil_AccelGyro module...")
-                target_link_libraries(Earendil_Handheld PUBLIC Earendil_AccelGyro)
+                message(STATUS "Linking Earendil_GPS library...")
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_GPS)
+        endif()
+        if (EARENDIL_MAGNETOMETER STREQUAL "ON")
+                message(STATUS "Including Earendil_Magnetometer and its dependencies...")
+                # cmake/earendil/compat/
+                include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
+                # cmake/earendil/core/
+                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
+                include(cmake/earendil/core/Earendil_SharedData.cmake)
+                # cmake/earendil/libraries/
+                include(cmake/earendil/libraries/Earendil_Magnetometer.cmake)
+                
+                # cmake/third_party/compat/
+                include(cmake/third_party/compat/arduino_pico.cmake)
+                include(cmake/third_party/compat/ArduinoCore_API.cmake)
+                # cmake/third_party/libraries/
+                include(cmake/third_party/libraries/Adafruit_MMC56x3.cmake)
+                include(cmake/third_party/libraries/Adafruit_BusIO.cmake)
+                include(cmake/third_party/libraries/Adafruit_Sensor.cmake)
+
+                message(STATUS "Linking Earendil_Magnetometer module...")
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Magnetometer)
+        endif()
+        if (EARENDIL_RADIO STREQUAL "ON")
+                message(STATUS "Including Earendil_Radio and its dependencies...")
+                # cmake/earendil/compat/
+                include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
+                # cmake/earendil/core/
+                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
+                include(cmake/earendil/core/Earendil_SharedData.cmake)
+                # cmake/earendil/libraries/
+                include(cmake/earendil/libraries/Earendil_Radio.cmake)
+
+                # cmake/third_party/compat/
+                include(cmake/third_party/compat/arduino_pico.cmake)
+                include(cmake/third_party/compat/ArduinoCore_API.cmake)
+                # cmake/third_party/libraries/
+                include(cmake/third_party/libraries/RadioHead.cmake)
+
+                message(STATUS "Linking Earendil_Radio library...")
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_Radio)
+        endif()
+        if (EARENDIL_USDREADER STREQUAL "ON")
+                message(STATUS "Including Earendil_uSDReader and its dependencies...")
+                # cmake/earendil/compat/
+                include(cmake/earendil/compat/Earendil_ArduinoCompat.cmake)
+                # cmake/earendil/core/
+                include(cmake/earendil/core/Earendil_TaskHandles.cmake)
+                include(cmake/earendil/core/Earendil_SharedData.cmake)
+                # cmake/earendil/libraries/
+                include(cmake/earendil/libraries/Earendil_uSDReader.cmake)
+                
+                # cmake/third_party/compat/
+                include(cmake/third_party/compat/arduino_pico.cmake)
+                include(cmake/third_party/compat/ArduinoCore_API.cmake)
+                # cmake/third_party/libraries/
+                include(cmake/third_party/libraries/SdFat.cmake)               
+
+                message(STATUS "Linking Earendil_uSDReader module...")
+                target_link_libraries(Earendil_Handheld PUBLIC Earendil_uSDReader)
         endif()
         message(STATUS "")
 

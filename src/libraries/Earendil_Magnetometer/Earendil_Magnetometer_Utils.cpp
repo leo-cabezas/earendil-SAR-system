@@ -18,7 +18,7 @@ namespace Earendil_Magnetometer {
     return heading;                   // return the heading angle
   }
 
-
+  
   /*
   void vCompass(void* pvParameters){
     Serial.println("Adafruit_MMC5603 Magnetometer Compass");

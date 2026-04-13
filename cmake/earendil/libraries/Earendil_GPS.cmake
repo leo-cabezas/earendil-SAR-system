@@ -30,6 +30,10 @@ target_link_libraries(Earendil_GPS PUBLIC       # Link all pico-sdk / FreeRTOS-K
         pico_stdlib             # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
 )
 target_link_libraries(Earendil_GPS PUBLIC       # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+        # cmake/earendil/core
+        Earendil_TaskHandles
+        Earendil_SharedData
+        # cmake/earendil/libraries        
         Adafruit_GPS
 )
 target_include_directories(Earendil_GPS PUBLIC

@@ -4,15 +4,21 @@
 #include <FreeRTOS.h>           // For pdMS_TO_TICKS(), etc. Needed for task.h, semphr.h, etc.
 #include <task.h>               // For vTaskDelay(), etc.
 #include <semphr.h>             // For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
-#include <event_groups.h>       // For IPC communication between tasks during calibration.
-#include <queue.h>              // For IPC communication between the LCD and buttons.
+// #include <event_groups.h>       // For IPC communication between tasks during calibration.
+// #include <queue.h>              // For IPC communication between the LCD and buttons.
+
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
 // #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
+
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_LSM6DSOX.h>  // Adafruit_LSM6DS library.
-#include <Earendil_Display.h>
-#include <Earendil_Utils.h>
+
+// --- DEPENDENCIES // EARENDIL LIBRARIES ---
+#include <Earendil_TaskHandles.h>
+#include <Earendil_SharedData.h>
+
+// --- OTHER DEPENDENCIES ---
 
 // --- Calibration State ------------------------------------------------
 #define CALIB_SAMPLES 500
@@ -46,4 +52,23 @@ typedef float GyroMetrics_t[6];
 // void gyroReading(GyroMetrics_t metrics);
 // void gyroShow(GyroMetrics_t metrics);
 
-void vAccelGyro(void* pvParameters); // FreeRTOS task entry point
+namespace AccelGyro {
+    // --------------------------------- TASKS ---------------------------------
+    extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
+    extern Earendil::Earendil_SharedData_t*     Earendil_Data;
+    
+    void linkSharedStructs(
+        Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+    );
+    void createTasks(void);
+
+    void createTask_vAccelGyro_(void);
+    void vAccelGyro_(void* pvParameters);
+
+    // --------------------------------- UTILS ---------------------------------
+    extern Adafruit_LSM6DSOX accelgyro;
+
+}
+
+

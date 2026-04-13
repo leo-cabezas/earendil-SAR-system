@@ -1,7 +1,12 @@
-#include <Earendil_AccelGyro.h> // ATTENTION: Add all library dependencies to this header.
+#include <Earendil_AccelGyro.h>
 
-// ─── Sensor instance ───────────────────────────────────────────────
-Adafruit_LSM6DSOX sox;
+namespace AccelGyro {
+
+    Adafruit_LSM6DSOX accelgyro;
+
+}
+
+/*
 
 // ─── Shared handles ────────────────────────────────────────────────
 EventGroupHandle_t  gyroEventGroup = NULL;
@@ -307,33 +312,4 @@ void gyroShow(GyroMetrics_t metrics)
     // lcdPrint(1, buf);
 }
 
-// ─── FreeRTOS task ─────────────────────────────────────────────────
-void vAccelGyro(void* pvParameters){
-  (void) pvParameters;
-  vTaskDelay(pdMS_TO_TICKS(10000));
-  printf("Accell-oscope started!\n");
-
-  GyroMetrics_t metrics;
-  EventBits_t   bits;
-  gyroSetup();
-  // gyroCalibrate();
-  
-  while (1){
-    bits = xEventGroupGetBits(gyroEventGroup);
-
-    if (bits & GYRO_EVT_CALIBRATE_REQUEST) {
-        // Clear the request bit before starting
-        xEventGroupClearBits(gyroEventGroup, GYRO_EVT_CALIBRATE_REQUEST);
-
-        bool success = gyroCalibrate();
-
-        // Signal completion or cancellation back to the requester
-        xEventGroupSetBits(gyroEventGroup, success ? GYRO_EVT_CALIBRATE_COMPLETE : GYRO_EVT_CALIBRATE_CANCELLED);
-    } else {
-        // Normal operation: read and expose sensor data
-        gyroReading(metrics);
-        gyroShow(metrics); //For debugging
-    // }
-    vTaskDelay(pdMS_TO_TICKS(1000));
-  }
-}
+*/

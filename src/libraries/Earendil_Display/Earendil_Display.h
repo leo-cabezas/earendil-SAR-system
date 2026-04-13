@@ -19,7 +19,6 @@
 #include <Earendil_SharedData.h>
 
 // --- OTHER DEPENDENCIES ---
-// #include <Earendil_Utils.h>
 #include <string>
 
 // --- ROUND LCD DISPLAY PINOUT CONFIGURATION ---

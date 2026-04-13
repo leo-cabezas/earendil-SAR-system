@@ -30,7 +30,13 @@ target_link_libraries(Earendil_SharedData INTERFACE     # Link all non-(pico-sdk
 )
 target_include_directories(Earendil_SharedData INTERFACE
         ./src/core/Earendil_SharedData
+        ./src/libraries/Earendil_AccelGyro/Earendil_AccelGyro_SharedData
+        ./src/libraries/Earendil_Altimeter/Earendil_Altimeter_SharedData
+        # ./src/libraries/Earendil_Display/Earendil_Display_SharedData
+        ./src/libraries/Earendil_GPS/Earendil_GPS_SharedData
         ./src/libraries/Earendil_Magnetometer/Earendil_Magnetometer_SharedData
+        ./src/libraries/Earendil_Radio/Earendil_Radio_SharedData
+        ./src/libraries/Earendil_uSDReader/Earendil_uSDReader_SharedData
         # Comprehensive header list for documentation purposes:
         # List here...
 )
