@@ -34,6 +34,9 @@ namespace Earendil_Magnetometer {
     void createTask_vMagnetometer_UpdateHeading(void);
     void vMagnetometer_UpdateHeading(void* pvParameters);
 
+    void createTask_vMagnetometer_Calibrate(void);
+    void vMagnetometer_Calibrate(void* pvParameters);
+
     // --------------------------------- UTILS ---------------------------------
     extern Adafruit_MMC5603 magnetometer;
 
@@ -42,7 +45,10 @@ namespace Earendil_Magnetometer {
     void setupMagnetometer(void);
     
     float getHeading(float calibrated[3]);
-    
+
+    void updateFilter(float raw[3]);
+    void applyCalibration(float calibrated[3]);
+    void calibrateMagnetometer();
 }
 
 
