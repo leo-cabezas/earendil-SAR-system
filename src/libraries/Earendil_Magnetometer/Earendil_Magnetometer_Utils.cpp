@@ -19,7 +19,7 @@ namespace Earendil_Magnetometer {
   }
   
   const float FILTER_COEFF = 10.0; //low pass filter coefficient
-  const int CALIBRATION_TIME = 30000; // 30 second Calibration time
+  const int CALIBRATION_TIME = 10000; // 10 second Calibration time
   const int SAMPLE_DELAY = 200; // 200ms between samples
 
   struct Magmeter {

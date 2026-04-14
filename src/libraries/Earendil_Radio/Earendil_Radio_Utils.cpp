@@ -36,10 +36,13 @@ namespace Earendil_Radio {
         gpio_put(13, 1);
 
         // Send packet
+        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
+        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl);
         if (radio.send((uint8_t*)buf, len + 1)) {
             radio.waitPacketSent();
         }
-
+        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
+        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl);
         gpio_put(13, 0);
     }
 

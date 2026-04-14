@@ -96,7 +96,24 @@ namespace Earendil_Display {
     }
 
     void request_Magnetometer_Calibrate(){
+    
+        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //Pause all the tasks so nothing interferes with magnetometer
+        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
+        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
+        vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
+
+        tft.fillScreen(GC9A01A_BLACK);
+        tft.setCursor(40, 120);
+        tft.print("Calibrating");
+        tft.setCursor(60, 120);
         xTaskNotify(Earendil_Handles->Magnetometer_Handles.task_vCalibrate_Magnetometer, 0, eNoAction);
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        tft.fillescreen(GC9A01A_BLACK);
+
+        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //resume Everything
+        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
+        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
+        vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
     }
     // =================================MENU STUFF==============================================================
     // Menu structure
@@ -213,7 +230,7 @@ namespace Earendil_Display {
         // BACK BUTTON PRESSED
         if (gpio_get(BUTTON_BACK) == 0){
             if (goBack()){
-                drawMenu();
+                //drawMenu();
             } else {
                 vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen);
                 vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);

@@ -14,7 +14,7 @@ void vApplicationTickHook(void) {
 
 void vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName) {
     (void) pcTaskName;
-    printf("ERROR: Stack overflow in task: %s\n", pcTaskName);
+    puts("ERROR: Stack overflow");
     while(1);
 }
 
