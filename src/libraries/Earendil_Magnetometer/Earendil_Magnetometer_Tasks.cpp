@@ -46,9 +46,9 @@ namespace Earendil_Magnetometer {
             raw[1] = event.magnetic.y;
             raw[2] = event.magnetic.z;
 
-            char buf[64];
-            snprintf(buf, sizeof(buf), "raw_x=%.2f\nraw_y=%.2f\nraw_z=%.2f\n", raw[0], raw[1], raw[2]);
-            puts(buf);
+            //char buf[64];
+            //snprintf(buf, sizeof(buf), "raw_x=%.2f\nraw_y=%.2f\nraw_z=%.2f\n", raw[0], raw[1], raw[2]);
+            //puts(buf);
 
             //Earendil_Data->Magnetometer_Data.heading = getHeading(raw);
 
@@ -82,6 +82,7 @@ namespace Earendil_Magnetometer {
         while (1){
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
             calibrateMagnetometer();
+            xTaskNotify(Earendil_Handles->Display_Handles_Handles.task_vDisplay_MenuControl, 0, eNoAction);
         }
     }
 

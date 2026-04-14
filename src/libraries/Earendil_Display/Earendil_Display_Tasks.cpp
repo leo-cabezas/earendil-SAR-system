@@ -46,7 +46,7 @@ namespace Earendil_Display {
         while(1){
             displayNav();
 
-            vTaskDelay(pdMS_TO_TICKS(50));
+            vTaskDelay(pdMS_TO_TICKS(1000));
         }
     }
     // =======================================================================================
@@ -106,7 +106,7 @@ namespace Earendil_Display {
         
         while(1){
             drawMenu();
-            // vTaskDelay(pdMS_TO_TICKS(50));
+            vTaskDelay(pdMS_TO_TICKS(1000));
         }
     }
 
@@ -133,6 +133,8 @@ namespace Earendil_Display {
     void vDisplay_MenuControl(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
         
+        vTaskSuspend(NULL);
+
         while(1){
             menuControl();
             vTaskDelay(pdMS_TO_TICKS(50));

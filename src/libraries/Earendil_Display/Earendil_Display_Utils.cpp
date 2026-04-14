@@ -38,7 +38,6 @@ namespace Earendil_Display {
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen, NULL);
         vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_NavControl, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
@@ -85,7 +84,24 @@ namespace Earendil_Display {
     }
 
     void request_Magnetometer_Calibrate(){
+    
+        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //Pause all the tasks so nothing interferes with magnetometer
+        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
+        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
+        vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
+
+        tft.fillScreen(GC9A01A_BLACK);
+        tft.setCursor(40, 120);
+        tft.print("Calibrating");
+        tft.setCursor(60, 120);
         xTaskNotify(Earendil_Handles->Magnetometer_Handles.task_vCalibrate_Magnetometer, 0, eNoAction);
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        tft.fillescreen(GC9A01A_BLACK);
+
+        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //resume Everything
+        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
+        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
+        vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
     }
     // =================================MENU STUFF==============================================================
     // Menu structure
@@ -195,7 +211,7 @@ namespace Earendil_Display {
         // BACK BUTTON PRESSED
         if(gpio_get(BUTTON_BACK) == 0){
             if (goBack()){
-                drawMenu();
+                //drawMenu();
             } else {
                 vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen);
                 vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
@@ -210,7 +226,7 @@ namespace Earendil_Display {
         // SELECT BUTTON PRESSED
         if(gpio_get(BUTTON_SELECT) == 0){
             selectItem();
-            drawMenu();
+            //drawMenu();
             while (gpio_get(BUTTON_SELECT) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_SELECT, GPIO_IRQ_EDGE_FALL, true);
@@ -218,7 +234,7 @@ namespace Earendil_Display {
         // DOWN BUTTON PRESSED
         if(gpio_get(BUTTON_DOWN) == 0){
             moveDown();
-            drawMenu();
+            //drawMenu();
             while (gpio_get(BUTTON_DOWN) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_DOWN, GPIO_IRQ_EDGE_FALL, true);
@@ -226,7 +242,7 @@ namespace Earendil_Display {
         // UP BUTTON PRESSED
         if(gpio_get(BUTTON_UP) == 0){
             moveUp();
-            drawMenu();
+            //drawMenu();
             while (gpio_get(BUTTON_UP) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_UP, GPIO_IRQ_EDGE_FALL, true);
