@@ -36,11 +36,14 @@
 
 #include <Earendil_TaskHandles.h>
 #include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
 
 // #include <Earendil_Utils.h>
 
 namespace Earendil {
+
     void setup(void);
     void createTasks(void);
+    
 }
 

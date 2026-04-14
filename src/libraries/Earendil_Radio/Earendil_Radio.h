@@ -15,6 +15,7 @@
 // --- DEPENDENCIES // EARENDIL LIBRARIES ---
 #include <Earendil_TaskHandles.h>
 #include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
 
 // --- RADIO TRANSCEIVER PINOUT CONFIGURATION ---
 #define RFM95_CS_PIN        16      // SPI chip-select
@@ -25,17 +26,18 @@
 // #define RFM95_SPI_MISO      8       // SPI MISO (Master-In, Slave-Out)
 // #define RFM95_SPI_SCLK      14      // SPI clock
 
-#include <Earendil_TaskHandles.h>
-
 namespace Earendil_Radio {
     // --------------------------------- TASKS ---------------------------------
     extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
     extern Earendil::Earendil_SharedData_t*     Earendil_Data;
+    extern Earendil::Earendil_Mutexes_t*        Earendil_Mutexes;
     
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     );
+
     void createTasks(void);
 
     void createTask_vRadio_Ping_TX(void);

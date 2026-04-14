@@ -154,6 +154,7 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
                 # cmake/earendil/core/
                 include(cmake/earendil/core/Earendil_TaskHandles.cmake)
                 include(cmake/earendil/core/Earendil_SharedData.cmake)
+                include(cmake/earendil/core/Earendil_Mutexes.cmake)
                 # cmake/earendil/libraries/
                 include(cmake/earendil/libraries/Earendil_Display.cmake)
 
@@ -215,6 +216,7 @@ if (OUTPUT IN_LIST VALID_OUTPUT_OPTS_HANDHELD)
                 # cmake/earendil/core/
                 include(cmake/earendil/core/Earendil_TaskHandles.cmake)
                 include(cmake/earendil/core/Earendil_SharedData.cmake)
+                include(cmake/earendil/core/Earendil_Mutexes.cmake)
                 # cmake/earendil/libraries/
                 include(cmake/earendil/libraries/Earendil_Radio.cmake)
 

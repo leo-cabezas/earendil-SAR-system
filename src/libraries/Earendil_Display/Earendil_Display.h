@@ -9,7 +9,7 @@
 
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
-// #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
+#include <pico/multicore.h>     // Enable as needed. Not needed at the moment
 
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_GC9A01A.h>   // Adafruit_GC9A01A library
@@ -17,6 +17,7 @@
 // --- DEPENDENCIES // EARENDIL LIBRARIES ---
 #include <Earendil_TaskHandles.h>
 #include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
 
 // --- OTHER DEPENDENCIES ---
 #include <string>
@@ -59,11 +60,14 @@ namespace Earendil_Display {
     // --------------------------------- TASKS ---------------------------------
     extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
     extern Earendil::Earendil_SharedData_t*     Earendil_Data;
+    extern Earendil::Earendil_Mutexes_t*        Earendil_Mutexes;
     
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     );
+
     void createTasks(void);
 
     void createTask_vDisplay_NavScreen(void);
