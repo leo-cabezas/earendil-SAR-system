@@ -1,4 +1,4 @@
-#include <Earendil_Display.h>   // ATTENTION: Add all library dependencies inside this header.
+ #include <Earendil_Display.h>   // ATTENTION: Add all library dependencies inside this header.
 
 namespace Earendil_Display {
     Adafruit_GC9A01A display = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
@@ -17,6 +17,7 @@ namespace Earendil_Display {
     }
     
     void setupMenuButtons(void){
+        setupButton(BUTTON1);
         setupButton(BUTTON_BACK);
         setupButton(BUTTON_SELECT);
         setupButton(BUTTON_DOWN);
@@ -34,6 +35,14 @@ namespace Earendil_Display {
     }
 
     // VERY IMPORTANT: SHOULDN'T HAVE NULL AS THE SECOND ARGUMENT OF vTaskNotifyGiveFromISR. READ ON THIS
+    inline void interruptHandler_BUTTON1(void){
+        gpio_set_irq_enabled(BUTTON1, GPIO_IRQ_EDGE_FALL, false);
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
+        // vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_NavControl, NULL);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+    
     inline void interruptHandler_BUTTON_BACK(void){
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -64,6 +73,9 @@ namespace Earendil_Display {
     }
 
     void IO_IRQ_BANK0_Handler(void){
+        if (gpio_get_irq_event_mask(BUTTON1)    & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
+            interruptHandler_BUTTON1();
+        }
         if (gpio_get_irq_event_mask(BUTTON_BACK)    & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
             interruptHandler_BUTTON_BACK();
         }
@@ -208,8 +220,15 @@ namespace Earendil_Display {
     void menuControl(){
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         
+        // BUTTON 1 PRESSED
+        if (gpio_get(BUTTON1) == 0){
+            request_sendPing_TX();
+            while (gpio_get(BUTTON1) == 0) vTaskDelay(pdMS_TO_TICKS(5));
+        }
+        gpio_set_irq_enabled(BUTTON1, GPIO_IRQ_EDGE_FALL, true);
+
         // BACK BUTTON PRESSED
-        if(gpio_get(BUTTON_BACK) == 0){
+        if (gpio_get(BUTTON_BACK) == 0){
             if (goBack()){
                 //drawMenu();
             } else {
@@ -224,25 +243,22 @@ namespace Earendil_Display {
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, true);
 
         // SELECT BUTTON PRESSED
-        if(gpio_get(BUTTON_SELECT) == 0){
+        if (gpio_get(BUTTON_SELECT) == 0){
             selectItem();
-            //drawMenu();
             while (gpio_get(BUTTON_SELECT) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_SELECT, GPIO_IRQ_EDGE_FALL, true);
 
         // DOWN BUTTON PRESSED
-        if(gpio_get(BUTTON_DOWN) == 0){
+        if (gpio_get(BUTTON_DOWN) == 0){
             moveDown();
-            //drawMenu();
             while (gpio_get(BUTTON_DOWN) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_DOWN, GPIO_IRQ_EDGE_FALL, true);
         
         // UP BUTTON PRESSED
-        if(gpio_get(BUTTON_UP) == 0){
+        if (gpio_get(BUTTON_UP) == 0){
             moveUp();
-            //drawMenu();
             while (gpio_get(BUTTON_UP) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_UP, GPIO_IRQ_EDGE_FALL, true);

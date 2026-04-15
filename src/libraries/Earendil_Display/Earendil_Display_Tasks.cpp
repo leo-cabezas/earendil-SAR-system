@@ -4,19 +4,22 @@ namespace Earendil_Display {
     
     Earendil::Earendil_TaskHandles_t*   Earendil_Handles    = nullptr; 
     Earendil::Earendil_SharedData_t*    Earendil_Data       = nullptr;
+    Earendil::Earendil_Mutexes_t*       Earendil_Mutexes    = nullptr;
 
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     ){
         Earendil_Handles    = global_Earendil_Handles;
         Earendil_Data       = global_Earendil_Data;
+        Earendil_Mutexes    = global_Earendil_Mutexes;
     }
 
     void createTasks(void){    
-        createTask_vDisplay_NavScreen();
+        // createTask_vDisplay_NavScreen();
+        // createTask_vDisplay_NavControl();
         createTask_vDisplay_MenuScreen();
-        createTask_vDisplay_NavControl();
         createTask_vDisplay_MenuControl();
         // createTask_vDisplay_Calibration();
     }
@@ -49,6 +52,7 @@ namespace Earendil_Display {
             vTaskDelay(pdMS_TO_TICKS(1000));
         }
     }
+
     // =======================================================================================
     // vDisplay_NavControl
     // =======================================================================================
@@ -56,8 +60,8 @@ namespace Earendil_Display {
     void createTask_vDisplay_NavControl(void){
         TaskHandle_t* task_handle_ptr = &Earendil_Handles->Display_Handles.task_vDisplay_NavControl;
         xTaskCreate(
-            vDisplay_NavControl,                             // Task function
-            "vDisplay_NavControl",                           // Task name (for debugging)
+            vDisplay_NavControl,                            // Task function
+            "vDisplay_NavControl",                          // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
             1,                                              // Real-time task priority
@@ -76,17 +80,16 @@ namespace Earendil_Display {
             vTaskDelay(pdMS_TO_TICKS(50));
         }
     }
+
     // =======================================================================================
     // vDisplay_MenuScreen
     // =======================================================================================
 
-    // !!!!!!!!! MAYBE DIVIDE TASK INTO TWO: UPDATE & BUTTON CONTROL !!!!!!!!!!!!!!!
-
     void createTask_vDisplay_MenuScreen(void){
         TaskHandle_t* task_handle_ptr = &Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen;
         xTaskCreate(
-            vDisplay_MenuScreen,                             // Task function
-            "vDisplay_MenuScreen",                           // Task name (for debugging)
+            vDisplay_MenuScreen,                            // Task function
+            "vDisplay_MenuScreen",                          // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
             1,                                              // Real-time task priority
@@ -100,26 +103,27 @@ namespace Earendil_Display {
     void vDisplay_MenuScreen(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
-        vTaskSuspend(NULL); // Initially self-suspend.
+        // vTaskSuspend(NULL); // Initially self-suspend.
 
         setupMenu();
         
         while(1){
+            xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
             drawMenu();
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            xSemaphoreGive(Earendil_Mutexes->spi_mutex);
+            vTaskDelay(pdMS_TO_TICKS(50));
         }
     }
 
-    
-// =======================================================================================
+    // =======================================================================================
     // vDisplay_MenuControl
     // =======================================================================================
 
     void createTask_vDisplay_MenuControl(void){
         TaskHandle_t* task_handle_ptr = &Earendil_Handles->Display_Handles.task_vDisplay_MenuControl;
         xTaskCreate(
-            vDisplay_MenuControl,                             // Task function
-            "vDisplay_MenuControl",                           // Task name (for debugging)
+            vDisplay_MenuControl,                           // Task function
+            "vDisplay_MenuControl",                         // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
             1,                                              // Real-time task priority
@@ -133,17 +137,16 @@ namespace Earendil_Display {
     void vDisplay_MenuControl(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
         
-        vTaskSuspend(NULL);
+        // vTaskSuspend(NULL); // Initially self-suspend.
 
         while(1){
             menuControl();
             vTaskDelay(pdMS_TO_TICKS(50));
         }
     }
-
-
+    
     // =======================================================================================
-    // vDisplayCalibration
+    // vDisplay_Calibration
     // =======================================================================================
 
     /*

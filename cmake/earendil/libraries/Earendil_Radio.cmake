@@ -34,6 +34,7 @@ target_link_libraries(Earendil_Radio PUBLIC    # Link all non-(pico-sdk / FreeRT
         # cmake/earendil/core
         Earendil_TaskHandles
         Earendil_SharedData
+        Earendil_Mutexes
         # cmake/earendil/libraries
         RadioHead
 )

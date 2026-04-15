@@ -1,18 +1,21 @@
 #include <Earendil_Radio.h> // ATTENTION: Add all library dependencies to this header.
 
-
 namespace Earendil_Radio {
 
     Earendil::Earendil_TaskHandles_t*   Earendil_Handles    = nullptr; 
     Earendil::Earendil_SharedData_t*    Earendil_Data       = nullptr;
+    Earendil::Earendil_Mutexes_t*       Earendil_Mutexes    = nullptr;
 
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     ){
         Earendil_Handles    = global_Earendil_Handles;
         Earendil_Data       = global_Earendil_Data;
+        Earendil_Mutexes    = global_Earendil_Mutexes;
     }
+    
     void createTasks(void){
         createTask_vRadio_Ping_TX();
     }
@@ -46,7 +49,9 @@ namespace Earendil_Radio {
 
         while (1){
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+            xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
             sendPing_TX();
+            xSemaphoreGive(Earendil_Mutexes->spi_mutex);
         }
     }
 }

@@ -33,6 +33,7 @@ target_link_libraries(Earendil_Display PUBLIC   # Link all non-(pico-sdk / FreeR
         # cmake/earendil/core
         Earendil_TaskHandles
         Earendil_SharedData
+        Earendil_Mutexes
         # cmake/earendil/libraries
         Adafruit_GC9A01A
 )
