@@ -70,7 +70,7 @@ namespace Earendil_Display {
 
     void request_Magnetometer_Calibrate(){
     
-    
+        uint32_t notifValue;
         display.fillScreen(GC9A01A_BLACK);
         display.setCursor(40, 120);
         display.print("Calibrating");
@@ -96,7 +96,7 @@ namespace Earendil_Display {
     };
 
     MenuItem calibrateMenu[] = {
-        {"Magnetometer", NULL, NULL, 0, NULL}, 
+        {"Magnetometer", NULL, NULL, 0, &request_Magnetometer_Calibrate}, 
         {"Temperature", NULL, NULL, 0, NULL}, 
         {"Altimeter", NULL, NULL, 0, NULL}, 
         {"Gyroscope", NULL, NULL, 0, NULL}

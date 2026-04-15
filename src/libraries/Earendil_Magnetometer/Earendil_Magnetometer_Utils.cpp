@@ -84,7 +84,7 @@ namespace Earendil_Magnetometer {
     for (int i = 0; i < 3; i++){
       magmeter.hard_iron[i] = (magmeter.hard_max[i] + magmeter.hard_min[i]) / 2.0;  //Computes the hard iron calibration by averaging the max and min to find the midpoint between the two
     }
-    //computeSoftIron(); //call the soft iron calibrator
+    computeSoftIron(); //call the soft iron calibrator
   }
 
   void applyCalibration(float calibrated[3]){
