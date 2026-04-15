@@ -40,26 +40,24 @@ namespace Earendil_Magnetometer {
     void vMagnetometer_UpdateHeading(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
-        sensors_event_t event;
-        float raw[3] = {0, 0, 0};
+        //sensors_event_t event;
+        //float raw[3] = {0, 0, 0};
 
         while (1){
-            magnetometer.getEvent(&event);
+            //magnetometer.getEvent(&event);
 
-            raw[0] = event.magnetic.x;
-            raw[1] = event.magnetic.y;
-            raw[2] = event.magnetic.z;
+            //raw[0] = event.magnetic.x;
+            //raw[1] = event.magnetic.y;
+            //raw[2] = event.magnetic.z;
 
             //char buf[64];
             //snprintf(buf, sizeof(buf), "raw_x=%.2f\nraw_y=%.2f\nraw_z=%.2f\n", raw[0], raw[1], raw[2]);
             //puts(buf);
 
-            Earendil_Data->Magnetometer_Data.heading = getHeading(raw);
-
-            // updateFilter(raw);
-            // float calibrated[3];
-            // applyCalibration(calibrated);
-            // Earendil_Data->Magnetometer_Data.heading = getHeading(calibrated);
+            //Earendil_Data->Magnetometer_Data.heading = getHeading(raw);
+            float calibrated[3];
+            applyCalibration(calibrated);
+            Earendil_Data->Magnetometer_Data.heading = getHeading(calibrated);
 
             vTaskDelay(pdMS_TO_TICKS(50));
         }
@@ -69,9 +67,9 @@ namespace Earendil_Magnetometer {
     // vMagnetometer_Calibrate
     // =======================================================================================
 
-    /*
+    
     void createTask_vMagnetometer_Calibrate(void){
-        TaskHandle_t* task_handle_ptr = &Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading;   // INCORRECT HEADING
+        TaskHandle_t* task_handle_ptr = &Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_Calibrate;
         xTaskCreate(
             vMagnetometer_Calibrate,                    // Task function
             "vMagnetometer_Calibrate",                  // Task name (for debugging)
@@ -91,10 +89,9 @@ namespace Earendil_Magnetometer {
         while (1){
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
             calibrateMagnetometer();
-            xTaskNotify(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, 0, eNoAction);
+            xTaskNotify(Earendil_Handles->Display_Handles.task_vDisplay_Control, 0, eSetBits);
         }
     }
-    */
 }
 
 

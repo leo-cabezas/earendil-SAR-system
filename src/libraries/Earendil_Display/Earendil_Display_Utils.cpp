@@ -68,28 +68,22 @@ namespace Earendil_Display {
         xTaskNotify(Earendil_Handles->Radio_Handles.task_vRadio_Ping_TX, 0, eNoAction);
     }
 
-    /*
     void request_Magnetometer_Calibrate(){
     
-        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //Pause all the tasks so nothing interferes with magnetometer
-        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
-        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
-        vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
-
+    
         display.fillScreen(GC9A01A_BLACK);
         display.setCursor(40, 120);
         display.print("Calibrating");
         display.setCursor(60, 120);
-        xTaskNotify(Earendil_Handles->Magnetometer_Handles.task_vCalibrate_Magnetometer, 0, eNoAction);
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        xTaskNotify(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_Calibrate, 0, eNoAction);
+        xTaskNotifyWait(0, UINT32_MAX, &notifValue, portMAX_DELAY);
+
+        
         display.fillScreen(GC9A01A_BLACK);
 
-        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //resume Everything
-        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
-        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
-        vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
+
+
     }
-    */
 
     // =================================MENU STUFF==============================================================
     // Menu structure
