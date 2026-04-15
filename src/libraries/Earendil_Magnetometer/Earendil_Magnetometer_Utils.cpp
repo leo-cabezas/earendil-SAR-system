@@ -97,7 +97,7 @@ namespace Earendil_Magnetometer {
   void applyCalibration(float calibrated[3]){
     for (int i = 0; i < 3; i++){
       float no_hard = magmeter.filtered[i] - magmeter.hard_iron[i]; //subtract by the hard iron calibration scale
-      calibrated[i] = no_hard * magmeter.scale[i];//scale by the soft iron calibration factor
+      calibrated[i] = no_hard;//scale by the soft iron calibration factor * magmeter.scale[i];
     }
   }
   

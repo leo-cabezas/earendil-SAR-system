@@ -239,15 +239,15 @@ namespace Earendil_Display {
     //=================================COMPASS UI STUFF==============================================================
     
     void drawMagneticNorth(){
-        float heading = Earendil_Data->Magnetometer_Data.heading;   // Need to protect this with a mutex !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        float x = DISPLAY_CENTER_X + 90.0 * cos( (heading + 90) * (M_PI / 180.0));    // 120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
-        float y = DISPLAY_CENTER_Y - 90.0 * sin( (heading + 90) * (M_PI / 180.0));    // y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
+        float heading = Earendil_Data->Magnetometer_Data.heading + 90;   // Need to protect this with a mutex !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        float x = DISPLAY_CENTER_X + 90.0 * cos(heading * (M_PI / 180.0));    // 120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
+        float y = DISPLAY_CENTER_Y - 90.0 * sin(heading * (M_PI / 180.0));    // y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
         display.fillCircle(x, y, 5, GC9A01A_RED);//creates a circle on the edge of the screen to show off the angle
         
         display.setCursor(DISPLAY_CENTER_X - 30, DISPLAY_CENTER_Y);
         display.setTextColor(GC9A01A_YELLOW);
         display.setTextSize(3);
-        display.print(heading);
+        display.print(heading - 90);
     }
     
     void displayNav(){
