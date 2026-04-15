@@ -1,8 +1,11 @@
  #include <Earendil_Display.h>   // ATTENTION: Add all library dependencies inside this header.
 
 namespace Earendil_Display {
+    
     Adafruit_GC9A01A display = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 
+    ACTIVE_UI active_ui = NAVIGATION_UI;
+    
     void setup(){
         setupMenuButtons();
         setupDisplay();
@@ -10,7 +13,7 @@ namespace Earendil_Display {
 
     void setupDisplay(){
         display.begin();
-        display.setRotation(3);
+        display.setRotation(0);
         display.fillScreen(GC9A01A_RED);
         display.setCursor(120, 120);
         display.setTextColor(GC9A01A_WHITE);
@@ -27,66 +30,36 @@ namespace Earendil_Display {
         irq_set_enabled(IO_IRQ_BANK0, true);
     }
 
-    void setupButton(const uint8_t button_pin){
-        gpio_init(button_pin);
-        gpio_set_dir(button_pin, GPIO_IN);
-        gpio_pull_up(button_pin);
-        gpio_set_irq_enabled(button_pin, GPIO_IRQ_EDGE_FALL, true);
+    void setupButton(const uint8_t BUTTON_PIN){
+        gpio_init(BUTTON_PIN);
+        gpio_set_dir(BUTTON_PIN, GPIO_IN);
+        gpio_pull_up(BUTTON_PIN);
+        gpio_set_irq_enabled(BUTTON_PIN, GPIO_IRQ_EDGE_FALL, true);
     }
 
-    // VERY IMPORTANT: SHOULDN'T HAVE NULL AS THE SECOND ARGUMENT OF vTaskNotifyGiveFromISR. READ ON THIS
-    inline void interruptHandler_BUTTON1(void){
-        gpio_set_irq_enabled(BUTTON1, GPIO_IRQ_EDGE_FALL, false);
+    // VERY IMPORTANT: SHOULDN'T HAVE NULL AS THE SECOND ARGUMENT OF vTaskNotifyGiveFromISR. READ ON 
+    inline void interruptHandler_BUTTON(const uint8_t BUTTON_PIN){
+        gpio_set_irq_enabled(BUTTON_PIN, GPIO_IRQ_EDGE_FALL, false);
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
-        // vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_NavControl, NULL);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-    
-    inline void interruptHandler_BUTTON_BACK(void){
-        gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, false);
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_NavControl, NULL);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-
-    inline void interruptHandler_BUTTON_SELECT(void){
-        gpio_set_irq_enabled(BUTTON_SELECT, GPIO_IRQ_EDGE_FALL, false);
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-
-    inline void interruptHandler_BUTTON_DOWN(void){
-        gpio_set_irq_enabled(BUTTON_DOWN, GPIO_IRQ_EDGE_FALL, false);
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-
-    inline void interruptHandler_BUTTON_UP(void){
-        gpio_set_irq_enabled(BUTTON_UP, GPIO_IRQ_EDGE_FALL, false);
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, NULL);
+        vTaskNotifyGiveFromISR(Earendil_Handles->Display_Handles.task_vDisplay_Controls, NULL);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
     void IO_IRQ_BANK0_Handler(void){
-        if (gpio_get_irq_event_mask(BUTTON1)    & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
-            interruptHandler_BUTTON1();
+        if (gpio_get_irq_event_mask(BUTTON1)        & GPIO_IRQ_EDGE_FALL){
+            interruptHandler_BUTTON(BUTTON1);
         }
-        if (gpio_get_irq_event_mask(BUTTON_BACK)    & GPIO_IRQ_EDGE_FALL){  // DEBOUNCE BUTTON TEST IRQ
-            interruptHandler_BUTTON_BACK();
+        if (gpio_get_irq_event_mask(BUTTON_BACK)    & GPIO_IRQ_EDGE_FALL){
+            interruptHandler_BUTTON(BUTTON_BACK);
         }
-        if (gpio_get_irq_event_mask(BUTTON_SELECT)  & GPIO_IRQ_EDGE_FALL) {
-            interruptHandler_BUTTON_SELECT();
+        if (gpio_get_irq_event_mask(BUTTON_SELECT)  & GPIO_IRQ_EDGE_FALL){
+            interruptHandler_BUTTON(BUTTON_SELECT);
         }
-        if (gpio_get_irq_event_mask(BUTTON_DOWN)    & GPIO_IRQ_EDGE_FALL) {
-            interruptHandler_BUTTON_DOWN();
+        if (gpio_get_irq_event_mask(BUTTON_DOWN)    & GPIO_IRQ_EDGE_FALL){
+            interruptHandler_BUTTON(BUTTON_DOWN);
         }
-        if (gpio_get_irq_event_mask(BUTTON_UP)      & GPIO_IRQ_EDGE_FALL) {
-            interruptHandler_BUTTON_UP();
+        if (gpio_get_irq_event_mask(BUTTON_UP)      & GPIO_IRQ_EDGE_FALL){
+            interruptHandler_BUTTON(BUTTON_UP);
         }
     }
 
@@ -95,6 +68,7 @@ namespace Earendil_Display {
         xTaskNotify(Earendil_Handles->Radio_Handles.task_vRadio_Ping_TX, 0, eNoAction);
     }
 
+    /*
     void request_Magnetometer_Calibrate(){
     
         vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //Pause all the tasks so nothing interferes with magnetometer
@@ -102,19 +76,21 @@ namespace Earendil_Display {
         vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
         vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
 
-        tft.fillScreen(GC9A01A_BLACK);
-        tft.setCursor(40, 120);
-        tft.print("Calibrating");
-        tft.setCursor(60, 120);
+        display.fillScreen(GC9A01A_BLACK);
+        display.setCursor(40, 120);
+        display.print("Calibrating");
+        display.setCursor(60, 120);
         xTaskNotify(Earendil_Handles->Magnetometer_Handles.task_vCalibrate_Magnetometer, 0, eNoAction);
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        tft.fillescreen(GC9A01A_BLACK);
+        display.fillScreen(GC9A01A_BLACK);
 
         vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //resume Everything
         vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
         vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
         vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
     }
+    */
+
     // =================================MENU STUFF==============================================================
     // Menu structure
     struct MenuItem {
@@ -134,7 +110,7 @@ namespace Earendil_Display {
 
     // Array of menu items
     MenuItem mainMenu[] = {
-        {"Calibrate Magnetometer", NULL, NULL, 0, &request_Magnetometer_Calibrate},
+        // {"Calibrate Magnetometer", NULL, NULL, 0, &request_Magnetometer_Calibrate},
         {"Calibration", NULL, calibrateMenu, 4, NULL}, 
         {"Info", NULL, NULL, 0, NULL}, 
         {"Reset", NULL, NULL, 0, NULL}, 
@@ -229,15 +205,9 @@ namespace Earendil_Display {
 
         // BACK BUTTON PRESSED
         if (gpio_get(BUTTON_BACK) == 0){
-            if (goBack()){
-                //drawMenu();
-            } else {
-                vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen);
-                vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
-                vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
-                vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl);
+            if (!goBack()){
+                active_ui = NAVIGATION_UI;
             }
-            
             while (gpio_get(BUTTON_BACK) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, true);
@@ -270,8 +240,8 @@ namespace Earendil_Display {
     
     void drawMagneticNorth(){
         float heading = Earendil_Data->Magnetometer_Data.heading;   // Need to protect this with a mutex !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        float x = DISPLAY_CENTER_X + 90.0 * cos(heading * (M_PI / 180.0));    // 120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
-        float y = DISPLAY_CENTER_Y - 90.0 * sin(heading * (M_PI / 180.0));    // y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
+        float x = DISPLAY_CENTER_X + 90.0 * cos( (heading + 90) * (M_PI / 180.0));    // 120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
+        float y = DISPLAY_CENTER_Y - 90.0 * sin( (heading + 90) * (M_PI / 180.0));    // y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
         display.fillCircle(x, y, 5, GC9A01A_RED);//creates a circle on the edge of the screen to show off the angle
         
         display.setCursor(DISPLAY_CENTER_X - 30, DISPLAY_CENTER_Y);
@@ -339,10 +309,7 @@ namespace Earendil_Display {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         
         if (gpio_get(BUTTON_BACK) == 0){
-            vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
-            vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl);
-            vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen);
-            vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
+            active_ui = MENU_UI;
             while (gpio_get(BUTTON_BACK) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, true);

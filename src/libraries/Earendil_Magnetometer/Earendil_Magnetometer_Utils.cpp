@@ -13,7 +13,7 @@ namespace Earendil_Magnetometer {
   }
   
   float getHeading(float calibrated[3]){
-    float heading = (-1)*atan2(calibrated[0], calibrated[1]) * 180.0 / M_PI; //get the heading in degrees
+    float heading = (-1) * atan2(calibrated[0], calibrated[1]) * 180.0 / M_PI; //get the heading in degrees
     //if (heading < 0) heading += 360;  // if negative, add 360 to keeep the value positive
     return heading;                   // return the heading angle
   }

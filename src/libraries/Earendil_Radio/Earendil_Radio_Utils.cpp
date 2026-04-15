@@ -23,68 +23,104 @@ namespace Earendil_Radio {
         gpio_set_dir(13, GPIO_OUT);
     }
 
-    void sendPing_TX(void){
+    void sendPing_TX(
+        uint16_t recipient_id,
+        uint16_t sender_id,
+        uint16_t message_type,
+        uint16_t message_id,
+        uint16_t message_att,
+        uint32_t date_sent,
+        uint32_t time_sent
+    ){        
+        std::vector<uint8_t> radio_packet;
+        uint16_t recipient_id   = 1488;
+        std::vector<uint8_t> metadata;
+        uint16_t sender_id      = 1313;
+        uint16_t message_type   = static_cast<uint16_t>(MessageType::PING_REQUEST);
+        uint16_t message_id     = 0;
+        uint16_t message_att    = 0;
+        uint32_t date_sent      = 1234;
+        uint32_t time_sent      = 5678;
 
-        uint8_t buf[64];
-        buf[0] = (uint8_t) 12;
-        buf[1] = (uint8_t) 34;
-        buf[2] = (uint8_t) 56;
-        buf[3] = (uint8_t) 78;
-        buf[4] = (uint8_t) 'S';
-        int len = 5;
-        
+        encodeMetadata(
+            metadata, 
+            sender_id, 
+            message_type, 
+            message_id, 
+            message_attempt, 
+            date_sent, 
+            time_sent
+        );
+        encodePacket(
+            radio_packet, 
+            recipient_id, 
+            metadata, 
+            data
+        );
+
         gpio_put(13, 1);
-
-        // Send packet
-        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
-        vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl);
-        if (radio.send((uint8_t*)buf, len + 1)) {
+        if (radio.send(radio_packet.data(), radio_packet.size())) {
             radio.waitPacketSent();
         }
-        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
-        vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl);
         gpio_put(13, 0);
     }
 
-    // 
-    // ATTENTION: MIGHT BE A GOOD IDEA TO UPDATE THIS CODE TO USE C++ VECTORS. MORE MEMORY SAFE, WORTH.
-    //
-    #define METADATA_FIELD_COUNT 4
-    void encodePacket(    // TESTED, NEED TO INCLUDE ACTUAL SENT DATA.
-        uint8_t*    packet,
-        uint32_t    recipient_id,
-        uint8_t     (&metadata)[METADATA_FIELD_COUNT * 4]
-        // add data here. Probably a good idea to use std::vector<uint8_t>
-    ){
-        const uint8_t recipient_id_index = 0;
-        packet[recipient_id_index + 0] = (recipient_id >> 24) & 0xFF;
-        packet[recipient_id_index + 1] = (recipient_id >> 16) & 0xFF;
-        packet[recipient_id_index + 2] = (recipient_id >> 8)  & 0xFF;
-        packet[recipient_id_index + 3] = (recipient_id >> 0)  & 0xFF; 
+    void listen_RX(void){
 
-        const uint8_t metadata_index = 4;
-        for (size_t i = 0; i < METADATA_FIELD_COUNT * 4; i++){
-            packet[metadata_index + i] = metadata[i];
+    }
+
+    void encodeDate(void){
+        ;
+    }
+
+    void encodePacket(
+        std::vector<uint8_t>&       radio_packet,
+        uint16_t                    recipient_id
+        const std::vector<uint8_t>& metadata,
+        const std::vector<uint8_t>& data,
+    ){
+        radio_packet.push_back(static_cast<uint8_t>( (recipient_id >> 8 ) & 0xFF ));
+        radio_packet.push_back(static_cast<uint8_t>( (recipient_id >> 0 ) & 0xFF ));
+
+        for (size_t i = 0; i < metadata.size(); i++){
+            radio_packet.push_back( metadata[i] );
+        }
+
+        for (size_t i = 0; i < data.size(); i++){
+            radio_packet.push_back( data[i] );
         }
     }
 
-    void encodeMetadata(  // TESTED AND FUNCTIONAL.
-        uint8_t     (&metadata)[METADATA_FIELD_COUNT * 4],
-        uint32_t    sender_id, 
-        uint32_t    message_id,
-        uint32_t    message_attempt,
-        uint32_t    timestamp
+    void encodeMetadata(
+        std::vector<uint8_t>&   metadata,
+        uint16_t                sender_id, 
+        uint16_t                message_type,
+        uint16_t                message_id,
+        uint16_t                message_att,
+        uint32_t                date_sent,
+        uint32_t                time_sent
     ){  
-        uint32_t metadata_fields[METADATA_FIELD_COUNT] = {sender_id, message_id, message_attempt, timestamp};
+        metadata.push_back(static_cast<uint8_t>( (sender_id >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (sender_id >> 0 ) & 0xFF ));
 
-        uint8_t field_index = 0;
-        for (size_t i = 0; i < METADATA_FIELD_COUNT; i++){
-            metadata[field_index + 0] = (metadata_fields[i] >> 24) & 0xFF;
-            metadata[field_index + 1] = (metadata_fields[i] >> 16) & 0xFF;
-            metadata[field_index + 2] = (metadata_fields[i] >> 8)  & 0xFF;
-            metadata[field_index + 3] = (metadata_fields[i] >> 0)  & 0xFF;
-            field_index += 4;
-        }
+        metadata.push_back(static_cast<uint8_t>( (message_type >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (message_type >> 0 ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (message_id >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (message_id >> 0 ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (message_att >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (message_att >> 0 ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (date_sent >> 24 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (date_sent >> 16 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (date_sent >> 8  ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (date_sent >> 0  ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (time_sent >> 24 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (time_sent >> 16 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (time_sent >> 8  ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (time_sent >> 0  ) & 0xFF ));
     }
 
     void decodeMetadata(  // TESTED AND FUNCTIONAL.

@@ -36,7 +36,7 @@ namespace Earendil_Radio {
             "vRadio_Ping_TX",                               // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
-            2,                                              // Real-time task priority
+            3,                                              // Real-time task priority
             task_handle_ptr                                 // Task handle
         );
         vTaskCoreAffinitySet(*task_handle_ptr, 1 << 
@@ -47,13 +47,57 @@ namespace Earendil_Radio {
     void vRadio_Ping_TX(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
+        uint16_t sender_id;
+        uint16_t message_type;
+        uint16_t message_id;
+        uint16_t message_att;
+        uint32_t date_sent;
+        uint32_t time_sent;
+
         while (1){
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
             xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
+            uint16_t sender_id      = 1313;
+            uint16_t message_type   = static_cast<uint16_t>(MessageType::PING_REQUEST);
+            uint16_t message_id     = 0;
+            uint16_t message_att    = 0;
+            uint32_t date_sent      = 1234;
+            uint32_t time_sent      = 5678;
             sendPing_TX();
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
         }
     }
+
+    // =======================================================================================
+    // vRadio_Ping_TX
+    // =======================================================================================
+
+    void createTask_vRadio_Listen_RX(void){
+        TaskHandle_t* task_handle_ptr = &Earendil_Handles->Radio_Handles.task_vRadio_Listen_RX;
+        xTaskCreate(
+            vRadio_Listen_RX,                               // Task function
+            "vRadio_Listen_RX",                             // Task name (for debugging)
+            512,                                            // Task stack depth (in words, NOT bytes!)
+            NULL,                                           // Task parameters at creation
+            2,                                              // Real-time task priority
+            task_handle_ptr                                 // Task handle
+        );
+        vTaskCoreAffinitySet(*task_handle_ptr, 1 << 
+            0                                               // Assigned core (options: 0, 1)
+        );
+    }
+
+    void vRadio_Listen_RX(void* pvParameters){
+        (void)pvParameters;     // Parameters unused.
+
+        while (1){
+            xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
+            listen_RX();
+            xSemaphoreGive(Earendil_Mutexes->spi_mutex);
+            vTaskDelay(pdMS_TO_TICKS(1000));
+        }
+    }
+
 }
 
 

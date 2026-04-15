@@ -70,43 +70,40 @@ namespace Earendil_Display {
 
     void createTasks(void);
 
-    void createTask_vDisplay_NavScreen(void);
-    void vDisplay_NavScreen(void* pvParameters);
+    void createTask_vDisplay_UI(void);
+    void vDisplay_UI(void* pvParameters);
 
-    void createTask_vDisplay_MenuScreen(void);
-    void vDisplay_MenuScreen(void* pvParameters);
+    void createTask_vDisplay_Controls(void);
+    void vDisplay_Controls(void* pvParameters);
 
     //void createTask_vDisplay_Calibration(void);
     //void vDisplay_Calibration(void* pvParameters);
 
-    void createTask_vDisplay_NavControl(void);
-    void vDisplay_NavControl(void* pvParameters);
-
-    void createTask_vDisplay_MenuControl(void);
-    void vDisplay_MenuControl(void* pvParameters);
-
     // --------------------------------- UTILS ---------------------------------
     extern Adafruit_GC9A01A display;
+
+    typedef enum {
+        NAVIGATION_UI = 0,
+        MENU_UI = 1
+    } ACTIVE_UI;
+    extern ACTIVE_UI active_ui;
 
     void setup(void);
 
     void setupDisplay(void);
     void setupMenu(void);
+
     void setupMenuButtons(void);
-    void setupButton(const uint8_t);
-    
-    void interruptHandler_BUTTON_BACK(void);
-    void interruptHandler_BUTTON_SELECT(void);
-    void interruptHandler_BUTTON_DOWN(void);
-    void interruptHandler_BUTTON_UP(void);
+    void setupButton(const uint8_t BUTTON_PIN);
+    void interruptHandler_BUTTON(const uint8_t BUTTON_PIN);
     void IO_IRQ_BANK0_Handler(void);
 
     void drawMenu(void);
-    void moveUp(void);
-    void moveDown(void);
-    void selectItem(void);
-    bool goBack(void);
     void menuControl(void);
+    bool goBack(void);
+    void selectItem(void);
+    void moveDown(void);
+    void moveUp(void);
 
     void getDistNAngle(void);
     void drawDistance(void);

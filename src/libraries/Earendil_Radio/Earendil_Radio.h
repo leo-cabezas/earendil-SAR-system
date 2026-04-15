@@ -1,9 +1,9 @@
 #pragma once    // To prevent duplicate library imports.
 
 // --- DEPENDENCIES // FreeRTOS-Kernel ---
-#include <FreeRTOS.h>           // For pdMS_TO_TICKS(), etc. Needed for task.h, semphr.h, etc.
-#include <task.h>               // For vTaskDelay(), etc.
-#include <semphr.h>             // For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
+#include <FreeRTOS.h>           // Core FreeRTOS library.
+#include <task.h>               // FreeRTOS library. For xTaskCreate(), vTaskDelay(), vTaskNotify(), etc.
+#include <semphr.h>             // FreeRTOS library. For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
 
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
@@ -16,6 +16,10 @@
 #include <Earendil_TaskHandles.h>
 #include <Earendil_SharedData.h>
 #include <Earendil_Mutexes.h>
+
+// --- OTHER DEPENDENCIES ---
+#include <cstdint>
+#include <vector>
 
 // --- RADIO TRANSCEIVER PINOUT CONFIGURATION ---
 #define RFM95_CS_PIN        16      // SPI chip-select
@@ -43,15 +47,43 @@ namespace Earendil_Radio {
     void createTask_vRadio_Ping_TX(void);
     void vRadio_Ping_TX(void* pvParameters);
 
+    void createTask_vRadio_Listen_RX(void);
+
+
 
     // --------------------------------- UTILS ---------------------------------
     extern RH_RF95 radio;
+
+    enum class MessageType : uint16_t {
+        PING_REQUEST,
+        PING_REQUEST_ACK,
+
+        DATA_REQUEST_GPS,
+        DATA_REQUEST_GPS_ACK
+    }
 
     void setup(void);
 
     void setupRadio(void);
 
     void sendPing_TX(void);
+
+    void encodePacket(
+        std::vector<uint8_t>&       radio_packet,
+        uint16_t                    recipient_id
+        const std::vector<uint8_t>& metadata,
+        const std::vector<uint8_t>& data,
+    );
+
+    void encodeMetadata(
+        std::vector<uint8_t>&   metadata,
+        uint16_t                sender_id, 
+        uint16_t                message_type,
+        uint16_t                message_id,
+        uint16_t                message_att,
+        uint32_t                date_sent,
+        uint32_t                time_sent
+    );
 
 
 }
