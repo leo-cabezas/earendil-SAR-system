@@ -10,7 +10,7 @@ namespace Earendil_Display {
 
     void setupDisplay(){
         display.begin();
-        display.setRotation(3);
+        display.setRotation(0);
         display.fillScreen(GC9A01A_RED);
         display.setCursor(120, 120);
         display.setTextColor(GC9A01A_WHITE);
@@ -90,13 +90,13 @@ namespace Earendil_Display {
         vTaskSuspend(Earendil_Handles->Display_Handles.task_vDisplay_MenuScreen);
         vTaskSuspend(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_UpdateHeading);
 
-        tft.fillScreen(GC9A01A_BLACK);
-        tft.setCursor(40, 120);
-        tft.print("Calibrating");
-        tft.setCursor(60, 120);
+        display.fillScreen(GC9A01A_BLACK);
+        display.setCursor(40, 120);
+        display.print("Calibrating");
+        display.setCursor(60, 120);
         xTaskNotify(Earendil_Handles->Magnetometer_Handles.task_vCalibrate_Magnetometer, 0, eNoAction);
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        tft.fillescreen(GC9A01A_BLACK);
+        display.fillScreen(GC9A01A_BLACK);
 
         vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavScreen); //resume Everything
         vTaskResume(Earendil_Handles->Display_Handles.task_vDisplay_NavControl);
@@ -253,7 +253,7 @@ namespace Earendil_Display {
     //=================================COMPASS UI STUFF==============================================================
     
     void drawMagneticNorth(){
-        float heading = Earendil_Data->Magnetometer_Data.heading;   // Need to protect this with a mutex !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        float heading = Earendil_Data->Magnetometer_Data.heading + 90;   // Need to protect this with a mutex !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         float x = DISPLAY_CENTER_X + 90.0 * cos(heading * (M_PI / 180.0));    // 120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
         float y = DISPLAY_CENTER_Y - 90.0 * sin(heading * (M_PI / 180.0));    // y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
         display.fillCircle(x, y, 5, GC9A01A_RED);//creates a circle on the edge of the screen to show off the angle
@@ -261,7 +261,7 @@ namespace Earendil_Display {
         display.setCursor(DISPLAY_CENTER_X - 30, DISPLAY_CENTER_Y);
         display.setTextColor(GC9A01A_YELLOW);
         display.setTextSize(3);
-        display.print(heading);
+        display.print(heading - 90);
     }
     
     void displayNav(){

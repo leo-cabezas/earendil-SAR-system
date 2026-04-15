@@ -82,7 +82,7 @@ namespace Earendil_Magnetometer {
         while (1){
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
             calibrateMagnetometer();
-            xTaskNotify(Earendil_Handles->Display_Handles_Handles.task_vDisplay_MenuControl, 0, eNoAction);
+            xTaskNotify(Earendil_Handles->Display_Handles.task_vDisplay_MenuControl, 0, eNoAction);
         }
     }
 
