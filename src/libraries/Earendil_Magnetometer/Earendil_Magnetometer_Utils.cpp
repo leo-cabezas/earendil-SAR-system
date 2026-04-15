@@ -67,31 +67,24 @@ namespace Earendil_Magnetometer {
     }
   }
 
-  void finalizeCalibration(){
-    for (int i = 0; i < 3; i++){
-      magmeter.hard_iron[i] = (magmeter.hard_max[i] + magmeter.hard_min[i]) / 2.0;  //Computes the hard iron calibration by averaging the max and min to find the midpoint between the two
-    }
-    computeSoftIron(); //call the soft iron calibrator
-  }
 
   void calibrateMagnetometer(){
-    Serial.println("rotate sensor in all directions"); //directions for the user to calibrate the magnetometer
-    unsigned long start = millis(); //start timer in milliseconds for the timer
-    
-    while (millis() - start < CALIBRATION_TIME){  //while the current timer is less than the calibration timer
+    constexpr uint32_t NUMBER_SAMPLES = 100;
+    constexpr uint32_t SAMPLING_RATE  = 50;
+    for (int i = 0; i < NUMBER_SAMPLES; i++){  //while the current timer is less than the calibration timer
     
       sensors_event_t event; //init a magnetometer sensor event
       magnetometer.getEvent(&event); //this grabs the current magnetometer readings
 
       float raw[3] = {event.magnetic.x, event.magnetic.y, event.magnetic.z};//this gets the raw x, y, and z values
       updateFilter(raw);//update the filter for this next set of raw data
-      updateHardIron(
-        
-      ); //update the soft iron calibration shift
-      delay(SAMPLE_DELAY);//delay by the sample delay to let the user move the magnetometer to a new position
+      updateHardIron(); //update the soft iron calibration shift
+      vTaskDelay(pdMS_TO_TICKS(SAMPLING_RATE));//delay by the sample delay to let the user move the magnetometer to a new position
     }
-    Serial.println("\nCalibration Done");
-    finalizeCalibration(); //get the hard iron and soft iron calibration based on the data recieved
+    for (int i = 0; i < 3; i++){
+      magmeter.hard_iron[i] = (magmeter.hard_max[i] + magmeter.hard_min[i]) / 2.0;  //Computes the hard iron calibration by averaging the max and min to find the midpoint between the two
+    }
+    computeSoftIron(); //call the soft iron calibrator
   }
 
   void applyCalibration(float calibrated[3]){
