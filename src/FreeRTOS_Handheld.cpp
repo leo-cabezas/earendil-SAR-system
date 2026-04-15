@@ -115,7 +115,7 @@ namespace Earendil {
 }
 
 int main() {
-    stdio_init_all();
+    // stdio_init_all();
 
     Earendil::setup();
     Earendil::createTasks();

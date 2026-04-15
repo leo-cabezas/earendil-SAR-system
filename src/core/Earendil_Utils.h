@@ -52,7 +52,7 @@ typedef struct {
     uint8_t day;
     uint8_t hour;
     uint8_t minute;
-    uint8_t seconds;
+    uint8_t second;
     //bool fix;// Fix validity
 } GPSData_t;
 

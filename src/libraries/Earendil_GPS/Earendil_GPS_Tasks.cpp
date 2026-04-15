@@ -24,8 +24,8 @@ namespace Earendil_GPS {
     void createTask_vGPS_(void){
         TaskHandle_t* task_handle_ptr = &Earendil_Handles->GPS_Handles.task_vDisplay_MenuScreen;
         xTaskCreate(
-            vDisplay_MenuScreen,                             // Task function
-            "vDisplay_MenuScreen",                           // Task name (for debugging)
+            vGPS_,                                          // Task function
+            "vGPS_",                                        // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
             1,                                              // Real-time task priority
@@ -36,16 +36,13 @@ namespace Earendil_GPS {
         );
     }
 
-    void vDisplay_MenuScreen(void* pvParameters){
+    void vGPS_(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
         vTaskSuspend(NULL); // Initially self-suspend.
-
-        setupMenu();
         
         while(1){
-            drawMenu();
-            menuControl();
+            
             // vTaskDelay(pdMS_TO_TICKS(50));
         }
     }

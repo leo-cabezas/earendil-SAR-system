@@ -18,7 +18,6 @@
 #include <Earendil_Mutexes.h>
 
 // --- OTHER DEPENDENCIES ---
-#include <cstdint>
 #include <vector>
 
 // --- RADIO TRANSCEIVER PINOUT CONFIGURATION ---
@@ -48,35 +47,48 @@ namespace Earendil_Radio {
     void vRadio_Ping_TX(void* pvParameters);
 
     void createTask_vRadio_Listen_RX(void);
-
-
+    void vRadio_Listen_RX(void* pvParameters);
 
     // --------------------------------- UTILS ---------------------------------
     extern RH_RF95 radio;
 
+    /*
     enum class MessageType : uint16_t {
         PING_REQUEST,
         PING_REQUEST_ACK,
-
         DATA_REQUEST_GPS,
-        DATA_REQUEST_GPS_ACK
-    }
+        DATA_FULFILL_GPS_ACK
+    };
+    */
 
     void setup(void);
 
     void setupRadio(void);
 
-    void sendPing_TX(void);
+    void sendPing_TX(
+        uint16_t recipient_id,
+        uint16_t sender_id,
+        uint16_t message_type,
+        uint16_t message_id,
+        uint16_t message_att,
+        uint32_t date_sent,
+        uint32_t time_sent
+    );
+    void listen_RX(void);
 
     void encodePacket(
         std::vector<uint8_t>&       radio_packet,
-        uint16_t                    recipient_id
         const std::vector<uint8_t>& metadata,
-        const std::vector<uint8_t>& data,
+        const std::vector<uint8_t>& data
     );
-
+    void decodePacket(
+        const std::vector<uint8_t>& radio_packet,
+        std::vector<uint8_t>&       metadata,
+        std::vector<uint8_t>&       data
+    );
     void encodeMetadata(
         std::vector<uint8_t>&   metadata,
+        uint16_t                recipient_id,
         uint16_t                sender_id, 
         uint16_t                message_type,
         uint16_t                message_id,
@@ -84,6 +96,15 @@ namespace Earendil_Radio {
         uint32_t                date_sent,
         uint32_t                time_sent
     );
-
+    void decodeMetadata(
+        const std::vector<uint8_t>& metadata,
+        uint16_t&                   recipient_id, 
+        uint16_t&                   sender_id, 
+        uint16_t&                   message_type,
+        uint16_t&                   message_id,
+        uint16_t&                   message_att,
+        uint32_t&                   date_sent,
+        uint32_t&                   time_sent
+    );
 
 }

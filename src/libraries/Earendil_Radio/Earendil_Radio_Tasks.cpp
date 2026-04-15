@@ -18,15 +18,12 @@ namespace Earendil_Radio {
     
     void createTasks(void){
         createTask_vRadio_Ping_TX();
+        // createTask_vRadio_Listen_RX();
     }
 
     // =======================================================================================
     // vRadio_Ping_TX
     // =======================================================================================
-    
-    // !!!!!!!!!!! WARNING !!!!!!!!!!!!!
-    // Raising the priority of radio tasks above that of display tasks works,
-    // but WE SHOULD HAVE A MUTEX FOR THE SPI1 BUS.
 
     // MAYBE CALL IT RADIO_MANUALPING_TX INSTEAD???????????????????????''
     void createTask_vRadio_Ping_TX(void){
@@ -36,7 +33,7 @@ namespace Earendil_Radio {
             "vRadio_Ping_TX",                               // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
-            3,                                              // Real-time task priority
+            2,                                              // Real-time task priority
             task_handle_ptr                                 // Task handle
         );
         vTaskCoreAffinitySet(*task_handle_ptr, 1 << 
@@ -47,6 +44,7 @@ namespace Earendil_Radio {
     void vRadio_Ping_TX(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
+        uint16_t recipient_id;
         uint16_t sender_id;
         uint16_t message_type;
         uint16_t message_id;
@@ -56,14 +54,25 @@ namespace Earendil_Radio {
 
         while (1){
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+            recipient_id   = 1488;
+            sender_id      = 1313;
+            message_type   = 1;
+            message_id     = 0;
+            message_att    = 0;
+            date_sent      = 1234;
+            time_sent      = 5678;
+
             xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
-            uint16_t sender_id      = 1313;
-            uint16_t message_type   = static_cast<uint16_t>(MessageType::PING_REQUEST);
-            uint16_t message_id     = 0;
-            uint16_t message_att    = 0;
-            uint32_t date_sent      = 1234;
-            uint32_t time_sent      = 5678;
-            sendPing_TX();
+            sendPing_TX(
+                recipient_id,
+                sender_id,
+                message_type,
+                message_id,
+                message_att,
+                date_sent,
+                time_sent
+            );
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
         }
     }
@@ -79,7 +88,7 @@ namespace Earendil_Radio {
             "vRadio_Listen_RX",                             // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
-            2,                                              // Real-time task priority
+            1,                                              // Real-time task priority
             task_handle_ptr                                 // Task handle
         );
         vTaskCoreAffinitySet(*task_handle_ptr, 1 << 
@@ -94,7 +103,7 @@ namespace Earendil_Radio {
             xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
             listen_RX();
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            vTaskDelay(pdMS_TO_TICKS(500));
         }
     }
 

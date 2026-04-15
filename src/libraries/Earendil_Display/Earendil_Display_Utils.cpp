@@ -4,7 +4,7 @@ namespace Earendil_Display {
     
     Adafruit_GC9A01A display = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 
-    ACTIVE_UI active_ui = NAVIGATION_UI;
+    ACTIVE_UI active_ui;
     
     void setup(){
         setupMenuButtons();
@@ -17,6 +17,8 @@ namespace Earendil_Display {
         display.fillScreen(GC9A01A_RED);
         display.setCursor(120, 120);
         display.setTextColor(GC9A01A_WHITE);
+
+        active_ui = NAVIGATION_UI;
     }
     
     void setupMenuButtons(void){
