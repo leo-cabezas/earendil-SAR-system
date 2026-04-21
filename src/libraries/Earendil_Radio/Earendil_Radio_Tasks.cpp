@@ -17,14 +17,14 @@ namespace Earendil_Radio {
     }
     
     void createTasks(void){
-        createTask_vRadio_Ping_TX();
-        // createTask_vRadio_Listen_RX();
+        // createTask_vRadio_Ping_TX();
+        createTask_vRadio_Listen_RX();
     }
 
     // =======================================================================================
     // vRadio_Ping_TX
     // =======================================================================================
-
+    
     // MAYBE CALL IT RADIO_MANUALPING_TX INSTEAD???????????????????????''
     void createTask_vRadio_Ping_TX(void){
         TaskHandle_t* task_handle_ptr = &Earendil_Handles->Radio_Handles.task_vRadio_Ping_TX;
@@ -33,7 +33,7 @@ namespace Earendil_Radio {
             "vRadio_Ping_TX",                               // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
-            2,                                              // Real-time task priority
+            4,                                              // Real-time task priority
             task_handle_ptr                                 // Task handle
         );
         vTaskCoreAffinitySet(*task_handle_ptr, 1 << 
@@ -44,26 +44,24 @@ namespace Earendil_Radio {
     void vRadio_Ping_TX(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
-        uint16_t recipient_id;
-        uint16_t sender_id;
-        uint16_t message_type;
-        uint16_t message_id;
-        uint16_t message_att;
-        uint32_t date_sent;
-        uint32_t time_sent;
+        uint16_t recipient_id   = 1;
+        uint16_t sender_id      = 0;
+        uint16_t message_type   = 1;
+        uint16_t message_id     = 0;
+        uint16_t message_att    = 0;
+        uint32_t date_sent      = 20260420;
+        uint32_t time_sent      = 1488;
 
         while (1){
-            ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+            // ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // COMMENT OUT FOR CONTINUOUS PING TEST
 
-            recipient_id   = 1488;
-            sender_id      = 1313;
-            message_type   = 1;
-            message_id     = 0;
-            message_att    = 0;
-            date_sent      = 1234;
-            time_sent      = 5678;
+            // recipient_id   = 1488;
+            // message_type   = 1;
+            // message_id     = 0;
+            message_att    += 1;
+            date_sent      = 20260420;
+            time_sent      = 1488;
 
-            xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
             sendPing_TX(
                 recipient_id,
                 sender_id,
@@ -73,12 +71,13 @@ namespace Earendil_Radio {
                 date_sent,
                 time_sent
             );
-            xSemaphoreGive(Earendil_Mutexes->spi_mutex);
+
+            vTaskDelay(pdMS_TO_TICKS(2000)); // FOR TESTING ONLY
         }
     }
 
     // =======================================================================================
-    // vRadio_Ping_TX
+    // vRadio_Listen_RX
     // =======================================================================================
 
     void createTask_vRadio_Listen_RX(void){
@@ -86,13 +85,13 @@ namespace Earendil_Radio {
         xTaskCreate(
             vRadio_Listen_RX,                               // Task function
             "vRadio_Listen_RX",                             // Task name (for debugging)
-            512,                                            // Task stack depth (in words, NOT bytes!)
+            1024,                                           // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
-            1,                                              // Real-time task priority
+            3,                                              // Real-time task priority
             task_handle_ptr                                 // Task handle
         );
         vTaskCoreAffinitySet(*task_handle_ptr, 1 << 
-            0                                               // Assigned core (options: 0, 1)
+            1                                               // Assigned core (options: 0, 1)
         );
     }
 
@@ -100,10 +99,8 @@ namespace Earendil_Radio {
         (void)pvParameters;     // Parameters unused.
 
         while (1){
-            xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
             listen_RX();
-            xSemaphoreGive(Earendil_Mutexes->spi_mutex);
-            vTaskDelay(pdMS_TO_TICKS(500));
+            vTaskDelay(pdMS_TO_TICKS(50));
         }
     }
 

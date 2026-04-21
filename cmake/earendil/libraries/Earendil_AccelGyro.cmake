@@ -18,10 +18,11 @@
 include_guard()
 
 add_library(Earendil_AccelGyro STATIC
-        ./src/libraries/Earendil_AccelGyro/Earendil_AccelGyro.cpp
+        ./src/libraries/Earendil_AccelGyro/Earendil_AccelGyro_Tasks.cpp
+        ./src/libraries/Earendil_AccelGyro/Earendil_AccelGyro_Utils.cpp
 )
 target_compile_definitions(Earendil_AccelGyro PUBLIC
-        EARENDIL_ACCELGYRO_ENABLED      # Compile definition to enable Earendil_GPS within the source code.
+        EARENDIL_ACCELGYRO_ENABLED      # Compile definition to enable Earendil_AccelGyro within the source code.
 ) 
 target_link_libraries(Earendil_AccelGyro PUBLIC # Link all pico-sdk / FreeRTOS-Kernel dependencies.
         FreeRTOS-Kernel
@@ -32,6 +33,7 @@ target_link_libraries(Earendil_AccelGyro PUBLIC # Link all non-(pico-sdk / FreeR
         # cmake/earendil/core
         Earendil_TaskHandles
         Earendil_SharedData
+        Earendil_Mutexes
         # cmake/earendil/libraries
         Adafruit_LSM6DS
 )

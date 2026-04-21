@@ -18,7 +18,7 @@ namespace Earendil_Display {
         display.setCursor(120, 120);
         display.setTextColor(GC9A01A_WHITE);
 
-        active_ui = NAVIGATION_UI;
+        active_ui = TESTING_UI;
     }
     
     void setupMenuButtons(void){
@@ -194,7 +194,11 @@ namespace Earendil_Display {
         
         // BUTTON 1 PRESSED
         if (gpio_get(BUTTON1) == 0){
-            request_sendPing_TX();
+            if (active_ui == TESTING_UI){
+                active_ui = MENU_UI;
+            } else {
+                active_ui = TESTING_UI;
+            }
             while (gpio_get(BUTTON1) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON1, GPIO_IRQ_EDGE_FALL, true);
@@ -310,4 +314,74 @@ namespace Earendil_Display {
         }
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, true);
     }
-}
+
+    // =================================== TESTING STUFF =============================================
+    
+    constexpr double EARTH_RADIUS = 6371008.8;
+
+    void getBearingToNode(double& bearing_to_node_deg){
+        // SIMPLIFY MATH TO REMOVE AS MANY EARTH_RADIUS TERMS FROM THE CALCULATION AS POSSIBLE.
+        double handheld_latitude_rad    = Earendil_Data->GPS_Data.latitude_rad;
+        double handheld_longitude_rad   = Earendil_Data->GPS_Data.longitude_rad;
+        double node_latitude_rad        = Earendil_Data->Radio_Data.rx_latitude_rad;
+        double node_longitude_rad       = Earendil_Data->Radio_Data.rx_longitude_rad;
+
+        double handheld_X   = EARTH_RADIUS * cos(handheld_latitude_rad) * cos(handheld_longitude_rad);
+        double handheld_Y   = EARTH_RADIUS * cos(handheld_latitude_rad) * sin(handheld_longitude_rad);
+        double handheld_Z   = EARTH_RADIUS * sin(handheld_latitude_rad);
+        double node_X       = EARTH_RADIUS * cos(node_latitude_rad) * cos(node_longitude_rad);
+        double node_Y       = EARTH_RADIUS * cos(node_latitude_rad) * sin(node_longitude_rad);
+        double node_Z       = EARTH_RADIUS * sin(node_latitude_rad);
+
+        double Hx_sqr   = handheld_X * handheld_X;
+        double Hy_sqr   = handheld_Y * handheld_Y;
+        double Hz_sqr   = handheld_Z * handheld_Z;
+        double HxNx     = handheld_X * node_X;
+        double HyNy     = handheld_Y * node_Y;
+        double HzNz     = handheld_Z * node_Z;
+
+        double mag_north_vec_X = (-1) * EARTH_RADIUS * handheld_X * handheld_Z;
+        double mag_north_vec_Y = (-1) * EARTH_RADIUS * handheld_Y * handheld_Z;
+        double mag_north_vec_Z = EARTH_RADIUS * (Hx_sqr + Hy_sqr);
+        double mag_north_vec_mag = sqrt(pow(mag_north_vec_X, 2) + pow(mag_north_vec_Y, 2) + pow(mag_north_vec_Z, 2));
+
+        double bearing_vec_X = node_X * (Hy_sqr + Hz_sqr) - handheld_X * (HyNy + HzNz); 
+        double bearing_vec_Y = node_Y * (Hx_sqr + Hz_sqr) - handheld_Y * (HxNx + HzNz);
+        double bearing_vec_Z = node_Z * (Hx_sqr + Hy_sqr) - handheld_Z * (HxNx + HyNy);
+        double bearing_vec_mag = sqrt(pow(bearing_vec_X, 2) + pow(bearing_vec_Y, 2) + pow(bearing_vec_Z, 2));
+
+        double dot_product = mag_north_vec_X * bearing_vec_X + mag_north_vec_Y * bearing_vec_Y + mag_north_vec_Z * bearing_vec_Z;
+        bearing_to_node_deg = acos(dot_product / (mag_north_vec_mag * bearing_vec_mag)) * (180.0 / M_PI);
+    }
+
+    void drawTesting(){
+        uint8_t init_y = 40;
+        uint8_t x = 40;
+        uint8_t y = init_y;
+        
+        display.fillRect(x, init_y, 180, 150, GC9A01A_BLACK);
+
+        display.setTextColor(GC9A01A_WHITE);
+        display.setTextSize(3);
+        
+        display.setCursor(x, y);
+        display.print(Earendil_Data->GPS_Data.latitude_deg, 6);
+        y += 30;
+        display.setCursor(x, y);
+        display.print(Earendil_Data->GPS_Data.longitude_deg, 6);
+        y += 30;
+        display.setCursor(x, y);
+        display.print(Earendil_Data->Radio_Data.rx_latitude_deg, 6);
+        y += 30;
+        display.setCursor(x, y);
+        display.print(Earendil_Data->Radio_Data.rx_longitude_deg, 6);
+
+        
+        double bearing_to_node_deg;
+        getBearingToNode(bearing_to_node_deg);
+        y+= 30;
+        display.setCursor(x, y);
+        display.print(bearing_to_node_deg, 6);
+    }
+
+} 

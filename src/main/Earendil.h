@@ -1,9 +1,5 @@
 #pragma once
 
-// TEMPORARY !!!!!!!!!!!!!!!!!!!!!!!!!!
-#include <cstdio>   // Probably not needed here. Just in case.
-#include <string>
-
 // FreeRTOS libraries
 #include <FreeRTOS.h>
 #include <task.h>

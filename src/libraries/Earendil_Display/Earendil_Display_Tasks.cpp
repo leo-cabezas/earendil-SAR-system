@@ -50,12 +50,16 @@ namespace Earendil_Display {
                 case NAVIGATION_UI:
                     displayNav();
                     break;
-                case MENU_UI:
+                case MENU_UI:     
                     drawMenu();
+                    break;
+                
+                case TESTING_UI:
+                    drawTesting();
                     break;
             }
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
-            vTaskDelay(pdMS_TO_TICKS(50));
+            vTaskDelay(pdMS_TO_TICKS(2000));
         }
     }
 
@@ -70,7 +74,7 @@ namespace Earendil_Display {
             "vDisplay_Controls",                            // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
-            1,                                              // Real-time task priority
+            2,                                              // Real-time task priority
             task_handle_ptr                                 // Task handle
         );
         vTaskCoreAffinitySet(*task_handle_ptr, 1 << 
@@ -87,6 +91,10 @@ namespace Earendil_Display {
                     controlNav();
                     break;
                 case MENU_UI:
+                    menuControl();
+                    break;
+                
+                case TESTING_UI:
                     menuControl();
                     break;
             }

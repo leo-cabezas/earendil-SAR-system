@@ -83,8 +83,9 @@ namespace Earendil_Display {
     extern Adafruit_GC9A01A display;
 
     typedef enum {
-        NAVIGATION_UI = 0,
-        MENU_UI = 1
+        NAVIGATION_UI   = 0,
+        MENU_UI         = 1,
+        TESTING_UI      = 2
     } ACTIVE_UI;
     extern ACTIVE_UI active_ui;
 
@@ -112,6 +113,9 @@ namespace Earendil_Display {
     void drawNotch(void);
     void controlNav(void);
     void displayNav(void);
+
+    // Testing stuff.
+    void drawTesting(void);
 }
 
 

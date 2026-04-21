@@ -33,6 +33,7 @@ target_link_libraries(Earendil_Magnetometer PUBLIC      # Link all non-(pico-sdk
         # cmake/earendil/core
         Earendil_TaskHandles
         Earendil_SharedData
+        Earendil_Mutexes
         # cmake/earendil/libraries
         Adafruit_MMC56x3
 )

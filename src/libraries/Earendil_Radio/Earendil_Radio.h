@@ -7,7 +7,7 @@
 
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
-// #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
+#include <pico/multicore.h>     // Enable as needed. Not needed at the moment
 
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <RH_RF95.h>            // RadioHead library.
@@ -18,6 +18,7 @@
 #include <Earendil_Mutexes.h>
 
 // --- OTHER DEPENDENCIES ---
+#include <cstdint>
 #include <vector>
 
 // --- RADIO TRANSCEIVER PINOUT CONFIGURATION ---
@@ -57,7 +58,7 @@ namespace Earendil_Radio {
         PING_REQUEST,
         PING_REQUEST_ACK,
         DATA_REQUEST_GPS,
-        DATA_FULFILL_GPS_ACK
+        DATA_FULFILL_GPS
     };
     */
 
@@ -107,4 +108,15 @@ namespace Earendil_Radio {
         uint32_t&                   time_sent
     );
 
+    void encodeGPSData(
+        std::vector<uint8_t>&   data,
+        double                  latitude_rad,
+        double                  longitude_rad
+    );
+
+    void decodeGPSData(
+        const std::vector<uint8_t>& data,
+        double&                     latitude_rad,
+        double&                     longitude_rad
+    );
 }

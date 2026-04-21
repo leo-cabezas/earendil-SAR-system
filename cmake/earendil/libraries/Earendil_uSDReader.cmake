@@ -18,7 +18,8 @@
 include_guard()
 
 add_library(Earendil_uSDReader STATIC
-        ./src/libraries/Earendil_uSDReader/Earendil_uSDReader.cpp
+        ./src/libraries/Earendil_uSDReader/Earendil_uSDReader_Tasks.cpp
+        ./src/libraries/Earendil_uSDReader/Earendil_uSDReader_Utils.cpp
 )
 target_compile_definitions(Earendil_uSDReader PUBLIC
         EARENDIL_USDREADER_ENABLED       # Compile definition to enable Earendil_Radio within the source code.
@@ -32,6 +33,7 @@ target_link_libraries(Earendil_uSDReader PUBLIC # Link all non-(pico-sdk / FreeR
         # cmake/earendil/core
         Earendil_TaskHandles
         Earendil_SharedData
+        Earendil_Mutexes
         # cmake/earendil/libraries
         SdFat
 )

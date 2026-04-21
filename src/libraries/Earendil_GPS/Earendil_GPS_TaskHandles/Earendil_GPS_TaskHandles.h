@@ -6,6 +6,6 @@
 
 namespace Earendil_GPS {
     typedef struct GPS_TaskHandles {
-        
+        TaskHandle_t task_vGPS_UpdateData;
     } GPS_TaskHandles_t;
 }

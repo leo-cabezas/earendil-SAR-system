@@ -2,6 +2,10 @@
 
 namespace Earendil_Radio {
     typedef struct Radio_SharedData {
+        double rx_latitude_rad;
+        double rx_longitude_rad;
         
+        double rx_latitude_deg;
+        double rx_longitude_deg;
     } Radio_SharedData_t;
 }

@@ -2,11 +2,12 @@
 
 namespace Earendil_GPS {
     typedef struct GPS_SharedData {
-        float       latitude_deg;  // Positive = N, Negative = S
-        float       latitude_rad;
-        float       longitude_deg; // Positive = E, Negative = W
-        float       longitude_rad;
+        double      latitude_rad;
+        double      longitude_rad;
 
+        double      latitude_deg;  // Positive = N, Negative = S
+        double      longitude_deg; // Positive = E, Negative = W
+        
         uint16_t    year;
         uint8_t     month;
         uint8_t     day;

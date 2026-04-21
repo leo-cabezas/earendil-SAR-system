@@ -19,7 +19,8 @@
 include_guard()
 
 add_library(Earendil_Altimeter STATIC
-        ./src/libraries/Earendil_Altimeter/Earendil_Altimeter.cpp
+        ./src/libraries/Earendil_Altimeter/Earendil_Altimeter_Tasks.cpp
+        ./src/libraries/Earendil_Altimeter/Earendil_Altimeter_Utils.cpp
 )
 target_compile_definitions(Earendil_Altimeter PUBLIC
         EARENDIL_ALTIMETER_ENABLED      # Compile definition to enable Earendil_Altimeter within the source code.
@@ -33,6 +34,7 @@ target_link_libraries(Earendil_Altimeter PUBLIC # Link all non-(pico-sdk / FreeR
         # cmake/earendil/core
         Earendil_TaskHandles
         Earendil_SharedData
+        Earendil_Mutexes
         # cmake/earendil/libraries
         Adafruit_BMP3XX
 )

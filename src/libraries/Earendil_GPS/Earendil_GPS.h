@@ -7,18 +7,21 @@
 
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
-// #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
+#include <pico/multicore.h>     // Enable as needed. Not needed at the moment
 
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_GPS.h>       // Adafruit_GPS library.
-#include <Earendil_Utils.h>
 
 // --- DEPENDENCIES // EARENDIL LIBRARIES ---
 #include <Earendil_TaskHandles.h>
 #include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
 
-#define GPSSerial Serial1
-#define GPSECHO false
+// --- OTHER DEPENDENCIES ---
+#include <cmath>
+
+#define GPSSerial   Serial1
+#define GPSECHO     false
 
 /*
 extern SemaphoreHandle_t gpsDataMutex;
@@ -30,23 +33,27 @@ namespace Earendil_GPS {
     // --------------------------------- TASKS ---------------------------------
     extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
     extern Earendil::Earendil_SharedData_t*     Earendil_Data;
+    extern Earendil::Earendil_Mutexes_t*        Earendil_Mutexes;
     
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     );
+    
     void createTasks(void);
 
-    // void createTask_vGPS_(void);
-    // void vGPS_(void* pvParameters);
+    void createTask_vGPS_UpdateData(void);
+    void vGPS_UpdateData(void* pvParameters);
 
     // --------------------------------- UTILS ---------------------------------
-    extern Adafruit_GC9A01A display;
+    extern Adafruit_GPS gps;
 
     void setup(void);
     
-    
-    // void vGPS(void* pvParameters);
+    void setupGPS(void);
+
+    void gpsUpdate(void);
 
     // void vGPSTX(void* pvParameters);
 

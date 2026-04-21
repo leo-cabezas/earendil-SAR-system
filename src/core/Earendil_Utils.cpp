@@ -1,6 +1,6 @@
 #include <Earendil_Utils.h>
 
-//GPS Data structs for use in the final distance calculations. Specific tasks can write to them then the calculator function can read from them.
+// GPS Data structs for use in the final distance calculations. Specific tasks can write to them then the calculator function can read from them.
 GPSData_t GPS_Handheld;
 GPSData_t GPS_Node;
 
@@ -87,12 +87,12 @@ void getBearingToNode(double& bearing_to_node_deg){
     double node_latitude_rad = 0.9;
     double node_longitude_rad = 0.2;
 
-    double handheld_X   = EARTH_RADIUS * sin(handheld_latitude_rad) * cos(handheld_longitude_rad);
-    double handheld_Y   = EARTH_RADIUS * sin(handheld_latitude_rad) * sin(handheld_longitude_rad);
-    double handheld_Z   = EARTH_RADIUS * cos(handheld_latitude_rad);
-    double node_X       = EARTH_RADIUS * sin(node_latitude_rad) * cos(node_longitude_rad);
-    double node_Y       = EARTH_RADIUS * sin(node_latitude_rad) * sin(node_longitude_rad);
-    double node_Z       = EARTH_RADIUS * cos(node_latitude_rad);
+    double handheld_X   = EARTH_RADIUS * cos(handheld_latitude_rad) * cos(handheld_longitude_rad);
+    double handheld_Y   = EARTH_RADIUS * cos(handheld_latitude_rad) * sin(handheld_longitude_rad);
+    double handheld_Z   = EARTH_RADIUS * sin(handheld_latitude_rad);
+    double node_X       = EARTH_RADIUS * cos(node_latitude_rad) * cos(node_longitude_rad);
+    double node_Y       = EARTH_RADIUS * cos(node_latitude_rad) * sin(node_longitude_rad);
+    double node_Z       = EARTH_RADIUS * sin(node_latitude_rad);
     
     double Hx_sqr   = handheld_X * handheld_X;
     double Hy_sqr   = handheld_Y * handheld_Y;
