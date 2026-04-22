@@ -80,39 +80,49 @@ void updateDistance(float& distance){    // Is float enough precision?
     */
 }
 
-void getBearingToNode(double& bearing_to_node_deg){
-    // Need to take into account latitude difference w.r.t. spherical coordinates.
-    double handheld_latitude_rad = 0.6;
-    double handheld_longitude_rad = 6.2;
-    double node_latitude_rad = 0.9;
-    double node_longitude_rad = 0.2;
-
-    double handheld_X   = EARTH_RADIUS * cos(handheld_latitude_rad) * cos(handheld_longitude_rad);
-    double handheld_Y   = EARTH_RADIUS * cos(handheld_latitude_rad) * sin(handheld_longitude_rad);
-    double handheld_Z   = EARTH_RADIUS * sin(handheld_latitude_rad);
-    double node_X       = EARTH_RADIUS * cos(node_latitude_rad) * cos(node_longitude_rad);
-    double node_Y       = EARTH_RADIUS * cos(node_latitude_rad) * sin(node_longitude_rad);
-    double node_Z       = EARTH_RADIUS * sin(node_latitude_rad);
+void getBearingToNode(
+    double& bearing_to_node_deg,
+    double  handheld_latitude_rad,
+    double  handheld_longitude_rad,
+    double  node_latitude_rad,
+    double  node_longitude_rad
+){
+    double handheld_X   = cos(handheld_latitude_rad) * cos(handheld_longitude_rad);
+    double handheld_Y   = cos(handheld_latitude_rad) * sin(handheld_longitude_rad);
+    double handheld_Z   = sin(handheld_latitude_rad);
     
+    double node_X       = cos(node_latitude_rad) * cos(node_longitude_rad);
+    double node_Y       = cos(node_latitude_rad) * sin(node_longitude_rad);
+    double node_Z       = sin(node_latitude_rad);
+
     double Hx_sqr   = handheld_X * handheld_X;
     double Hy_sqr   = handheld_Y * handheld_Y;
     double Hz_sqr   = handheld_Z * handheld_Z;
     double HxNx     = handheld_X * node_X;
     double HyNy     = handheld_Y * node_Y;
     double HzNz     = handheld_Z * node_Z;
-    
-    double mag_north_vec_X = (-1) * EARTH_RADIUS * handheld_X * handheld_Z;
-    double mag_north_vec_Y = (-1) * EARTH_RADIUS * handheld_Y * handheld_Z;
-    double mag_north_vec_Z = EARTH_RADIUS * (Hx_sqr + Hy_sqr);
-    double mag_north_vec_mag = sqrt(pow(mag_north_vec_X, 2) + pow(mag_north_vec_Y, 2) + pow(mag_north_vec_Z, 2));
+
+    double mag_north_vec_X = (-1) * handheld_X * handheld_Z;
+    double mag_north_vec_Y = (-1) * handheld_Y * handheld_Z;
+    double mag_north_vec_Z = (Hx_sqr + Hy_sqr);
 
     double bearing_vec_X = node_X * (Hy_sqr + Hz_sqr) - handheld_X * (HyNy + HzNz); 
     double bearing_vec_Y = node_Y * (Hx_sqr + Hz_sqr) - handheld_Y * (HxNx + HzNz);
     double bearing_vec_Z = node_Z * (Hx_sqr + Hy_sqr) - handheld_Z * (HxNx + HyNy);
-    double bearing_vec_mag = sqrt(pow(bearing_vec_X, 2) + pow(bearing_vec_Y, 2) + pow(bearing_vec_Z, 2));
     
-    double dot_product = mag_north_vec_X * bearing_vec_X + mag_north_vec_Y * bearing_vec_Y + mag_north_vec_Z * bearing_vec_Z;
-    bearing_to_node_deg = acos(dot_product / (mag_north_vec_mag * bearing_vec_mag)) * (180.0 / M_PI);
+    double B_dot_M = mag_north_vec_X * bearing_vec_X + mag_north_vec_Y * bearing_vec_Y + mag_north_vec_Z * bearing_vec_Z;
+    
+    double B_cross_M_X = (bearing_vec_Y * mag_north_vec_Z - bearing_vec_Z * mag_north_vec_Y);
+    double B_cross_M_Y = (bearing_vec_Z * mag_north_vec_X - bearing_vec_X * mag_north_vec_Z);
+    double B_cross_M_Z = (bearing_vec_X * mag_north_vec_Y - bearing_vec_Y * mag_north_vec_X);
+    
+    double normal_X = handheld_X;
+    double normal_Y = handheld_Y;
+    double normal_Z = handheld_Z;
+    
+    double BxM_dot_N = B_cross_M_X * normal_X + B_cross_M_Y * normal_Y + B_cross_M_Z * normal_Z;
+    
+    bearing_to_node_deg = atan2(BxM_dot_N, B_dot_M) * (180.0 / M_PI);
 }
 
 void vGPSRXUtility(void* pvParameters){

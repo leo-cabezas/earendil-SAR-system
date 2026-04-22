@@ -316,22 +316,21 @@ namespace Earendil_Display {
     }
 
     // =================================== TESTING STUFF =============================================
-    
-    constexpr double EARTH_RADIUS = 6371008.8;
 
-    void getBearingToNode(double& bearing_to_node_deg){
-        // SIMPLIFY MATH TO REMOVE AS MANY EARTH_RADIUS TERMS FROM THE CALCULATION AS POSSIBLE.
-        double handheld_latitude_rad    = Earendil_Data->GPS_Data.latitude_rad;
-        double handheld_longitude_rad   = Earendil_Data->GPS_Data.longitude_rad;
-        double node_latitude_rad        = Earendil_Data->Radio_Data.rx_latitude_rad;
-        double node_longitude_rad       = Earendil_Data->Radio_Data.rx_longitude_rad;
-
-        double handheld_X   = EARTH_RADIUS * cos(handheld_latitude_rad) * cos(handheld_longitude_rad);
-        double handheld_Y   = EARTH_RADIUS * cos(handheld_latitude_rad) * sin(handheld_longitude_rad);
-        double handheld_Z   = EARTH_RADIUS * sin(handheld_latitude_rad);
-        double node_X       = EARTH_RADIUS * cos(node_latitude_rad) * cos(node_longitude_rad);
-        double node_Y       = EARTH_RADIUS * cos(node_latitude_rad) * sin(node_longitude_rad);
-        double node_Z       = EARTH_RADIUS * sin(node_latitude_rad);
+    void getBearingToNode(
+        double& bearing_to_node_deg,
+        double  handheld_latitude_rad,
+        double  handheld_longitude_rad,
+        double  node_latitude_rad,
+        double  node_longitude_rad
+    ){
+        double handheld_X   = cos(handheld_latitude_rad) * cos(handheld_longitude_rad);
+        double handheld_Y   = cos(handheld_latitude_rad) * sin(handheld_longitude_rad);
+        double handheld_Z   = sin(handheld_latitude_rad);
+        
+        double node_X       = cos(node_latitude_rad) * cos(node_longitude_rad);
+        double node_Y       = cos(node_latitude_rad) * sin(node_longitude_rad);
+        double node_Z       = sin(node_latitude_rad);
 
         double Hx_sqr   = handheld_X * handheld_X;
         double Hy_sqr   = handheld_Y * handheld_Y;
@@ -340,18 +339,27 @@ namespace Earendil_Display {
         double HyNy     = handheld_Y * node_Y;
         double HzNz     = handheld_Z * node_Z;
 
-        double mag_north_vec_X = (-1) * EARTH_RADIUS * handheld_X * handheld_Z;
-        double mag_north_vec_Y = (-1) * EARTH_RADIUS * handheld_Y * handheld_Z;
-        double mag_north_vec_Z = EARTH_RADIUS * (Hx_sqr + Hy_sqr);
-        double mag_north_vec_mag = sqrt(pow(mag_north_vec_X, 2) + pow(mag_north_vec_Y, 2) + pow(mag_north_vec_Z, 2));
+        double mag_north_vec_X = (-1) * handheld_X * handheld_Z;
+        double mag_north_vec_Y = (-1) * handheld_Y * handheld_Z;
+        double mag_north_vec_Z = (Hx_sqr + Hy_sqr);
 
         double bearing_vec_X = node_X * (Hy_sqr + Hz_sqr) - handheld_X * (HyNy + HzNz); 
         double bearing_vec_Y = node_Y * (Hx_sqr + Hz_sqr) - handheld_Y * (HxNx + HzNz);
         double bearing_vec_Z = node_Z * (Hx_sqr + Hy_sqr) - handheld_Z * (HxNx + HyNy);
-        double bearing_vec_mag = sqrt(pow(bearing_vec_X, 2) + pow(bearing_vec_Y, 2) + pow(bearing_vec_Z, 2));
-
-        double dot_product = mag_north_vec_X * bearing_vec_X + mag_north_vec_Y * bearing_vec_Y + mag_north_vec_Z * bearing_vec_Z;
-        bearing_to_node_deg = acos(dot_product / (mag_north_vec_mag * bearing_vec_mag)) * (180.0 / M_PI);
+        
+        double B_dot_M = mag_north_vec_X * bearing_vec_X + mag_north_vec_Y * bearing_vec_Y + mag_north_vec_Z * bearing_vec_Z;
+        
+        double B_cross_M_X = (bearing_vec_Y * mag_north_vec_Z - bearing_vec_Z * mag_north_vec_Y);
+        double B_cross_M_Y = (bearing_vec_Z * mag_north_vec_X - bearing_vec_X * mag_north_vec_Z);
+        double B_cross_M_Z = (bearing_vec_X * mag_north_vec_Y - bearing_vec_Y * mag_north_vec_X);
+        
+        double normal_X = handheld_X;
+        double normal_Y = handheld_Y;
+        double normal_Z = handheld_Z;
+        
+        double BxM_dot_N = B_cross_M_X * normal_X + B_cross_M_Y * normal_Y + B_cross_M_Z * normal_Z;
+        
+        bearing_to_node_deg = atan2(BxM_dot_N, B_dot_M) * (180.0 / M_PI);
     }
 
     void drawTesting(){
@@ -359,26 +367,38 @@ namespace Earendil_Display {
         uint8_t x = 40;
         uint8_t y = init_y;
         
+        double handheld_latitude_rad    = Earendil_Data->GPS_Data.latitude_rad;
+        double handheld_longitude_rad   = Earendil_Data->GPS_Data.longitude_rad;
+        double node_latitude_rad        = Earendil_Data->Radio_Data.rx_latitude_rad;
+        double node_longitude_rad       = Earendil_Data->Radio_Data.rx_longitude_rad;
+
+        double bearing_to_node_deg = 0;
+        getBearingToNode(
+            bearing_to_node_deg,
+            handheld_latitude_rad,
+            handheld_longitude_rad,
+            node_latitude_rad,
+            node_longitude_rad
+        );
+
         display.fillRect(x, init_y, 180, 150, GC9A01A_BLACK);
 
         display.setTextColor(GC9A01A_WHITE);
         display.setTextSize(3);
         
         display.setCursor(x, y);
-        display.print(Earendil_Data->GPS_Data.latitude_deg, 6);
+        display.print(handheld_latitude_rad, 6);
         y += 30;
         display.setCursor(x, y);
-        display.print(Earendil_Data->GPS_Data.longitude_deg, 6);
-        y += 30;
-        display.setCursor(x, y);
-        display.print(Earendil_Data->Radio_Data.rx_latitude_deg, 6);
-        y += 30;
-        display.setCursor(x, y);
-        display.print(Earendil_Data->Radio_Data.rx_longitude_deg, 6);
+        display.print(handheld_longitude_rad, 6);
 
-        
-        double bearing_to_node_deg;
-        getBearingToNode(bearing_to_node_deg);
+        y += 30;
+        display.setCursor(x, y);
+        display.print(node_latitude_rad, 6);
+        y += 30;
+        display.setCursor(x, y);
+        display.print(node_longitude_rad, 6);
+
         y+= 30;
         display.setCursor(x, y);
         display.print(bearing_to_node_deg, 6);
