@@ -15,7 +15,7 @@ namespace Earendil_Magnetometer {
 
     void createTasks(void){
         createTask_vMagnetometer_UpdateHeading();
-        // createTask_vMagnetometer_Calibrate();
+        createTask_vMagnetometer_Calibrate();
     }
 
     // =======================================================================================
@@ -55,9 +55,10 @@ namespace Earendil_Magnetometer {
             //puts(buf);
 
             //Earendil_Data->Magnetometer_Data.heading = getHeading(raw);
+            updateFilter(raw);
             float calibrated[3];
             applyCalibration(calibrated);
-            Earendil_Data->Magnetometer_Data.heading = getHeading(raw);
+            Earendil_Data->Magnetometer_Data.heading = getHeading(calibrated);
 
             vTaskDelay(pdMS_TO_TICKS(50));
         }
@@ -89,7 +90,7 @@ namespace Earendil_Magnetometer {
         while (1){
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
             calibrateMagnetometer();
-            xTaskNotify(Earendil_Handles->Display_Handles.task_vDisplay_Controls, 0, eSetBits);
+            xTaskNotifyGive(Earendil_Handles->Display_Handles.task_vDisplay_Controls);
         }
     }
 }

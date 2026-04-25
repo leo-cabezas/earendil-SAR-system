@@ -26,10 +26,17 @@ namespace Earendil_Magnetometer {
     float hard_min[3] = {9999, 9999, 9999}; //min raw values for hard iron calibration
     float hard_max[3] = {-9999, -9999, -9999}; //max raw values for hard iron calibration
     float hard_iron[3] = {0.0, 0.0, 0.0}; //finall hard iron offset values
-    float scale[3] = {1.0, 1.0, 1.0}; //this is the soft iron scaling factor
     float filtered[3] = {0.0, 0.0, 0.0}; //this is the filtered magnetometer values
     bool filter_initted = false; //flag to make sure the filter isnt being biased too low
   };
+
+
+  const float SOFT_IRON[3][3] = //soft iron hard coded values
+    {
+      {0.0, 0.0, 0.0},
+      {0.0, 0.0, 0.0},
+      {0.0, 0.0, 0.0}
+    };
 
   Magmeter magmeter;
 
@@ -54,19 +61,6 @@ namespace Earendil_Magnetometer {
     }
   }
 
-  void computeSoftIron(){
-    float radius[3]; //array to hold the x,y,z radius
-    for (int i = 0; i < 3; i++){
-      radius[i] = (magmeter.hard_max[i] - magmeter.hard_min[i]) / 2.0; //use the hard max and min and divide by 2 to find the radius
-    }
-
-    float avg_radius = (radius[0] + radius[1] + radius[2]) / 3.0; //average out the x, y and z radii
-
-    for (int i = 0; i < 3; i++){
-      if (radius[i] != 0) magmeter.scale[i] = avg_radius / radius[i]; //change out the radius scale if its not 0 to prevent the value from killing the scale factor
-    }
-  }
-
 
   void calibrateMagnetometer(){
     constexpr uint32_t NUMBER_SAMPLES = 100;
@@ -84,16 +78,28 @@ namespace Earendil_Magnetometer {
     for (int i = 0; i < 3; i++){
       magmeter.hard_iron[i] = (magmeter.hard_max[i] + magmeter.hard_min[i]) / 2.0;  //Computes the hard iron calibration by averaging the max and min to find the midpoint between the two
     }
-    computeSoftIron(); //call the soft iron calibrator
   }
 
-  void applyCalibration(float calibrated[3]){
-    for (int i = 0; i < 3; i++){
-      float no_hard = magmeter.filtered[i] - magmeter.hard_iron[i]; //subtract by the hard iron calibration scale
-      calibrated[i] = no_hard;//scale by the soft iron calibration factor * magmeter.scale[i];
-    }
+
+void applyCalibration(float calibrated[3]) {
+  float temp[3];
+
+  for (int i = 0; i < 3; i++) //removes the hard iron
+  {
+    temp[i] = magmeter.filtered[i] - magmeter.hard_iron[i];
   }
+
+  // Step 2: apply soft iron matrix
+  for (int i = 0; i < 3; i++)
+  {
+    calibrated[i] = 
+      SOFT_IRON[i][0] * temp[0] +
+      SOFT_IRON[i][1] * temp[1] +
+      SOFT_IRON[i][2] * temp[2];
+  }
+}
   
+
   void printData(float heading){
     Serial.print("Heading: "); //label for the heading
     Serial.println(heading, 2); //prints out the actual heading
