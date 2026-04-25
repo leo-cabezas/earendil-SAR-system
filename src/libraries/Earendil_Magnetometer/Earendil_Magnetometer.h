@@ -15,6 +15,7 @@
 // --- DEPENDENCIES // EARENDIL LIBRARIES ---
 #include <Earendil_TaskHandles.h>
 #include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
 
 // --- OTHER DEPENDENCIES ---
 #include <cmath>
@@ -27,7 +28,8 @@ namespace Earendil_Magnetometer {
 
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     );
     void createTasks(void);
 

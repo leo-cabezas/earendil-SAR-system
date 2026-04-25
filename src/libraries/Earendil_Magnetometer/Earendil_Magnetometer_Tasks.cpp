@@ -7,8 +7,10 @@ namespace Earendil_Magnetometer {
 
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
-    ){
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
+    )
+    {
         Earendil_Handles    = global_Earendil_Handles;
         Earendil_Data       = global_Earendil_Data;
     }
