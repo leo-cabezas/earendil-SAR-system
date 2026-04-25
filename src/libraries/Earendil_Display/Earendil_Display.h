@@ -85,7 +85,7 @@ namespace Earendil_Display {
     typedef enum {
         NAVIGATION_UI   = 0,
         MENU_UI         = 1,
-        TESTING_UI      = 2
+        TESTING_UI      = 2,
         CALIBRATING_UI  = 3
     } ACTIVE_UI;
     extern ACTIVE_UI active_ui;
