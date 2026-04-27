@@ -15,6 +15,7 @@
 // --- DEPENDENCIES // EARENDIL LIBRARIES ---
 #include <Earendil_TaskHandles.h>
 #include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
 
 // --- OTHER DEPENDENCIES ---
 #include <cmath>
@@ -24,11 +25,14 @@ namespace Earendil_Magnetometer {
     // --------------------------------- TASKS ---------------------------------
     extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
     extern Earendil::Earendil_SharedData_t*     Earendil_Data;
-
+    extern Earendil::Earendil_Mutexes_t*        Earendil_Mutexes;
+    
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     );
+
     void createTasks(void);
 
     void createTask_vMagnetometer_UpdateHeading(void);
@@ -44,10 +48,10 @@ namespace Earendil_Magnetometer {
     
     void setupMagnetometer(void);
     
-    float getHeading(float calibrated[3]);
+    double getHeading(double calibrated[3]);
 
-    void updateFilter(float raw[3]);
-    void applyCalibration(float calibrated[3]);
+    void updateFilter(double raw[3]);
+    void applyCalibration(double calibrated[3]);
     void calibrateMagnetometer();
 }
 

@@ -43,6 +43,16 @@
 #define X_MENU_OFFSET       40
 #define Y_MENU_OFFSET       60
 
+#define NAV_BACKGROUND_COLOR    GC9A01A_BLACK
+
+#define HEADING_TRACK_RADIUS    100.0
+#define HEADING_CIRCLE_RADIUS   5
+#define HEADING_NORTH_COLOR     GC9A01A_RED
+
+#define BEARING_TRACK_RADIUS    100.0
+#define BEARING_CIRCLE_RADIUS   5
+#define BEARING_NODE_COLOR      GC9A01A_YELLOW
+
 #define OUTLINE_BLU         0x2CB6
 #define OUTLINE_DARKBLU     0x1188
 
@@ -83,39 +93,76 @@ namespace Earendil_Display {
     extern Adafruit_GC9A01A display;
 
     typedef enum {
-        NAVIGATION_UI   = 0,
-        MENU_UI         = 1,
-        TESTING_UI      = 2
-    } ACTIVE_UI;
-    extern ACTIVE_UI active_ui;
+        NULL_UI,
+        NAVIGATION_UI,
+        MENU_UI,
+        TESTING_UI
+    } Display_UI;
+    extern Display_UI active_ui;
 
     void setup(void);
-
     void setupDisplay(void);
-    void setupMenu(void);
 
+    // =====================================
+
+    void setupMenu(void);
     void setupMenuButtons(void);
-    void setupButton(const uint8_t BUTTON_PIN);
-    void interruptHandler_BUTTON(const uint8_t BUTTON_PIN);
+    void setupButton(
+        const uint8_t BUTTON_PIN
+    );
+    void interruptHandler_BUTTON(
+        const uint8_t BUTTON_PIN
+    );
     void IO_IRQ_BANK0_Handler(void);
 
-    void drawMenu(void);
+    void drawMenuScreen(void);
     void menuControl(void);
     bool goBack(void);
     void selectItem(void);
     void moveDown(void);
     void moveUp(void);
 
+    // =====================================
+
+    typedef struct NavScreenState {
+        double last_heading_north_X = -1;
+        double last_heading_north_Y = -1;
+        double last_bearing_node_X  = -1;
+        double last_bearing_node_Y  = -1;
+    } NavScreenState_t;
+    extern NavScreenState_t NavState;
+
+    void drawNavScreen(void);
+
+    void clearHeadingToNorth(void);
+    void drawHeadingToNorth(
+        double heading_north_deg
+    );
+
+    void clearBearingToNode(void);
+    void drawBearingToNode(
+        double heading_north_deg,
+        double bearing_node_deg
+    );
+
     void getDistNAngle(void);
     void drawDistance(void);
-    void drawDirection(void);
+    
     void drawMagneticNorth(void);
     void drawNotch(void);
     void controlNav(void);
-    void displayNav(void);
+    
+    // =====================================
 
     // Testing stuff.
     void drawTesting(void);
+    void getBearingToNode(
+        double& bearing_to_node_deg,
+        double  handheld_latitude_rad,
+        double  handheld_longitude_rad,
+        double  node_latitude_rad,
+        double  node_longitude_rad
+    );
 }
 
 

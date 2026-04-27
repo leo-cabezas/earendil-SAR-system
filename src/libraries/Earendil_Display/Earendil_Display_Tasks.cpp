@@ -48,10 +48,10 @@ namespace Earendil_Display {
             xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
             switch (active_ui){
                 case NAVIGATION_UI:
-                    displayNav();
+                    drawNavScreen();
                     break;
                 case MENU_UI:     
-                    drawMenu();
+                    drawMenuScreen();
                     break;
                 
                 case TESTING_UI:
@@ -59,7 +59,7 @@ namespace Earendil_Display {
                     break;
             }
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
-            vTaskDelay(pdMS_TO_TICKS(2000));
+            vTaskDelay(pdMS_TO_TICKS(500));
         }
     }
 

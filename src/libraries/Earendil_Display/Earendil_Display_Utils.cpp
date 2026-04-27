@@ -4,7 +4,10 @@ namespace Earendil_Display {
     
     Adafruit_GC9A01A display = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 
-    ACTIVE_UI active_ui;
+    Display_UI last_ui;
+    Display_UI active_ui;
+
+    NavScreenState_t NavState;
     
     void setup(){
         setupMenuButtons();
@@ -14,11 +17,12 @@ namespace Earendil_Display {
     void setupDisplay(){
         display.begin();
         display.setRotation(0);
-        display.fillScreen(GC9A01A_RED);
+        display.fillScreen(NAV_BACKGROUND_COLOR);
         display.setCursor(120, 120);
         display.setTextColor(GC9A01A_WHITE);
 
-        active_ui = TESTING_UI;
+        last_ui     = NULL_UI;
+        active_ui   = NAVIGATION_UI;
     }
     
     void setupMenuButtons(void){
@@ -106,7 +110,6 @@ namespace Earendil_Display {
 
     // Array of menu items
     MenuItem mainMenu[] = {
-        // {"Calibrate Magnetometer", NULL, NULL, 0, &request_Magnetometer_Calibrate},
         {"Calibration", NULL, calibrateMenu, 4, NULL}, 
         {"Info", NULL, NULL, 0, NULL}, 
         {"Reset", NULL, NULL, 0, NULL}, 
@@ -127,7 +130,7 @@ namespace Earendil_Display {
 
     // Placeholder for now. everythigns in the serial monitor while I figure out the scrolling part. if I cant figure it out i'll go back to the original idea i had
     // yippee i figured out the scrolling part. pain in the ass, i needed a top index tracker
-    void drawMenu(){
+    void drawMenuScreen(){
         display.fillScreen(GC9A01A_BLACK);
         display.setCursor(X_MENU_OFFSET-20, Y_MENU_OFFSET-40);//sets the cursor to draw the text. x is from left to right byt a larger y is downward
         display.setTextColor(GC9A01A_WHITE);
@@ -236,73 +239,91 @@ namespace Earendil_Display {
         vTaskDelay(pdMS_TO_TICKS(20));
     }
 
-    //=================================COMPASS UI STUFF==============================================================
-    
-    void drawMagneticNorth(){
-        float heading = Earendil_Data->Magnetometer_Data.heading + 90;   // Need to protect this with a mutex !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        float x = DISPLAY_CENTER_X + 90.0 * cos(heading * (M_PI / 180.0));    // 120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
-        float y = DISPLAY_CENTER_Y - 90.0 * sin(heading * (M_PI / 180.0));    // y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
-        display.fillCircle(x, y, 5, GC9A01A_RED);//creates a circle on the edge of the screen to show off the angle
+    //================================= NAVIGATION UI STUFF ==============================================================
+
+    void drawNavScreen(){    
+        clearHeadingToNorth();
+        clearBearingToNode();
+
+        double heading_north_deg        = Earendil_Data->Magnetometer_Data.heading_deg;
         
-        display.setCursor(DISPLAY_CENTER_X - 30, DISPLAY_CENTER_Y);
-        display.setTextColor(GC9A01A_YELLOW);
+        double handheld_latitude_rad    = Earendil_Data->GPS_Data.latitude_rad;
+        double handheld_longitude_rad   = Earendil_Data->GPS_Data.longitude_rad;
+        
+        double node_latitude_rad        = Earendil_Data->Radio_Data.rx_latitude_rad;
+        double node_longitude_rad       = Earendil_Data->Radio_Data.rx_longitude_rad;
+
+        double bearing_node_deg = 0;
+        getBearingToNode(
+            bearing_node_deg,
+            handheld_latitude_rad,
+            handheld_longitude_rad,
+            node_latitude_rad,
+            node_longitude_rad
+        );
+
+        drawBearingToNode(heading_north_deg, bearing_node_deg);
+        drawHeadingToNorth(heading_north_deg);
+
+        display.fillRect(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30, 120, 50, NAV_BACKGROUND_COLOR);
+
+        display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30);
         display.setTextSize(3);
-        display.print(heading - 90);
-    }
-    
-    void displayNav(){
-        display.fillScreen(GC9A01A_BLACK);  // Instead redraw the annulus where the indicator notches sit
-        drawMagneticNorth();
-        // drawDistance();
-        // drawDirection();
-    }
+        display.setTextColor(GC9A01A_RED);
+        display.print(heading_north_deg);
 
-    struct handheld {
-        double my_lat; //this will pull the lattitude from the GPS module
-        double my_long; //this will pull the longitude from the GPS module
+        display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30 + 30);
+        display.setTextColor(GC9A01A_YELLOW);
+        display.print(bearing_node_deg);
 
-        double my_angle; //stores the angle from north from the magnetometer
-        double distance_to_node;//distance from the handheld to the node
-        double angle_from_north; //gets the relative angle from north so the user can spin around and still get an accurate direction
-        double angle_to_node;//angle from the handheld face to the node
-    };
-
-    struct node {
-        double node_lat;//pulls the lattidude from the gps
-        double node_long;//same thing here
-    };
-
-    handheld my_handheld {0.6, 6.2, 0.0, 0.0, 0.0, 0.0};//hardcoded handheld data structure
-    node node_1 {0.09, 0.0005}; //Hardcoded node instance structure to play around with
-
-    GFXcanvas16 canvas(240, 240);
-    int ui_state = 0; //0 for the compass, 1 for the menu
-    bool lastState = HIGH; //checks last state of the button
-
-    void drawDistance(){
-        display.setCursor(75, 110);//sets the cursor to draw the text. x is from left to right byt a larger y is downward
-        display.setTextColor(GC9A01A_WHITE);
-        display.setTextSize(3);//scale the text to be bigger
-        display.print(my_handheld.distance_to_node, 2);//prints out the distance to 2 decimal places
     }
 
-    void drawDirection(){
-        double bearing_to_node_deg;
-        // getBearingToNode(bearing_to_node_deg);
-        double relative_ang = my_handheld.angle_from_north + bearing_to_node_deg;
-        if (relative_ang < 0) relative_ang += 360;
-
-        double x = 120 + 105*sin(relative_ang*3.1415/180);//120 is the origin, x uses sine to account for 90 degrees of rotation to get north. 
-        double y = 120 - 105*cos(relative_ang*3.1415/180);//y coordinates face downward, so -cosine is used to account for downward face of the y axis and the 90 degree flip
-        display.fillCircle(x, y, 5, GC9A01A_WHITE);//creates a circle on the edge of the screen to show off the angle
+    void clearHeadingToNorth(){
+        if ( (NavState.last_heading_north_X >= 0) && (NavState.last_heading_north_Y >= 0) ){
+            display.fillCircle(
+                NavState.last_heading_north_X, NavState.last_heading_north_Y, 
+                HEADING_CIRCLE_RADIUS, NAV_BACKGROUND_COLOR
+            );
+        }
     }
 
-    void drawNotch(){
-        display.fillCircle(120, 120, 115, OUTLINE_BLU);
-        display.fillCircle(120, 120, 109, GC9A01A_BLACK);
-        display.fillCircle(120, 120, 110, 0x1188);
-        display.fillCircle(120, 120, 100, OUTLINE_BLU);
-        display.fillCircle(120, 120, 95, GC9A01A_BLACK);
+    void drawHeadingToNorth(
+        double heading_north_deg
+    ){
+        double heading_north_X  = DISPLAY_CENTER_X + HEADING_TRACK_RADIUS * cos( (heading_north_deg + 90) * (M_PI / 180.0));
+        double heading_north_Y  = DISPLAY_CENTER_Y - HEADING_TRACK_RADIUS * sin( (heading_north_deg + 90) * (M_PI / 180.0));
+        display.fillCircle(
+            heading_north_X, heading_north_Y, 
+            HEADING_CIRCLE_RADIUS, HEADING_NORTH_COLOR
+        );
+        
+        NavState.last_heading_north_X = heading_north_X;
+        NavState.last_heading_north_Y = heading_north_Y;
+    }
+
+    void clearBearingToNode(){
+        if ( (NavState.last_bearing_node_X >= 0) && (NavState.last_bearing_node_Y >= 0) ){
+            display.fillCircle(
+                NavState.last_bearing_node_X, NavState.last_bearing_node_Y, 
+                BEARING_CIRCLE_RADIUS, NAV_BACKGROUND_COLOR
+            );
+        }
+    }
+
+    void drawBearingToNode(
+        double heading_north_deg,
+        double bearing_node_deg
+    ){
+        double node_angle_deg   = heading_north_deg - bearing_node_deg;
+        double bearing_node_X   = DISPLAY_CENTER_X + BEARING_TRACK_RADIUS * cos( (node_angle_deg + 90) * (M_PI / 180.0));
+        double bearing_node_Y   = DISPLAY_CENTER_Y - BEARING_TRACK_RADIUS * sin( (node_angle_deg + 90) * (M_PI / 180.0));
+        display.fillCircle(
+            bearing_node_X, bearing_node_Y, 
+            BEARING_CIRCLE_RADIUS, BEARING_NODE_COLOR
+        );
+
+        NavState.last_bearing_node_X = bearing_node_X;
+        NavState.last_bearing_node_Y = bearing_node_Y;
     }
 
     void controlNav(){
@@ -313,6 +334,7 @@ namespace Earendil_Display {
             while (gpio_get(BUTTON_BACK) == 0) vTaskDelay(pdMS_TO_TICKS(5));
         }
         gpio_set_irq_enabled(BUTTON_BACK, GPIO_IRQ_EDGE_FALL, true);
+
     }
 
     // =================================== TESTING STUFF =============================================
@@ -367,19 +389,10 @@ namespace Earendil_Display {
         uint8_t x = 40;
         uint8_t y = init_y;
         
-        double handheld_latitude_rad    = Earendil_Data->GPS_Data.latitude_rad;
-        double handheld_longitude_rad   = Earendil_Data->GPS_Data.longitude_rad;
-        double node_latitude_rad        = Earendil_Data->Radio_Data.rx_latitude_rad;
-        double node_longitude_rad       = Earendil_Data->Radio_Data.rx_longitude_rad;
-
-        double bearing_to_node_deg = 0;
-        getBearingToNode(
-            bearing_to_node_deg,
-            handheld_latitude_rad,
-            handheld_longitude_rad,
-            node_latitude_rad,
-            node_longitude_rad
-        );
+        double handheld_latitude_deg    = Earendil_Data->GPS_Data.latitude_deg;
+        double handheld_longitude_deg   = Earendil_Data->GPS_Data.longitude_deg;
+        double node_latitude_deg        = Earendil_Data->Radio_Data.rx_latitude_deg;
+        double node_longitude_deg       = Earendil_Data->Radio_Data.rx_longitude_deg;
 
         display.fillRect(x, init_y, 180, 150, GC9A01A_BLACK);
 
@@ -387,21 +400,17 @@ namespace Earendil_Display {
         display.setTextSize(3);
         
         display.setCursor(x, y);
-        display.print(handheld_latitude_rad, 6);
+        display.print(handheld_latitude_deg, 6);
         y += 30;
         display.setCursor(x, y);
-        display.print(handheld_longitude_rad, 6);
+        display.print(handheld_longitude_deg, 6);
 
         y += 30;
         display.setCursor(x, y);
-        display.print(node_latitude_rad, 6);
+        display.print(node_latitude_deg, 6);
         y += 30;
         display.setCursor(x, y);
-        display.print(node_longitude_rad, 6);
-
-        y+= 30;
-        display.setCursor(x, y);
-        display.print(bearing_to_node_deg, 6);
+        display.print(node_longitude_deg, 6);
     }
 
 } 

@@ -4,13 +4,16 @@ namespace Earendil_Magnetometer {
 
     Earendil::Earendil_TaskHandles_t*   Earendil_Handles    = nullptr; 
     Earendil::Earendil_SharedData_t*    Earendil_Data       = nullptr;
+    Earendil::Earendil_Mutexes_t*       Earendil_Mutexes    = nullptr;
 
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     ){
         Earendil_Handles    = global_Earendil_Handles;
         Earendil_Data       = global_Earendil_Data;
+        Earendil_Mutexes    = global_Earendil_Mutexes;
     }
 
     void createTasks(void){
@@ -41,7 +44,7 @@ namespace Earendil_Magnetometer {
         (void)pvParameters;     // Parameters unused.
 
         sensors_event_t event;
-        float raw[3] = {0, 0, 0};
+        double raw[3] = {0, 0, 0};
 
         while (1){
             magnetometer.getEvent(&event);
@@ -53,11 +56,12 @@ namespace Earendil_Magnetometer {
             //char buf[64];
             //snprintf(buf, sizeof(buf), "raw_x=%.2f\nraw_y=%.2f\nraw_z=%.2f\n", raw[0], raw[1], raw[2]);
             //puts(buf);
-
-            //Earendil_Data->Magnetometer_Data.heading = getHeading(raw);
-            float calibrated[3];
+            
+            
+            double calibrated[3];
             applyCalibration(calibrated);
-            Earendil_Data->Magnetometer_Data.heading = getHeading(raw);
+            
+            Earendil_Data->Magnetometer_Data.heading_deg = getHeading(calibrated);
 
             vTaskDelay(pdMS_TO_TICKS(50));
         }

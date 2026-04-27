@@ -17,8 +17,8 @@ namespace Earendil_Radio {
     }
     
     void createTasks(void){
-        createTask_vRadio_Ping_TX();
-        // createTask_vRadio_Listen_RX();
+        // createTask_vRadio_Ping_TX();
+        createTask_vRadio_Listen_RX();
     }
 
     // =======================================================================================
