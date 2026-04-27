@@ -91,13 +91,13 @@ namespace Earendil_Display {
         (void)pvParameters;     // Parameters unused.
         
         while(1){
-
+            
             if (ulTaskNotifyTake(pdTRUE, 0) > 0)
             {
                 if (active_ui == CALIBRATING_UI)
                 {
                     active_ui = MENU_UI;
-                    drawMenu();
+                    drawMenuScreen();
                 }
             }
             switch (active_ui){

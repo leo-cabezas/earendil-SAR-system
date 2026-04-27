@@ -4,8 +4,7 @@ namespace Earendil_Display {
     
     Adafruit_GC9A01A display = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 
-    Display_UI last_ui;
-    Display_UI active_ui;
+    ACTIVE_UI active_ui;
 
     NavScreenState_t NavState;
     
@@ -21,7 +20,6 @@ namespace Earendil_Display {
         display.setCursor(120, 120);
         display.setTextColor(GC9A01A_WHITE);
 
-        last_ui     = NULL_UI;
         active_ui   = NAVIGATION_UI;
     }
     
@@ -245,8 +243,8 @@ namespace Earendil_Display {
         double handheld_latitude_rad    = Earendil_Data->GPS_Data.latitude_rad;
         double handheld_longitude_rad   = Earendil_Data->GPS_Data.longitude_rad;
         
-        double node_latitude_rad        = Earendil_Data->Radio_Data.rx_latitude_rad;
-        double node_longitude_rad       = Earendil_Data->Radio_Data.rx_longitude_rad;
+        double node_latitude_rad        = 38.957472     * (M_PI / 180.0);
+        double node_longitude_rad       = -95.253361    * (M_PI / 180.0);
 
         double bearing_node_deg = 0;
         getBearingToNode(
@@ -257,10 +255,19 @@ namespace Earendil_Display {
             node_longitude_rad
         );
 
+        double distance_node_m = 0;
+        getDistanceToNode(
+            distance_node_m,
+            handheld_latitude_rad,
+            handheld_longitude_rad,
+            node_latitude_rad,
+            node_longitude_rad
+        );
+
         drawBearingToNode(heading_north_deg, bearing_node_deg);
         drawHeadingToNorth(heading_north_deg);
 
-        display.fillRect(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30, 120, 50, NAV_BACKGROUND_COLOR);
+        display.fillRect(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30, 120, 90, NAV_BACKGROUND_COLOR);
 
         display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30);
         display.setTextSize(3);
@@ -271,6 +278,9 @@ namespace Earendil_Display {
         display.setTextColor(GC9A01A_YELLOW);
         display.print(bearing_node_deg);
 
+        display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30 + 30 + 30);
+        display.setTextColor(GC9A01A_BLUE);
+        display.print(distance_node_m);
     }
 
     void clearHeadingToNorth(){
@@ -319,6 +329,15 @@ namespace Earendil_Display {
 
         NavState.last_bearing_node_X = bearing_node_X;
         NavState.last_bearing_node_Y = bearing_node_Y;
+    }
+
+    void drawDistanceToNode(
+        double handheld_latitude_rad,
+        double handheld_longitude_rad,
+        double node_latitude_rad,
+        double node_longitude_rad
+    ){
+
     }
 
     void controlNav(){
@@ -370,13 +389,41 @@ namespace Earendil_Display {
         double B_cross_M_Y = (bearing_vec_Z * mag_north_vec_X - bearing_vec_X * mag_north_vec_Z);
         double B_cross_M_Z = (bearing_vec_X * mag_north_vec_Y - bearing_vec_Y * mag_north_vec_X);
         
-        double normal_X = handheld_X;
-        double normal_Y = handheld_Y;
-        double normal_Z = handheld_Z;
+        double BxM_dot_H = B_cross_M_X * handheld_X + B_cross_M_Y * handheld_Y + B_cross_M_Z * handheld_Z;
         
-        double BxM_dot_N = B_cross_M_X * normal_X + B_cross_M_Y * normal_Y + B_cross_M_Z * normal_Z;
+        bearing_to_node_deg = atan2(BxM_dot_H, B_dot_M) * (180.0 / M_PI);
+    }
+
+    void getDistanceToNode(
+        double& distance_node_m,
+        double  handheld_latitude_rad,
+        double  handheld_longitude_rad,
+        double  node_latitude_rad,
+        double  node_longitude_rad
+    ){
+        constexpr double EARTH_RADIUS = 6371008.8;  // In meters.
+
+        double handheld_X   = cos(handheld_latitude_rad) * cos(handheld_longitude_rad);
+        double handheld_Y   = cos(handheld_latitude_rad) * sin(handheld_longitude_rad);
+        double handheld_Z   = sin(handheld_latitude_rad);
         
-        bearing_to_node_deg = atan2(BxM_dot_N, B_dot_M) * (180.0 / M_PI);
+        double node_X       = cos(node_latitude_rad) * cos(node_longitude_rad);
+        double node_Y       = cos(node_latitude_rad) * sin(node_longitude_rad);
+        double node_Z       = sin(node_latitude_rad);
+
+        double H_dot_N = handheld_X * node_X + handheld_Y * node_Y + handheld_Z * node_Z;
+
+        double H_cross_N_X      = (handheld_Y * node_Z - handheld_Z * node_Y);
+        double H_cross_N_Y      = (handheld_Z * node_X - handheld_X * node_Z);
+        double H_cross_N_Z      = (handheld_X * node_Y - handheld_Y * node_X);
+        double mag_H_cross_N    = sqrt(
+            H_cross_N_X * H_cross_N_X + 
+            H_cross_N_Y * H_cross_N_Y +
+            H_cross_N_Z * H_cross_N_Z
+        );
+        
+        double central_angle = atan2(mag_H_cross_N, H_dot_N);
+        distance_node_m = EARTH_RADIUS * central_angle;
     }
 
     void drawTesting(){

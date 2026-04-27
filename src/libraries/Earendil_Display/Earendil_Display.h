@@ -93,21 +93,12 @@ namespace Earendil_Display {
     extern Adafruit_GC9A01A display;
 
     typedef enum {
-<<<<<<< HEAD
-        NULL_UI,
-        NAVIGATION_UI,
-        MENU_UI,
-        TESTING_UI
-    } Display_UI;
-    extern Display_UI active_ui;
-=======
         NAVIGATION_UI   = 0,
         MENU_UI         = 1,
         TESTING_UI      = 2,
         CALIBRATING_UI  = 3
     } ACTIVE_UI;
     extern ACTIVE_UI active_ui;
->>>>>>> 0748f648c4acf3eabe110d5fc001fd2c85916765
 
     void setup(void);
     void setupDisplay(void);
@@ -167,6 +158,13 @@ namespace Earendil_Display {
     void drawTesting(void);
     void getBearingToNode(
         double& bearing_to_node_deg,
+        double  handheld_latitude_rad,
+        double  handheld_longitude_rad,
+        double  node_latitude_rad,
+        double  node_longitude_rad
+    );
+    void getDistanceToNode(
+        double& distance_node_m,
         double  handheld_latitude_rad,
         double  handheld_longitude_rad,
         double  node_latitude_rad,

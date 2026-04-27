@@ -57,11 +57,12 @@ namespace Earendil_Magnetometer {
             //snprintf(buf, sizeof(buf), "raw_x=%.2f\nraw_y=%.2f\nraw_z=%.2f\n", raw[0], raw[1], raw[2]);
             //puts(buf);
             
-            
+            /*
             double calibrated[3];
             applyCalibration(calibrated);
+            */
             
-            Earendil_Data->Magnetometer_Data.heading_deg = getHeading(calibrated);
+            Earendil_Data->Magnetometer_Data.heading_deg = getHeading(raw);
 
             vTaskDelay(pdMS_TO_TICKS(50));
         }
