@@ -74,21 +74,16 @@ namespace Earendil_Display {
         xTaskNotify(Earendil_Handles->Radio_Handles.task_vRadio_Ping_TX, 0, eNoAction);
     }
 
-    void request_Magnetometer_Calibrate(){
-    
-        uint32_t notifValue;
+    void request_Magnetometer_Calibrate()
+    {
+        active_ui = CALIBRATING_UI;
+
         display.fillScreen(GC9A01A_BLACK);
         display.setCursor(40, 120);
         display.print("Calibrating");
-        display.setCursor(60, 120);
-        xTaskNotify(Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_Calibrate, 0, eNoAction);
-        xTaskNotifyWait(0, UINT32_MAX, &notifValue, portMAX_DELAY);
 
-        
-        display.fillScreen(GC9A01A_BLACK);
-
-
-
+        xTaskNotify(
+            Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_Calibrate,0,eNoAction);
     }
 
     // =================================MENU STUFF==============================================================

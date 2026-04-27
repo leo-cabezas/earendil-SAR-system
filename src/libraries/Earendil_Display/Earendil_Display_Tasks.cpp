@@ -57,6 +57,11 @@ namespace Earendil_Display {
                 case TESTING_UI:
                     drawTesting();
                     break;
+                case CALIBRATING_UI:
+                    display.fillScreen(GC9A01A_BLACK);
+                    display.setCursor(40, 120);
+                    display.print("Calibrating...");
+                    break;
             }
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
             vTaskDelay(pdMS_TO_TICKS(500));
@@ -86,6 +91,15 @@ namespace Earendil_Display {
         (void)pvParameters;     // Parameters unused.
         
         while(1){
+
+            if (ulTaskNotifyTake(pdTRUE, 0) > 0)
+            {
+                if (active_ui == CALIBRATING_UI)
+                {
+                    active_ui = MENU_UI;
+                    drawMenu();
+                }
+            }
             switch (active_ui){
                 case NAVIGATION_UI:
                     controlNav();
@@ -96,6 +110,8 @@ namespace Earendil_Display {
                 
                 case TESTING_UI:
                     menuControl();
+                    break;
+                case CALIBRATING_UI:
                     break;
             }
             vTaskDelay(pdMS_TO_TICKS(50));
