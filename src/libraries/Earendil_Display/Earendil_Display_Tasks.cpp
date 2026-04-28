@@ -19,7 +19,6 @@ namespace Earendil_Display {
     void createTasks(void){    
         createTask_vDisplay_UI();
         createTask_vDisplay_Controls();
-        // createTask_vDisplay_Calibration();
     }
 
     // =======================================================================================
@@ -46,14 +45,24 @@ namespace Earendil_Display {
         
         while(1){
             xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
+            if (previous_ui != active_ui){
+                switch (active_ui){
+                    case NAVIGATION_UI:
+                        draw_NavScreen_Static();
+                        break;
+                    case MENU_UI:
+                        draw_MenuScreen_Static();
+                        break;
+                }
+                previous_ui = active_ui;
+            }
             switch (active_ui){
                 case NAVIGATION_UI:
-                    drawNavScreen();
+                    draw_NavScreen_Dynamic();
                     break;
                 case MENU_UI:     
-                    drawMenuScreen();
+                    draw_MenuScreen_Dynamic();
                     break;
-                
                 case TESTING_UI:
                     drawTesting();
                     break;
@@ -64,6 +73,7 @@ namespace Earendil_Display {
                     break;
             }
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
+
             vTaskDelay(pdMS_TO_TICKS(500));
         }
     }
@@ -91,7 +101,7 @@ namespace Earendil_Display {
         (void)pvParameters;     // Parameters unused.
         
         while(1){
-            
+            /*
             if (ulTaskNotifyTake(pdTRUE, 0) > 0)
             {
                 if (active_ui == CALIBRATING_UI)
@@ -100,6 +110,7 @@ namespace Earendil_Display {
                     drawMenuScreen();
                 }
             }
+            */
             switch (active_ui){
                 case NAVIGATION_UI:
                     controlNav();

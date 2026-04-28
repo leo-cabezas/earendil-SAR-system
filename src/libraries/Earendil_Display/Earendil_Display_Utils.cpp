@@ -4,10 +4,14 @@ namespace Earendil_Display {
     
     Adafruit_GC9A01A display = Adafruit_GC9A01A(TFT_CS, TFT_DC, TFT_RST);
 
-    ACTIVE_UI active_ui;
-
+    volatile Display_UI_t previous_ui;
+    volatile Display_UI_t active_ui;
     NavScreenState_t NavState;
     
+    // =======================================================================================
+    // SETUP UTILITIES
+    // =======================================================================================
+
     void setup(){
         setupMenuButtons();
         setupDisplay();
@@ -16,10 +20,11 @@ namespace Earendil_Display {
     void setupDisplay(){
         display.begin();
         display.setRotation(0);
-        display.fillScreen(NAV_BACKGROUND_COLOR);
+        display.fillScreen(GC9A01A_GREEN);
         display.setCursor(120, 120);
         display.setTextColor(GC9A01A_WHITE);
 
+        previous_ui = NULL_UI;
         active_ui   = NAVIGATION_UI;
     }
     
@@ -72,8 +77,7 @@ namespace Earendil_Display {
         xTaskNotify(Earendil_Handles->Radio_Handles.task_vRadio_Ping_TX, 0, eNoAction);
     }
 
-    void request_Magnetometer_Calibrate()
-    {
+    void request_Magnetometer_Calibrate(){
         active_ui = CALIBRATING_UI;
 
         display.fillScreen(GC9A01A_BLACK);
@@ -81,10 +85,13 @@ namespace Earendil_Display {
         display.print("Calibrating");
 
         xTaskNotify(
-            Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_Calibrate,0,eNoAction);
+            Earendil_Handles->Magnetometer_Handles.task_vMagnetometer_Calibrate, 0, eNoAction);
     }
 
-    // =================================MENU STUFF==============================================================
+    // =======================================================================================
+    // MENU_UI UTILITIES
+    // =======================================================================================
+
     // Menu structure
     struct MenuItem {
         const char* name; //name of the menu item
@@ -95,19 +102,72 @@ namespace Earendil_Display {
     };
 
     MenuItem calibrateMenu[] = {
-        {"Magnetometer", NULL, NULL, 0, &request_Magnetometer_Calibrate}, 
-        {"Temperature", NULL, NULL, 0, NULL}, 
-        {"Altimeter", NULL, NULL, 0, NULL}, 
-        {"Gyroscope", NULL, NULL, 0, NULL}
+        {   
+            "Magnetometer", 
+            NULL, 
+            NULL, 
+            0, 
+            &request_Magnetometer_Calibrate
+        }, 
+        {
+            "Temperature", 
+            NULL, 
+            NULL, 
+            0, 
+            NULL
+        }, 
+        {
+            "Altimeter", 
+            NULL, 
+            NULL, 
+            0, 
+            NULL
+        }, 
+        {
+            "Gyroscope", 
+            NULL, 
+            NULL, 
+            0, 
+            NULL
+        }
     };
 
-    // Array of menu items
     MenuItem mainMenu[] = {
-        {"Calibration", NULL, calibrateMenu, 4, NULL}, 
-        {"Info", NULL, NULL, 0, NULL}, 
-        {"Reset", NULL, NULL, 0, NULL}, 
-        {"Manual Ping", NULL, NULL, 0, &request_sendPing_TX}, 
-        {"Off", NULL, NULL, 0, NULL}
+        {
+            "Calibration", 
+            NULL, 
+            calibrateMenu, 
+            4, 
+            NULL
+        }, 
+        {
+            "Info", 
+            NULL, 
+            NULL, 
+            0, 
+            NULL
+        }, 
+        {
+            "Reset", 
+            NULL, 
+            NULL, 
+            0, 
+            NULL
+        }, 
+        {
+            "Manual Ping", 
+            NULL, 
+            NULL, 
+            0, 
+            &request_sendPing_TX
+        }, 
+        {
+            "Off", 
+            NULL, 
+            NULL, 
+            0, 
+            NULL
+        }
     };
 
     MenuItem* currentMenu = mainMenu; //array pointer to the current menu to navigate parent and sub menus
@@ -121,14 +181,20 @@ namespace Earendil_Display {
         }
     }
 
-    // Placeholder for now. everythigns in the serial monitor while I figure out the scrolling part. if I cant figure it out i'll go back to the original idea i had
-    // yippee i figured out the scrolling part. pain in the ass, i needed a top index tracker
-    void drawMenuScreen(){
+    void draw_MenuScreen_Static(){
         display.fillScreen(GC9A01A_BLACK);
-        display.setCursor(X_MENU_OFFSET-20, Y_MENU_OFFSET-40);//sets the cursor to draw the text. x is from left to right byt a larger y is downward
+        display.setCursor(X_MENU_OFFSET - 20, Y_MENU_OFFSET - 40);//sets the cursor to draw the text. x is from left to right byt a larger y is downward
         display.setTextColor(GC9A01A_WHITE);
         display.setTextSize(2);                 // scale the text to be bigger
         display.print("------ MENU ------");    // prints out menu icon
+    }
+
+    // Placeholder for now. everythigns in the serial monitor while I figure out the scrolling part. if I cant figure it out i'll go back to the original idea i had
+    // yippee i figured out the scrolling part. pain in the ass, i needed a top index tracker
+    void draw_MenuScreen_Dynamic(){
+        display.setCursor(X_MENU_OFFSET - 20, Y_MENU_OFFSET - 40);//sets the cursor to draw the text. x is from left to right byt a larger y is downward
+        display.setTextColor(GC9A01A_WHITE);
+        display.setTextSize(2);                 // scale the text to be bigger
         display.setCursor(X_MENU_OFFSET, Y_MENU_OFFSET); // back to its original spot
         
         uint8_t max_index = min(3, itemCount - topIndex);
@@ -168,8 +234,6 @@ namespace Earendil_Display {
             itemCount = selection->childCount;  // total array size
         } else if (selection->function) { // if theres no child menu, check if theres a function
             selection->function(); // call the function
-        } else {
-            Serial.println("Placeholder so stuff doesnt break");
         }
     }
 
@@ -232,17 +296,38 @@ namespace Earendil_Display {
         vTaskDelay(pdMS_TO_TICKS(20));
     }
 
-    //================================= NAVIGATION UI STUFF ==============================================================
+    // =======================================================================================
+    // NAVIGATION_UI UTILITIES
+    // =======================================================================================
 
-    void drawNavScreen(){    
-        clearHeadingToNorth();
-        clearBearingToNode();
+    // --- STATIC UI ELEMENTS ----------------------------------------------------------------
+
+    void draw_NavScreen_Static(){
+        display.fillScreen(NAV_BACKGROUND_COLOR);
+        draw_GuideRails();
+    }
+
+    void draw_GuideRails(){
+        display.drawCircle(
+            DISPLAY_CENTER_X, DISPLAY_CENTER_Y,
+            GUIDE_RAIL_RADIUS_INNER, GUIDE_RAIL_COLOR
+        );
+        display.drawCircle(
+            DISPLAY_CENTER_X, DISPLAY_CENTER_Y,
+            GUIDE_RAIL_RADIUS_OUTER, GUIDE_RAIL_COLOR
+        );
+    }
+
+    // --- DYNAMIC UI ELEMENTS ---------------------------------------------------------------
+
+    void draw_NavScreen_Dynamic(){
+        
 
         double heading_north_deg        = Earendil_Data->Magnetometer_Data.heading_deg;
         
         double handheld_latitude_rad    = Earendil_Data->GPS_Data.latitude_rad;
         double handheld_longitude_rad   = Earendil_Data->GPS_Data.longitude_rad;
-        
+
         double node_latitude_rad        = 38.957472     * (M_PI / 180.0);
         double node_longitude_rad       = -95.253361    * (M_PI / 180.0);
 
@@ -264,9 +349,15 @@ namespace Earendil_Display {
             node_longitude_rad
         );
 
-        drawBearingToNode(heading_north_deg, bearing_node_deg);
-        drawHeadingToNorth(heading_north_deg);
+        clear_LastBearingToNode();
+        clear_LastHeadingToNorth();
+        clear_LastCardinalDirections();
 
+        draw_BearingToNode(heading_north_deg, bearing_node_deg);
+        draw_HeadingToNorth(heading_north_deg);
+        draw_CardinalDirections(heading_north_deg);
+
+        /*
         display.fillRect(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30, 120, 90, NAV_BACKGROUND_COLOR);
 
         display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30);
@@ -281,22 +372,15 @@ namespace Earendil_Display {
         display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30 + 30 + 30);
         display.setTextColor(GC9A01A_BLUE);
         display.print(distance_node_m);
+        */
     }
 
-    void clearHeadingToNorth(){
-        if ( (NavState.last_heading_north_X >= 0) && (NavState.last_heading_north_Y >= 0) ){
-            display.fillCircle(
-                NavState.last_heading_north_X, NavState.last_heading_north_Y, 
-                HEADING_CIRCLE_RADIUS, NAV_BACKGROUND_COLOR
-            );
-        }
-    }
-
-    void drawHeadingToNorth(
+    void draw_HeadingToNorth(
         double heading_north_deg
     ){
-        double heading_north_X  = DISPLAY_CENTER_X + HEADING_TRACK_RADIUS * cos( (heading_north_deg + 90) * (M_PI / 180.0));
-        double heading_north_Y  = DISPLAY_CENTER_Y - HEADING_TRACK_RADIUS * sin( (heading_north_deg + 90) * (M_PI / 180.0));
+        int16_t heading_north_X = DISPLAY_CENTER_X + HEADING_TRACK_RADIUS * cos( (heading_north_deg + 90) * (M_PI / 180.0));
+        int16_t heading_north_Y = DISPLAY_CENTER_Y - HEADING_TRACK_RADIUS * sin( (heading_north_deg + 90) * (M_PI / 180.0));
+
         display.fillCircle(
             heading_north_X, heading_north_Y, 
             HEADING_CIRCLE_RADIUS, HEADING_NORTH_COLOR
@@ -306,22 +390,23 @@ namespace Earendil_Display {
         NavState.last_heading_north_Y = heading_north_Y;
     }
 
-    void clearBearingToNode(){
-        if ( (NavState.last_bearing_node_X >= 0) && (NavState.last_bearing_node_Y >= 0) ){
+    void clear_LastHeadingToNorth(){
+        if ( (NavState.last_heading_north_X >= 0) && (NavState.last_heading_north_Y >= 0) ){
             display.fillCircle(
-                NavState.last_bearing_node_X, NavState.last_bearing_node_Y, 
-                BEARING_CIRCLE_RADIUS, NAV_BACKGROUND_COLOR
+                NavState.last_heading_north_X, NavState.last_heading_north_Y, 
+                HEADING_CIRCLE_RADIUS, NAV_BACKGROUND_COLOR
             );
         }
     }
 
-    void drawBearingToNode(
+    void draw_BearingToNode(
         double heading_north_deg,
         double bearing_node_deg
     ){
         double node_angle_deg   = heading_north_deg - bearing_node_deg;
-        double bearing_node_X   = DISPLAY_CENTER_X + BEARING_TRACK_RADIUS * cos( (node_angle_deg + 90) * (M_PI / 180.0));
-        double bearing_node_Y   = DISPLAY_CENTER_Y - BEARING_TRACK_RADIUS * sin( (node_angle_deg + 90) * (M_PI / 180.0));
+        int16_t bearing_node_X  = DISPLAY_CENTER_X + BEARING_TRACK_RADIUS * cos( (node_angle_deg + 90) * (M_PI / 180.0));
+        int16_t bearing_node_Y  = DISPLAY_CENTER_Y - BEARING_TRACK_RADIUS * sin( (node_angle_deg + 90) * (M_PI / 180.0));
+
         display.fillCircle(
             bearing_node_X, bearing_node_Y, 
             BEARING_CIRCLE_RADIUS, BEARING_NODE_COLOR
@@ -331,6 +416,182 @@ namespace Earendil_Display {
         NavState.last_bearing_node_Y = bearing_node_Y;
     }
 
+    void clear_LastBearingToNode(){
+        if ( (NavState.last_bearing_node_X >= 0) && (NavState.last_bearing_node_Y >= 0) ){
+            display.fillCircle(
+                NavState.last_bearing_node_X, NavState.last_bearing_node_Y, 
+                BEARING_CIRCLE_RADIUS, NAV_BACKGROUND_COLOR
+            );
+        }
+    }
+
+    void draw_CardinalDirections(
+        double heading_north_deg
+    ){
+        display.setTextSize(CARDINAL_DIRS_TEXT_SIZE);
+
+        // NORTH 
+        double north_angle          = heading_north_deg;
+        int16_t cardinal_north_X    = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (north_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_north_Y    = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (north_angle + 90) * (M_PI / 180.0));
+
+        int16_t cardinal_north_corner_X = 0;
+        int16_t cardinal_north_corner_Y = 0;
+        uint16_t cardinal_north_width   = 0;
+        uint16_t cardinal_north_height  = 0;
+
+        display.getTextBounds(
+                "N",
+                cardinal_north_X,
+                cardinal_north_Y,
+                &cardinal_north_corner_X,
+                &cardinal_north_corner_Y,
+                &cardinal_north_width,
+                &cardinal_north_height
+        );
+
+        cardinal_north_X    -= cardinal_north_width / 2;
+        cardinal_north_Y    -= cardinal_north_height / 2;
+
+        display.setCursor(cardinal_north_X, cardinal_north_Y);
+        display.setTextColor(CARDINAL_DIRS_COLOR_N);
+        display.print("N");
+
+        NavState.last_cardinal_north_X  = cardinal_north_X;
+        NavState.last_cardinal_north_Y  = cardinal_north_Y;
+
+        // WEST
+        double west_angle           = north_angle + 90;
+        int16_t cardinal_west_X     = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (west_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_west_Y     = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (west_angle + 90) * (M_PI / 180.0));
+
+        display.getTextBounds(
+                "N",
+                cardinal_north_X,
+                cardinal_north_Y,
+                &cardinal_north_corner_X,
+                &cardinal_north_corner_Y,
+                &cardinal_north_width,
+                &cardinal_north_height
+        );
+
+        cardinal_north_X    -= cardinal_north_width / 2;
+        cardinal_north_Y    -= cardinal_north_height / 2;
+
+        display.setCursor(cardinal_west_X, cardinal_west_Y);
+        display.setTextColor(CARDINAL_DIRS_COLOR_W);
+        display.print("W");
+
+        NavState.last_cardinal_west_X   = cardinal_west_X;
+        NavState.last_cardinal_west_Y   = cardinal_west_Y;
+
+        // SOUTH
+        double south_angle          = west_angle + 90;
+        int16_t cardinal_south_X    = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (south_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_south_Y    = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (south_angle + 90) * (M_PI / 180.0));
+
+        display.getTextBounds(
+                "N",
+                cardinal_north_X,
+                cardinal_north_Y,
+                &cardinal_north_corner_X,
+                &cardinal_north_corner_Y,
+                &cardinal_north_width,
+                &cardinal_north_height
+        );
+
+        cardinal_north_X    -= cardinal_north_width / 2;
+        cardinal_north_Y    -= cardinal_north_height / 2;
+
+        display.setCursor(cardinal_south_X, cardinal_south_Y);
+        display.setTextColor(CARDINAL_DIRS_COLOR_S);
+        display.print("S");
+
+        NavState.last_cardinal_south_X  = cardinal_south_X;
+        NavState.last_cardinal_south_Y  = cardinal_south_Y;
+
+        // EAST
+        double east_angle           = south_angle + 90;
+        int16_t cardinal_east_X     = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (east_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_east_Y     = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (east_angle + 90) * (M_PI / 180.0));
+
+        display.getTextBounds(
+                "N",
+                cardinal_north_X,
+                cardinal_north_Y,
+                &cardinal_north_corner_X,
+                &cardinal_north_corner_Y,
+                &cardinal_north_width,
+                &cardinal_north_height
+        );
+
+        cardinal_north_X    -= cardinal_north_width / 2;
+        cardinal_north_Y    -= cardinal_north_height / 2;
+
+        display.setCursor(cardinal_east_X, cardinal_east_Y);
+        display.setTextColor(CARDINAL_DIRS_COLOR_E);
+        display.print("E");
+
+        NavState.last_cardinal_east_X   = cardinal_east_X;
+        NavState.last_cardinal_east_Y   = cardinal_east_Y;
+    }
+
+    void draw_Cardinal(
+        double      cardinal_angle,
+        const char* cardinal_label,
+        uint16_t    cardinal_color,
+        int16_t&    cardinal_X_save_to,
+        int16_t&    cardinal_Y_save_to,
+        uint16_t&   cardinal_width_save_to,
+        uint16_t&   cardinal_height_save_to
+    ){
+        int16_t cardinal_X_raw  = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (cardinal_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_Y_raw  = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (cardinal_angle + 90) * (M_PI / 180.0));
+
+        int16_t cardinal_corner_X = 0;
+        int16_t cardinal_corner_Y = 0;
+        uint16_t cardinal_width   = 0;
+        uint16_t cardinal_height  = 0;
+
+        display.getTextBounds(
+                cardinal_label,
+                cardinal_X,
+                cardinal_Y,
+                &cardinal_corner_X,
+                &cardinal_corner_Y,
+                &cardinal_width,
+                &cardinal_height
+        );
+
+        cardinal_X  = cardinal_X_raw - - (cardinal_width / 2);
+        cardinal_Y  = cardinal_Y_raw - - cardinal_height / 2;
+
+        display.setCursor(cardinal_X, cardinal_Y);
+        display.setTextColor(cardinal_color);
+        display.print(cardinal_label);
+
+        NavState.last_cardinal_north_X  = cardinal_north_X;
+        NavState.last_cardinal_north_Y  = cardinal_north_Y;
+    }
+
+    void clear_LastCardinalDirections(){
+        if (    
+            (NavState.last_cardinal_north_X >= 0)       && 
+            (NavState.last_cardinal_north_Y >= 0)       &&
+            (NavState.last_cardinal_north_width >= 0)   &&
+            (NavState.last_cardinal_north_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_cardinal_north_X,
+                NavState.last_cardinal_north_Y,
+                NavState.last_cardinal_north_width,
+                NavState.last_cardinal_north_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+    }
+
+    /*
     void drawDistanceToNode(
         double handheld_latitude_rad,
         double handheld_longitude_rad,
@@ -339,6 +600,9 @@ namespace Earendil_Display {
     ){
 
     }
+    */
+
+    // --- UX CONTROLS -----------------------------------------------------------------------
 
     void controlNav(){
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
@@ -351,7 +615,9 @@ namespace Earendil_Display {
 
     }
 
-    // =================================== TESTING STUFF =============================================
+    // =======================================================================================
+    // TESTING UTILITIES
+    // =======================================================================================
 
     void getBearingToNode(
         double& bearing_to_node_deg,
