@@ -51,7 +51,7 @@ namespace Earendil_Magnetometer {
     double getHeading(double calibrated[3]);
 
     void updateFilter(double raw[3]);
-    void applyCalibration(double calibrated[3]);
+    void applyCalibration(double* calibrated);
     void calibrateMagnetometer();
 }
 
