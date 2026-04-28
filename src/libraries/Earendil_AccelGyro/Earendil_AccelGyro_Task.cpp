@@ -24,34 +24,21 @@ namespace Earendil_AccelGyro {
 
 }
 
-/*
+
 void vAccelGyro(void* pvParameters){
   (void) pvParameters;
   vTaskDelay(pdMS_TO_TICKS(10000));
   printf("Accell-oscope started!\n");
 
-  GyroMetrics_t metrics;
-  EventBits_t   bits;
+
   gyroSetup();
   // gyroCalibrate();
   
   while (1){
-    bits = xEventGroupGetBits(gyroEventGroup);
-
-    if (bits & GYRO_EVT_CALIBRATE_REQUEST) {
-        // Clear the request bit before starting
-        xEventGroupClearBits(gyroEventGroup, GYRO_EVT_CALIBRATE_REQUEST);
-
-        bool success = gyroCalibrate();
-
-        // Signal completion or cancellation back to the requester
-        xEventGroupSetBits(gyroEventGroup, success ? GYRO_EVT_CALIBRATE_COMPLETE : GYRO_EVT_CALIBRATE_CANCELLED);
-    } else {
         // Normal operation: read and expose sensor data
-        gyroReading(metrics);
+        gyroReading();
         gyroShow(metrics); //For debugging
-    }
-    vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
-*/
+

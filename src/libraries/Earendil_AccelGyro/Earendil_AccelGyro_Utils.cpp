@@ -6,7 +6,6 @@ namespace AccelGyro {
 
 }
 
-/*
 
 // ─── Shared handles ────────────────────────────────────────────────
 EventGroupHandle_t  gyroEventGroup = NULL;
@@ -18,30 +17,13 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
 
 // ─── Internal helpers ──────────────────────────────────────────────
 
-static void lcdPrint(const char* msg)
-{
-    char text[LCD_MSG_LEN];
-    snprintf(text, LCD_MSG_LEN, "%s", msg);
-    xQueueSend(calQueue, &text, pdMS_TO_TICKS(50));
-}
 
-// // Blocks until BTN_CONFIRM or BTN_CANCEL is received from the ISR queue.
-// // Returns the button ID received.
-// static uint8_t waitForButton(void)
-// {
-//     uint8_t btn = 0;
-//     while (btn != BTN_CONFIRM && btn != BTN_CANCEL) {
-//         xQueueReceive(s_buttonQueue, &btn, portMAX_DELAY);
-//     }
-//     return btn;
-// }
+
 
 static void countdown(int n){
     char cd_buf[32];
-    lcdPrint("Sampling in ");
     for (; n>0; n--){
         snprintf(cd_buf, sizeof(cd_buf), "%d...\n", n);
-        lcdPrint(cd_buf);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -85,7 +67,7 @@ static bool gyroCalibrate(void)
     float avgA[3], avgG[3];
 
     // ── Gyro bias ──────────────────────────────────────────────────
-    lcdPrint("Place flat+still");
+
     // lcdPrint("Confirm/Cancel");
 
     // if (waitForButton() == BTN_CANCEL) {
@@ -95,8 +77,8 @@ static bool gyroCalibrate(void)
     //     return false;
     // }
 
-    lcdPrint("Sampling gyro...");
-    lcdPrint("");
+    //lcdPrint("Sampling gyro...");
+    //lcdPrint("");
 
     if (!collectSamples(avgA, avgG, CALIB_SAMPLES)) {
         //lcdPrint(1, "I2C Error!");
@@ -109,8 +91,8 @@ static bool gyroCalibrate(void)
     gyroBias[2] = avgG[2];
 
     snprintf(buf, LCD_MSG_LEN, "X:%.4f", gyroBias[0]);
-    lcdPrint("Gyro bias done:");
-    lcdPrint(buf);
+    //lcdPrint("Gyro bias done:");
+    //lcdPrint(buf);
     vTaskDelay(pdMS_TO_TICKS(1500));
 
     // ── Accel 6-position calibration ──────────────────────────────
@@ -128,12 +110,12 @@ static bool gyroCalibrate(void)
 
     float posData[6][3];
 
-    lcdPrint("Get ready, Y arrow away, X arrow right");
+    //lcdPrint("Get ready, Y arrow away, X arrow right");
 
     for (int p = 0; p < 6; p++) {
         snprintf(buf, LCD_MSG_LEN, "%d/6: %s", p + 1, posLabels[p]);
-        lcdPrint("Accel Calibration");
-        lcdPrint(buf);
+        //lcdPrint("Accel Calibration");
+        //lcdPrint(buf);
         vTaskDelay(pdMS_TO_TICKS(3000));
         // lcdPrint("Confirm/Cancel");
 
@@ -148,13 +130,13 @@ static bool gyroCalibrate(void)
 
         if (!collectSamples(posData[p], avgG, CALIB_SAMPLES)) {
             //lcdPrint(1, "I2C Error!");
-            lcdPrint("Collection Error!");
+            //lcdPrint("Collection Error!");
             return false;
         }
 
         snprintf(buf, LCD_MSG_LEN, "%.3f %.3f %.3f",
                  posData[p][0], posData[p][1], posData[p][2]);
-        lcdPrint(2, buf);
+        //lcdPrint(2, buf);
         vTaskDelay(pdMS_TO_TICKS(3000));
     }
 
@@ -171,13 +153,13 @@ static bool gyroCalibrate(void)
         accelScale[ax]  = GRAVITY / ((posReading - negReading) / 2.0f);
     }
 
-    lcdPrint("Calibration Done");
+    //lcdPrint("Calibration Done");
     snprintf(buf, LCD_MSG_LEN, "Offsets: %.3f %.3f %.3f",
              accelOffset[0], accelOffset[1], accelOffset[2]);
-    lcdPrint(buf);
+    //lcdPrint(buf);
     snprintf(buf, LCD_MSG_LEN, "Scale:   %.3f %.3f %.3f",
              accelScale[0], accelScale[1], accelScale[2]);
-    lcdPrint(buf);
+    //lcdPrint(buf);
     vTaskDelay(pdMS_TO_TICKS(2000));
 
     return true;
@@ -202,15 +184,15 @@ void gyroSetup(){
         bool found = sox.begin_I2C();
         //xSemaphoreGive(s_i2cMutex);
         if (!found) {
-            lcdPrint("LSM6DSOX");
-            lcdPrint("NOT FOUND");
+            //lcdPrint("LSM6DSOX");
+            //lcdPrint("NOT FOUND");
             while (1) { 
                 vTaskDelay(pdMS_TO_TICKS(100));
             }
         }
     //}
 
-    lcdPrint("LSM6DSOX Found!");
+    //lcdPrint("LSM6DSOX Found!");
     vTaskDelay(pdMS_TO_TICKS(1000));
     
     // Log accel range
@@ -223,7 +205,7 @@ void gyroSetup(){
         case LSM6DS_ACCEL_RANGE_16_G: snprintf(a_buf, LCD_MSG_LEN, "Accel: +-16G"); break;
         default:                      snprintf(a_buf, LCD_MSG_LEN, "Accel: Unknown"); break;
     }
-    lcdPrint(a_buf);
+    //lcdPrint(a_buf);
     vTaskDelay(pdMS_TO_TICKS(1000));
 
     // sox.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS );
@@ -235,7 +217,7 @@ void gyroSetup(){
     case LSM6DS_GYRO_RANGE_2000_DPS: snprintf(a_buf, LCD_MSG_LEN, "Gyro Range: 2000 degrees/s"); break;
     case ISM330DHCX_GYRO_RANGE_4000_DPS: snprintf(a_buf, LCD_MSG_LEN, "Gyro Range: N/A"); break; // unsupported range for the DSOX
     }
-    lcdPrint(a_buf);
+    //lcdPrint(a_buf);
     vTaskDelay(pdMS_TO_TICKS(1000));
 
     // sox.setAccelDataRate(LSM6DS_RATE_12_5_HZ);
@@ -252,7 +234,7 @@ void gyroSetup(){
     case LSM6DS_RATE_3_33K_HZ: snprintf(a_buf, LCD_MSG_LEN, "Accel Data Rate:  3.33 KHz"); break;
     case LSM6DS_RATE_6_66K_HZ: snprintf(a_buf, LCD_MSG_LEN, "Accel Data Rate:  6.66 KHz"); break;
     }
-    lcdPrint(a_buf);
+    //lcdPrint(a_buf);
     vTaskDelay(pdMS_TO_TICKS(1000));
 
     // sox.setGyroDataRate(LSM6DS_RATE_12_5_HZ);
@@ -269,13 +251,13 @@ void gyroSetup(){
     case LSM6DS_RATE_3_33K_HZ: snprintf(a_buf, LCD_MSG_LEN, "Gyro Data Rate:  3.33 KHz"); break;
     case LSM6DS_RATE_6_66K_HZ: snprintf(a_buf, LCD_MSG_LEN, "Gyro Data Rate:  6.66 KHz"); break;
     }
-    lcdPrint(a_buf);
+
     vTaskDelay(pdMS_TO_TICKS(1000));
 }
 
 // ─── Reading (calibration applied) ────────────────────────────────
 
-void gyroReading(GyroMetrics_t metrics)
+void gyroReading()
 {
     //if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) != pdTRUE) return;
 
@@ -283,25 +265,28 @@ void gyroReading(GyroMetrics_t metrics)
     sox.getEvent(&accel, &gyro, &temp);
     //xSemaphoreGive(s_i2cMutex);
 
-    metrics[0] = (accel.acceleration.x - accelOffset[0]) * accelScale[0];
-    metrics[1] = (accel.acceleration.y - accelOffset[1]) * accelScale[1];
-    metrics[2] = (accel.acceleration.z - accelOffset[2]) * accelScale[2];
-    metrics[3] = gyro.gyro.x - gyroBias[0];
-    metrics[4] = gyro.gyro.y - gyroBias[1];
-    metrics[5] = gyro.gyro.z - gyroBias[2];
+    GyroMetrics[0] = (accel.acceleration.x - accelOffset[0]) * accelScale[0];
+    GyroMetrics[1] = (accel.acceleration.y - accelOffset[1]) * accelScale[1];
+    GyroMetrics[2] = (accel.acceleration.z - accelOffset[2]) * accelScale[2];
+    GyroMetrics[3] = gyro.gyro.x - gyroBias[0];
+    GyroMetrics[4] = gyro.gyro.y - gyroBias[1];
+    GyroMetrics[5] = gyro.gyro.z - gyroBias[2];
+
+
+    //send data to a shared struct
 }
 
 // ─── Display (snprintf for debug) ─────────────────────────────────
 
-void gyroShow(GyroMetrics_t metrics)
+void gyroShow()
 {
     printf("\n============ACCELL-OSCOPE READING===============\nAX:%.2f AY:%.2f AZ:%.2f\nGX:%.2f GY:%.2f GZ:%.2f\n================================================\n", 
-        metrics[0], 
-        metrics[1], 
-        metrics[2], 
-        metrics[3], 
-        metrics[4], 
-        metrics[5]
+        GyroMetrics[0], 
+        GyroMetrics[1], 
+        GyroMetrics[2], 
+        GyroMetrics[3], 
+        GyroMetrics[4], 
+        GyroMetrics[5]
     );
     // char buf[LCD_MSG_LEN];
     // snprintf(buf, LCD_MSG_LEN, "AX:%.2f AY:%.2f AZ:%.2f",
@@ -311,5 +296,3 @@ void gyroShow(GyroMetrics_t metrics)
     //          metrics[3], metrics[4], metrics[5]);
     // lcdPrint(1, buf);
 }
-
-*/
