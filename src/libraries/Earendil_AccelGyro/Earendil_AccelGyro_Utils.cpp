@@ -1,14 +1,10 @@
 #include <Earendil_AccelGyro.h>
 
-namespace AccelGyro {
+namespace Earendil_AccelGyro {
 
     Adafruit_LSM6DSOX accelgyro;
 
-}
 
-
-// ─── Shared handles ────────────────────────────────────────────────
-EventGroupHandle_t  gyroEventGroup = NULL;
 
 // ─── Calibration state ─────────────────────────────────────────────
 static float gyroBias[3]    = {0.0f, 0.0f, 0.0f};
@@ -18,7 +14,10 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
 // ─── Internal helpers ──────────────────────────────────────────────
 
 
-
+    void setup()
+    {
+        gyroSetup();
+    }
 
 static void countdown(int n){
     char cd_buf[32];
@@ -39,7 +38,7 @@ static bool collectSamples(float outAccel[3], float outGyro[3], int n)
         //    return false; // I2C bus unavailable
         //}
         sensors_event_t accel, gyro, temp;
-        sox.getEvent(&accel, &gyro, &temp);
+        accelgyro.getEvent(&accel, &gyro, &temp);
         //xSemaphoreGive(s_i2cMutex);
 
         sumA[0] += accel.acceleration.x;
@@ -82,7 +81,7 @@ static bool gyroCalibrate(void)
 
     if (!collectSamples(avgA, avgG, CALIB_SAMPLES)) {
         //lcdPrint(1, "I2C Error!");
-        lcdPrint("Collection Error!");
+        //lcdPrint("Collection Error!");
         return false;
     }
 
@@ -177,11 +176,9 @@ void gyroSetup(){
     // s_buttonQueue = buttonQueue;
     // s_i2cMutex    = i2cMutex;
 
-    gyroEventGroup = xEventGroupCreate();
-    configASSERT(gyroEventGroup != NULL);
 
     //if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) == pdTRUE) {
-        bool found = sox.begin_I2C();
+        bool found = accelgyro.begin_I2C();
         //xSemaphoreGive(s_i2cMutex);
         if (!found) {
             //lcdPrint("LSM6DSOX");
@@ -196,9 +193,9 @@ void gyroSetup(){
     vTaskDelay(pdMS_TO_TICKS(1000));
     
     // Log accel range
-    // sox.setAccelRange(LSM6DS_ACCEL_RANGE_2_G);
+    // accelgyro.setAccelRange(LSM6DS_ACCEL_RANGE_2_G);
     char a_buf[LCD_MSG_LEN];
-    switch (sox.getAccelRange()) {
+    switch (accelgyro.getAccelRange()) {
         case LSM6DS_ACCEL_RANGE_2_G:  snprintf(a_buf, LCD_MSG_LEN, "Accel: +-2G");  break;
         case LSM6DS_ACCEL_RANGE_4_G:  snprintf(a_buf, LCD_MSG_LEN, "Accel: +-4G");  break;
         case LSM6DS_ACCEL_RANGE_8_G:  snprintf(a_buf, LCD_MSG_LEN, "Accel: +-8G");  break;
@@ -208,8 +205,8 @@ void gyroSetup(){
     //lcdPrint(a_buf);
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    // sox.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS );
-    switch (sox.getGyroRange()) {
+    // accelgyro.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS );
+    switch (accelgyro.getGyroRange()) {
     case LSM6DS_GYRO_RANGE_125_DPS: snprintf(a_buf, LCD_MSG_LEN, "Gyro Range: 125 degrees/s"); break;
     case LSM6DS_GYRO_RANGE_250_DPS: snprintf(a_buf, LCD_MSG_LEN, "Gyro Range: 250 degrees/s"); break;
     case LSM6DS_GYRO_RANGE_500_DPS: snprintf(a_buf, LCD_MSG_LEN, "Gyro Range: 500 degrees/s"); break;
@@ -220,8 +217,8 @@ void gyroSetup(){
     //lcdPrint(a_buf);
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    // sox.setAccelDataRate(LSM6DS_RATE_12_5_HZ);
-    switch (sox.getAccelDataRate()) {
+    // accelgyro.setAccelDataRate(LSM6DS_RATE_12_5_HZ);
+    switch (accelgyro.getAccelDataRate()) {
     case LSM6DS_RATE_SHUTDOWN: snprintf(a_buf, LCD_MSG_LEN, "Accel Data Rate:  0 Hz"); break;
     case LSM6DS_RATE_12_5_HZ: snprintf(a_buf, LCD_MSG_LEN, "Accel Data Rate:  12.5 Hz"); break;
     case LSM6DS_RATE_26_HZ: snprintf(a_buf, LCD_MSG_LEN, "Accel Data Rate:  26 Hz"); break;
@@ -237,8 +234,8 @@ void gyroSetup(){
     //lcdPrint(a_buf);
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    // sox.setGyroDataRate(LSM6DS_RATE_12_5_HZ);
-    switch (sox.getGyroDataRate()) {
+    // accelgyro.setGyroDataRate(LSM6DS_RATE_12_5_HZ);
+    switch (accelgyro.getGyroDataRate()) {
     case LSM6DS_RATE_SHUTDOWN: snprintf(a_buf, LCD_MSG_LEN, "Gyro Data Rate:  0 Hz"); break;
     case LSM6DS_RATE_12_5_HZ: snprintf(a_buf, LCD_MSG_LEN, "Gyro Data Rate:  12.5 Hz"); break;
     case LSM6DS_RATE_26_HZ: snprintf(a_buf, LCD_MSG_LEN, "Gyro Data Rate:  26 Hz"); break;
@@ -262,15 +259,15 @@ void gyroReading()
     //if (xSemaphoreTake(s_i2cMutex, pdMS_TO_TICKS(I2C_TIMEOUT_MS)) != pdTRUE) return;
 
     sensors_event_t accel, gyro, temp;
-    sox.getEvent(&accel, &gyro, &temp);
+    accelgyro.getEvent(&accel, &gyro, &temp);
     //xSemaphoreGive(s_i2cMutex);
 
-    GyroMetrics[0] = (accel.acceleration.x - accelOffset[0]) * accelScale[0];
-    GyroMetrics[1] = (accel.acceleration.y - accelOffset[1]) * accelScale[1];
-    GyroMetrics[2] = (accel.acceleration.z - accelOffset[2]) * accelScale[2];
-    GyroMetrics[3] = gyro.gyro.x - gyroBias[0];
-    GyroMetrics[4] = gyro.gyro.y - gyroBias[1];
-    GyroMetrics[5] = gyro.gyro.z - gyroBias[2];
+    Earendil_Data-> AccelGyro_Data.GyroMetrics[0] = (accel.acceleration.x - accelOffset[0]) * accelScale[0];
+    Earendil_Data-> AccelGyro_Data.GyroMetrics[1] = (accel.acceleration.y - accelOffset[1]) * accelScale[1];
+    Earendil_Data-> AccelGyro_Data.GyroMetrics[2] = (accel.acceleration.z - accelOffset[2]) * accelScale[2];
+    Earendil_Data-> AccelGyro_Data.GyroMetrics[3] = gyro.gyro.x - gyroBias[0];
+    Earendil_Data-> AccelGyro_Data.GyroMetrics[4] = gyro.gyro.y - gyroBias[1];
+    Earendil_Data-> AccelGyro_Data.GyroMetrics[5] = gyro.gyro.z - gyroBias[2];
 
 
     //send data to a shared struct
@@ -281,12 +278,12 @@ void gyroReading()
 void gyroShow()
 {
     printf("\n============ACCELL-OSCOPE READING===============\nAX:%.2f AY:%.2f AZ:%.2f\nGX:%.2f GY:%.2f GZ:%.2f\n================================================\n", 
-        GyroMetrics[0], 
-        GyroMetrics[1], 
-        GyroMetrics[2], 
-        GyroMetrics[3], 
-        GyroMetrics[4], 
-        GyroMetrics[5]
+        Earendil_Data-> AccelGyro_Data.GyroMetrics[0], 
+        Earendil_Data-> AccelGyro_Data.GyroMetrics[1], 
+        Earendil_Data-> AccelGyro_Data.GyroMetrics[2], 
+        Earendil_Data-> AccelGyro_Data.GyroMetrics[3], 
+        Earendil_Data-> AccelGyro_Data.GyroMetrics[4], 
+        Earendil_Data-> AccelGyro_Data.GyroMetrics[5]
     );
     // char buf[LCD_MSG_LEN];
     // snprintf(buf, LCD_MSG_LEN, "AX:%.2f AY:%.2f AZ:%.2f",
@@ -295,4 +292,6 @@ void gyroShow()
     // snprintf(buf, LCD_MSG_LEN, "GX:%.2f GY:%.2f GZ:%.2f",
     //          metrics[3], metrics[4], metrics[5]);
     // lcdPrint(1, buf);
+}
+
 }
