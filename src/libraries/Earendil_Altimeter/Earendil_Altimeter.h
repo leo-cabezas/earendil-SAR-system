@@ -10,8 +10,6 @@
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_BMP3XX.h>    // Adafruit_BMP3XX library.
 
-#include <Earendil_Utils.h>
-
 namespace Earendil_Altimeter {
     // --------------------------------- TASKS ---------------------------------
     extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
@@ -28,5 +26,6 @@ namespace Earendil_Altimeter {
 
     // --------------------------------- UTILS ---------------------------------
     Adafruit_BMP3XX altimeter;
+    void setup();
     
 }

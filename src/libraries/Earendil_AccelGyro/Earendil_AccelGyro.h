@@ -17,6 +17,7 @@
 // --- DEPENDENCIES // EARENDIL LIBRARIES ---
 #include <Earendil_TaskHandles.h>
 #include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
 
 // --- OTHER DEPENDENCIES ---
 
@@ -24,22 +25,13 @@
 #define CALIB_SAMPLES 500
 #define GRAVITY 9.80665f
 
-// --- Event bits -------------------------------------------------------
-#define GYRO_EVT_CALIBRATE_REQUEST  ( 1 << 0 )
-#define GYRO_EVT_CALIBRATE_COMPLETE ( 1 << 1 )
-#define GYRO_EVT_CALIBRATE_CANCELLED ( 1 << 2 )
-
-// --- Button IDs -------------------------------------------------------
-// #define BTN_CONFIRM  0x01
-// #define BTN_CANCEL   0x02
-
 // --- LCD message ------------------------------------------------------
 // Adapt this struct to match your existing LCD task's message format
 #define LCD_MSG_LEN 64
 
 // --- Gyro metrics -----------------------------------------------------
 // [0..2] = accel X/Y/Z (m/s^2), [3..5] = gyro X/Y/Z (rad/s)
-typedef float GyroMetrics_t[6];
+
 
 // --- Shared handles (defined in gyro.cpp, extern'd for other tasks) ---
 
@@ -52,22 +44,28 @@ typedef float GyroMetrics_t[6];
 // void gyroReading(GyroMetrics_t metrics);
 // void gyroShow(GyroMetrics_t metrics);
 
-namespace AccelGyro {
+namespace Earendil_AccelGyro {
     // --------------------------------- TASKS ---------------------------------
     extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
     extern Earendil::Earendil_SharedData_t*     Earendil_Data;
+    extern Earendil::Earendil_Mutexes_t*        Earendil_Mutexes;
     
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     );
+
     void createTasks(void);
 
-    void createTask_vAccelGyro_(void);
-    void vAccelGyro_(void* pvParameters);
-
+    void createTask_vAccelGyro(void);
+    void vAccelGyro(void* pvParameters);
     // --------------------------------- UTILS ---------------------------------
     extern Adafruit_LSM6DSOX accelgyro;
+    void gyroSetup();
+    void gyroShow();
+    void gyroReading();
+    void setup();
 
 }
 
