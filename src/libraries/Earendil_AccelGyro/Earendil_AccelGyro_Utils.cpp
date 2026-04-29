@@ -13,11 +13,17 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
 
 // ─── Internal helpers ──────────────────────────────────────────────
 
+// static void lcdPrint(const char* msg)
+// {
+//     char text[LCD_MSG_LEN];
+//     snprintf(text, LCD_MSG_LEN, "%s", msg);
+//     xQueueSend(calQueue, &text, pdMS_TO_TICKS(50));
+// }
 
-    void setup()
-    {
-        gyroSetup();
-    }
+void setup()
+{
+    gyroSetup();
+}
 
 static void countdown(int n){
     char cd_buf[32];

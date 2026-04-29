@@ -33,9 +33,6 @@
 // [0..2] = accel X/Y/Z (m/s^2), [3..5] = gyro X/Y/Z (rad/s)
 
 
-// --- Shared handles (defined in gyro.cpp, extern'd for other tasks) ---
-
-
 // --- Public API ------------------------------------------------------
 // void gyroSetup(QueueHandle_t lcdQueue,
 //                QueueHandle_t buttonQueue,

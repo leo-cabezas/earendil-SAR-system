@@ -24,6 +24,13 @@
 #include <Earendil_Mutexes.h>
 
 // --- OTHER DEPENDENCIES ---
+#include <math.h>
+
+// --- GLOBALS // ALTIMETER ---
+#define SEALEVELPRESSURE_HPA (1008.0)//Lawrence, KS local sea-level pressure: 20260429
+#define LOCAL_ALTITUDE (291.7)//m
+#define LAPSE_RATE (0.0065)//K/m
+#define HYPSOMETRIC_CONSTANT (0.190284)// GAS_CONSTANT * LAPSE_RATE / GRAVITY = (287.05 J/kg*K) * (0.0065 K/m) / (9.80665 m/s²)
 
 namespace Earendil_Altimeter {
     // --------------------------------- TASKS ---------------------------------
@@ -39,12 +46,13 @@ namespace Earendil_Altimeter {
 
     void createTasks(void);
 
-    void createTask_vAltimeter_(void);
-    void vAltimeter_(void* pvParameters);
+    void createTask_vAltimeter(void);
+    void vAltimeter(void* pvParameters);
 
     // --------------------------------- UTILS ---------------------------------
     Adafruit_BMP3XX altimeter;
     
     void setup();
-    
+    void altRead_hh();
+    void altRead_node();
 }

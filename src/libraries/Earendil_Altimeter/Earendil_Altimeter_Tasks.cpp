@@ -17,18 +17,18 @@ namespace Earendil_Altimeter {
     }
 
     void createTasks(void){    
-        // createTask_vAltimeter_Update();
+        createTask_vAltimeter();
     }
 
     // =======================================================================================
-    // vAltimeter_Update
+    // vAltimeter
     // =======================================================================================
 
-    void createTask_vAltimeter_Update(void){
-        TaskHandle_t* task_handle_ptr = &Earendil_Handles->Display_Handles.task_vAltimeter_Update;
+    void createTask_vAltimeter(void){
+        TaskHandle_t* task_handle_ptr = &Earendil_Handles->Display_Handles.task_vAltimeter;
         xTaskCreate(
-            vAltimeter_Update,                              // Task function
-            "vAltimeter_Update",                            // Task name (for debugging)
+            vAltimeter,                                    // Task function
+            "vAltimeter",                                  // Task name (for debugging)
             512,                                            // Task stack depth (in words, NOT bytes!)
             NULL,                                           // Task parameters at creation
             1,                                              // Real-time task priority
@@ -39,9 +39,10 @@ namespace Earendil_Altimeter {
         );
     }
 
-    void vAltimeter_(void* pvParameters){
+    void vAltimeter(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
         
+<<<<<<< HEAD
         if (!bmp.begin_I2C()) {   // hardware I2C mode, can pass in address & alt Wire
             printf("Could not find a valid BMP3 sensor, check wiring!");
             vTaskDelete(NULL);
@@ -78,5 +79,16 @@ namespace Earendil_Altimeter {
 
             vTaskDelay(pdMS_TO_TICKS(5000));
         }
+=======
+        vTaskDelay(pdMS_TO_TICKS(10000));
+          
+          while (1){
+
+            altRead_hh();//Handheld
+            //altRead_node();//Node
+
+            vTaskDelay(pdMS_TO_TICKS(5000));  
+          }
+>>>>>>> 57615aab13e960a6adf6554990b17741fa58444b
     }
 }

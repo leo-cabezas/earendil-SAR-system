@@ -63,23 +63,68 @@ void updateDistance(float& distance){    // Is float enough precision?
     //float node_longitude_rad = GPS_Node.longitudeRadians;
     // float node_altitude = GPS_Node.
 
-    /*
-    float handheld_X = (EARTH_RADIUS + handheld_altitude) * sin(handheld_longitude) * cos(handheld_latitude - 90.0);
-    float handheld_Y = (EARTH_RADIUS + handheld_altitude) * sin(handheld_longitude) * sin(handheld_latitude - 90.0);
-    float handheld_Z = handheld_altitude;
+//     /*
+//     float handheld_X = (EARTH_RADIUS + handheld_altitude) * sin(handheld_longitude) * cos(handheld_latitude - 90.0);
+//     float handheld_Y = (EARTH_RADIUS + handheld_altitude) * sin(handheld_longitude) * sin(handheld_latitude - 90.0);
+//     float handheld_Z = handheld_altitude;
 
-    float node_X = (EARTH_RADIUS + node_altitude) * sin(node_longitude) * cos(node_latitude - 90.0);
-    float node_Y = (EARTH_RADIUS + node_altitude) * sin(node_longitude) * sin(node_latitude - 90.0);
-    float node_Z = node_altitude;
+//     float node_X = (EARTH_RADIUS + node_altitude) * sin(node_longitude) * cos(node_latitude - 90.0);
+//     float node_Y = (EARTH_RADIUS + node_altitude) * sin(node_longitude) * sin(node_latitude - 90.0);
+//     float node_Z = node_altitude;
     
-    float delta_X = node_X - handheld_X;
-    float delta_Y = node_Y - handheld_Y;
-    float delta_Z = node_Z - handheld_Z;
+//     float delta_X = node_X - handheld_X;
+//     float delta_Y = node_Y - handheld_Y;
+//     float delta_Z = node_Z - handheld_Z;
 
-    distance = sqrt(delta_X * delta_X + delta_Y * delta_Y + delta_Z * delta_Z);
-    */
-}
+//     distance = sqrt(delta_X * delta_X + delta_Y * delta_Y + delta_Z * delta_Z);
+//     */
+// }
 
+<<<<<<< HEAD:src/libraries/Earendil_Utils.cpp
+<<<<<<< HEAD
+// static inline void getBearingToNode(double& bearing_to_node_deg){
+//     // Need to take into account latitude difference w.r.t. spherical coordinates.
+//     double handheld_latitude_rad = GPS_Handheld.latitudeRad;
+//     double handheld_longitude_rad = GPS_Handheld.longitudeRad;
+//     double node_latitude_rad = GPS_Node.latitudeRad;
+//     double node_longitude_rad = GPS_Node.longitudeRad;
+=======
+void getBearingToNode(double& bearing_to_node_deg){
+    // Need to take into account latitude difference w.r.t. spherical coordinates.
+    double handheld_latitude_rad = 0.6;
+    double handheld_longitude_rad = 6.2;
+    double node_latitude_rad = 0.9;
+    double node_longitude_rad = 0.2;
+>>>>>>> 5120ffec7afcdeaeab4aa2f56daf3bf69c4b94cb
+
+//     double handheld_X = EARTH_RADIUS * sin(handheld_latitude_rad) * cos(handheld_longitude_rad);
+//     double handheld_Y = EARTH_RADIUS * sin(handheld_latitude_rad) * sin(handheld_longitude_rad);
+//     double handheld_Z = EARTH_RADIUS * cos(handheld_latitude_rad);
+//     double node_X = EARTH_RADIUS * sin(node_latitude_rad) * cos(node_longitude_rad);
+//     double node_Y = EARTH_RADIUS * sin(node_latitude_rad) * sin(node_longitude_rad);
+//     double node_Z = EARTH_RADIUS * cos(node_latitude_rad);
+    
+//     double Hx_sqr = handheld_X * handheld_X;
+//     double Hy_sqr = handheld_Y * handheld_Y;
+//     double Hz_sqr = handheld_Z * handheld_Z;
+//     double HxNx = handheld_X * node_X;
+//     double HyNy = handheld_Y * node_Y;
+//     double HzNz = handheld_Z * node_Z;
+    
+//     double mag_north_vec_X = (-1) * EARTH_RADIUS * handheld_X * handheld_Z;
+//     double mag_north_vec_Y = (-1) * EARTH_RADIUS * handheld_Y * handheld_Z;
+//     double mag_north_vec_Z = EARTH_RADIUS * (Hx_sqr + Hy_sqr);
+//     double mag_north_vec_mag = sqrt(pow(mag_north_vec_X, 2) + pow(mag_north_vec_Y, 2) + pow(mag_north_vec_Z, 2));
+
+//     double bearing_vec_X = node_X * (Hy_sqr + Hz_sqr) - handheld_X * (HyNy + HzNz); 
+//     double bearing_vec_Y = node_Y * (Hx_sqr + Hz_sqr) - handheld_Y * (HxNx + HzNz);
+//     double bearing_vec_Z = node_Z * (Hx_sqr + Hy_sqr) - handheld_Z * (HxNx + HyNy);
+//     double bearing_vec_mag = sqrt(pow(bearing_vec_X, 2) + pow(bearing_vec_Y, 2) + pow(bearing_vec_Z, 2));
+    
+//     double dot_product = mag_north_vec_X * bearing_vec_X + mag_north_vec_Y * bearing_vec_Y + mag_north_vec_Z * bearing_vec_Z;
+//     bearing_to_node_deg = acos(dot_product / (mag_north_vec_mag * bearing_vec_mag)) * (180.0 / M_PI);
+// }
+=======
 void getBearingToNode(
     double& bearing_to_node_deg,
     double  handheld_latitude_rad,
@@ -124,6 +169,7 @@ void getBearingToNode(
     
     bearing_to_node_deg = atan2(BxM_dot_N, B_dot_M) * (180.0 / M_PI);
 }
+>>>>>>> c0783c551938a72d0a6db3035aeb50d75a520b3a:src/core/Earendil_Utils.cpp
 
 void vGPSRXUtility(void* pvParameters){
     GPSData_t gpsBench;
