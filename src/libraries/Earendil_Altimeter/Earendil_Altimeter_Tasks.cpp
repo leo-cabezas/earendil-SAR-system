@@ -25,7 +25,7 @@ namespace Earendil_Altimeter {
     // =======================================================================================
 
     void createTask_vAltimeter(void){
-        TaskHandle_t* task_handle_ptr = &Earendil_Handles->Display_Handles.task_vAltimeter;
+        TaskHandle_t* task_handle_ptr = &Earendil_Handles->Altimeter_Handles.task_vAltimeter;
         xTaskCreate(
             vAltimeter,                                    // Task function
             "vAltimeter",                                  // Task name (for debugging)

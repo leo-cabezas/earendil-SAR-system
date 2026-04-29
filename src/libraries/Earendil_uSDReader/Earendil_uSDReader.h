@@ -10,7 +10,38 @@
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <SdFat.h>              // SdFat library.
 
+// --- DEPENDENCIES // EARENDIL LIBRARIES ---
+#include <Earendil_TaskHandles.h>
+#include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
+
+
 #define USD_CS 11
 #define DISABLE_FS_H_WARNING
 
-void vMicroSD(void* pvParameters);
+namespace Earendil_uSDReader{
+    // --------------------------------- TASKS ---------------------------------
+    extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
+    extern Earendil::Earendil_SharedData_t*     Earendil_Data;
+    extern Earendil::Earendil_Mutexes_t*        Earendil_Mutexes;
+    
+    void linkSharedStructs(
+        Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
+    );
+    
+    void createTasks(void);
+
+    void createTask_vuSDReader(void);
+    void vuSDReader(void* pvParameters);
+
+    // --------------------------------- UTILS ---------------------------------
+    extern SdExFat sd;
+    extern ExFile file;
+
+    void setup();
+    void vuSDReader(void* pvParameters);
+    void logData();
+}
+
