@@ -4,13 +4,16 @@ namespace Earendil_Altimeter {
 
     Earendil::Earendil_TaskHandles_t*   Earendil_Handles    = nullptr; 
     Earendil::Earendil_SharedData_t*    Earendil_Data       = nullptr;
+    Earendil::Earendil_Mutexes_t*       Earendil_Mutexes    = nullptr;
 
     void linkSharedStructs(
         Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
-        Earendil::Earendil_SharedData_t*    global_Earendil_Data
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     ){
         Earendil_Handles    = global_Earendil_Handles;
         Earendil_Data       = global_Earendil_Data;
+        Earendil_Mutexes    = global_Earendil_Mutexes;
     }
 
     void createTasks(void){    
