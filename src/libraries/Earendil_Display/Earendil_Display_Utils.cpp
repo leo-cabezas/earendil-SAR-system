@@ -189,8 +189,6 @@ namespace Earendil_Display {
         display.print("------ MENU ------");    // prints out menu icon
     }
 
-    // Placeholder for now. everythigns in the serial monitor while I figure out the scrolling part. if I cant figure it out i'll go back to the original idea i had
-    // yippee i figured out the scrolling part. pain in the ass, i needed a top index tracker
     void draw_MenuScreen_Dynamic(){
         display.setCursor(X_MENU_OFFSET - 20, Y_MENU_OFFSET - 40);//sets the cursor to draw the text. x is from left to right byt a larger y is downward
         display.setTextColor(GC9A01A_WHITE);
@@ -321,8 +319,6 @@ namespace Earendil_Display {
     // --- DYNAMIC UI ELEMENTS ---------------------------------------------------------------
 
     void draw_NavScreen_Dynamic(){
-        
-
         double heading_north_deg        = Earendil_Data->Magnetometer_Data.heading_deg;
         
         double handheld_latitude_rad    = Earendil_Data->GPS_Data.latitude_rad;
@@ -348,15 +344,17 @@ namespace Earendil_Display {
             node_latitude_rad,
             node_longitude_rad
         );
-
+        
         clear_LastBearingToNode();
         clear_LastHeadingToNorth();
         clear_LastCardinalDirections();
+        clear_DistanceToNode();
 
-        draw_BearingToNode(heading_north_deg, bearing_node_deg);
-        draw_HeadingToNorth(heading_north_deg);
+        draw_DistanceToNode(1488.123456789);
         draw_CardinalDirections(heading_north_deg);
-
+        draw_HeadingToNorth(heading_north_deg);
+        draw_BearingToNode(heading_north_deg, bearing_node_deg);    
+        
         /*
         display.fillRect(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30, 120, 90, NAV_BACKGROUND_COLOR);
 
@@ -368,33 +366,60 @@ namespace Earendil_Display {
         display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30 + 30);
         display.setTextColor(GC9A01A_YELLOW);
         display.print(bearing_node_deg);
-
-        display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30 + 30 + 30);
-        display.setTextColor(GC9A01A_BLUE);
-        display.print(distance_node_m);
         */
     }
 
     void draw_HeadingToNorth(
         double heading_north_deg
     ){
-        int16_t heading_north_X = DISPLAY_CENTER_X + HEADING_TRACK_RADIUS * cos( (heading_north_deg + 90) * (M_PI / 180.0));
-        int16_t heading_north_Y = DISPLAY_CENTER_Y - HEADING_TRACK_RADIUS * sin( (heading_north_deg + 90) * (M_PI / 180.0));
-
-        display.fillCircle(
-            heading_north_X, heading_north_Y, 
-            HEADING_CIRCLE_RADIUS, HEADING_NORTH_COLOR
-        );
+        double  heading_track_radius_corr = HEADING_TRIANGLE_HEIGHT / 6.0;
+        int16_t heading_N_center_X  = DISPLAY_CENTER_X + (HEADING_TRACK_RADIUS - heading_track_radius_corr) * cos( (heading_north_deg + 90.0) * (M_PI / 180.0));
+        int16_t heading_N_center_Y  = DISPLAY_CENTER_Y - (HEADING_TRACK_RADIUS - heading_track_radius_corr) * sin( (heading_north_deg + 90.0) * (M_PI / 180.0));
         
-        NavState.last_heading_north_X = heading_north_X;
-        NavState.last_heading_north_Y = heading_north_Y;
+        double heading_triangle_radius = HEADING_TRIANGLE_HEIGHT * (2.0 / 3.0);
+        
+        int16_t heading_N_vertex_X0 = heading_N_center_X + heading_triangle_radius * cos( (heading_north_deg + 0.0 + 90.0) * (M_PI / 180.0));
+        int16_t heading_N_vertex_Y0 = heading_N_center_Y - heading_triangle_radius * sin( (heading_north_deg + 0.0 + 90.0) * (M_PI / 180.0));
+        int16_t heading_N_vertex_X1 = heading_N_center_X + heading_triangle_radius * cos( (heading_north_deg + 120.0 + 90.0) * (M_PI / 180.0));
+        int16_t heading_N_vertex_Y1 = heading_N_center_Y - heading_triangle_radius * sin( (heading_north_deg + 120.0 + 90.0) * (M_PI / 180.0));
+        int16_t heading_N_vertex_X2 = heading_N_center_X + heading_triangle_radius * cos( (heading_north_deg + 240.0 + 90.0) * (M_PI / 180.0));
+        int16_t heading_N_vertex_Y2 = heading_N_center_Y - heading_triangle_radius * sin( (heading_north_deg + 240.0 + 90.0) * (M_PI / 180.0));
+
+        display.fillTriangle(
+            heading_N_vertex_X0, 
+            heading_N_vertex_Y0, 
+            heading_N_vertex_X1, 
+            heading_N_vertex_Y1,
+            heading_N_vertex_X2, 
+            heading_N_vertex_Y2, 
+            HEADING_NORTH_COLOR
+        );
+
+        NavState.heading_N_vertex_X0 = heading_N_vertex_X0;
+        NavState.heading_N_vertex_Y0 = heading_N_vertex_Y0;
+        NavState.heading_N_vertex_X1 = heading_N_vertex_X1;
+        NavState.heading_N_vertex_Y1 = heading_N_vertex_Y1;
+        NavState.heading_N_vertex_X2 = heading_N_vertex_X2;
+        NavState.heading_N_vertex_Y2 = heading_N_vertex_Y2;
     }
 
     void clear_LastHeadingToNorth(){
-        if ( (NavState.last_heading_north_X >= 0) && (NavState.last_heading_north_Y >= 0) ){
-            display.fillCircle(
-                NavState.last_heading_north_X, NavState.last_heading_north_Y, 
-                HEADING_CIRCLE_RADIUS, NAV_BACKGROUND_COLOR
+        if ( 
+            (NavState.heading_N_vertex_X0 >= 0) &&
+            (NavState.heading_N_vertex_Y0 >= 0) &&
+            (NavState.heading_N_vertex_X1 >= 0) &&
+            (NavState.heading_N_vertex_Y1 >= 0) &&
+            (NavState.heading_N_vertex_X2 >= 0) &&
+            (NavState.heading_N_vertex_Y2 >= 0)
+        ){
+            display.fillTriangle(
+                NavState.heading_N_vertex_X0, 
+                NavState.heading_N_vertex_Y0, 
+                NavState.heading_N_vertex_X1, 
+                NavState.heading_N_vertex_Y1,
+                NavState.heading_N_vertex_X2, 
+                NavState.heading_N_vertex_Y2, 
+                NAV_BACKGROUND_COLOR
             );
         }
     }
@@ -404,8 +429,8 @@ namespace Earendil_Display {
         double bearing_node_deg
     ){
         double node_angle_deg   = heading_north_deg - bearing_node_deg;
-        int16_t bearing_node_X  = DISPLAY_CENTER_X + BEARING_TRACK_RADIUS * cos( (node_angle_deg + 90) * (M_PI / 180.0));
-        int16_t bearing_node_Y  = DISPLAY_CENTER_Y - BEARING_TRACK_RADIUS * sin( (node_angle_deg + 90) * (M_PI / 180.0));
+        int16_t bearing_node_X  = DISPLAY_CENTER_X + BEARING_TRACK_RADIUS * cos( (node_angle_deg + 90.0) * (M_PI / 180.0));
+        int16_t bearing_node_Y  = DISPLAY_CENTER_Y - BEARING_TRACK_RADIUS * sin( (node_angle_deg + 90.0) * (M_PI / 180.0));
 
         display.fillCircle(
             bearing_node_X, bearing_node_Y, 
@@ -428,179 +453,475 @@ namespace Earendil_Display {
     void draw_CardinalDirections(
         double heading_north_deg
     ){
-        display.setTextSize(CARDINAL_DIRS_TEXT_SIZE);
-
-        // NORTH 
-        double north_angle          = heading_north_deg;
-        int16_t cardinal_north_X    = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (north_angle + 90) * (M_PI / 180.0));
-        int16_t cardinal_north_Y    = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (north_angle + 90) * (M_PI / 180.0));
-
-        int16_t cardinal_north_corner_X = 0;
-        int16_t cardinal_north_corner_Y = 0;
-        uint16_t cardinal_north_width   = 0;
-        uint16_t cardinal_north_height  = 0;
-
-        display.getTextBounds(
-                "N",
-                cardinal_north_X,
-                cardinal_north_Y,
-                &cardinal_north_corner_X,
-                &cardinal_north_corner_Y,
-                &cardinal_north_width,
-                &cardinal_north_height
+        // DRAW "N" (NORTH LABEL)
+        double N_angle  = heading_north_deg;
+        draw_CardinalLabel(
+            N_angle,
+            "N",
+            CARDINAL_DIRS_TEXTSIZE_N,
+            CARDINAL_DIRS_COLOR_N,
+            NavState.last_cardinal_N_label_X,
+            NavState.last_cardinal_N_label_Y,
+            NavState.last_cardinal_N_label_width,
+            NavState.last_cardinal_N_label_height
         );
 
-        cardinal_north_X    -= cardinal_north_width / 2;
-        cardinal_north_Y    -= cardinal_north_height / 2;
-
-        display.setCursor(cardinal_north_X, cardinal_north_Y);
-        display.setTextColor(CARDINAL_DIRS_COLOR_N);
-        display.print("N");
-
-        NavState.last_cardinal_north_X  = cardinal_north_X;
-        NavState.last_cardinal_north_Y  = cardinal_north_Y;
-
-        // WEST
-        double west_angle           = north_angle + 90;
-        int16_t cardinal_west_X     = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (west_angle + 90) * (M_PI / 180.0));
-        int16_t cardinal_west_Y     = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (west_angle + 90) * (M_PI / 180.0));
-
-        display.getTextBounds(
-                "N",
-                cardinal_north_X,
-                cardinal_north_Y,
-                &cardinal_north_corner_X,
-                &cardinal_north_corner_Y,
-                &cardinal_north_width,
-                &cardinal_north_height
+        // DRAW "W" (WEST LABEL)
+        double W_angle   = N_angle + 90.0;
+        draw_CardinalLabel(
+            W_angle,
+            "W",
+            CARDINAL_DIRS_TEXTSIZE_W,
+            CARDINAL_DIRS_COLOR_W,
+            NavState.last_cardinal_W_label_X,
+            NavState.last_cardinal_W_label_Y,
+            NavState.last_cardinal_W_label_width,
+            NavState.last_cardinal_W_label_height
+        );
+        draw_CardinalNotch(
+            W_angle,
+            CARDINAL_DIRS_COLOR_W,
+            NavState.last_cardinal_W_notch_X0,
+            NavState.last_cardinal_W_notch_Y0,
+            NavState.last_cardinal_W_notch_X1,
+            NavState.last_cardinal_W_notch_Y1
         );
 
-        cardinal_north_X    -= cardinal_north_width / 2;
-        cardinal_north_Y    -= cardinal_north_height / 2;
-
-        display.setCursor(cardinal_west_X, cardinal_west_Y);
-        display.setTextColor(CARDINAL_DIRS_COLOR_W);
-        display.print("W");
-
-        NavState.last_cardinal_west_X   = cardinal_west_X;
-        NavState.last_cardinal_west_Y   = cardinal_west_Y;
-
-        // SOUTH
-        double south_angle          = west_angle + 90;
-        int16_t cardinal_south_X    = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (south_angle + 90) * (M_PI / 180.0));
-        int16_t cardinal_south_Y    = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (south_angle + 90) * (M_PI / 180.0));
-
-        display.getTextBounds(
-                "N",
-                cardinal_north_X,
-                cardinal_north_Y,
-                &cardinal_north_corner_X,
-                &cardinal_north_corner_Y,
-                &cardinal_north_width,
-                &cardinal_north_height
+        // DRAW "S" (SOUTH LABEL)
+        double S_angle  = W_angle + 90.0;
+        draw_CardinalLabel(
+            S_angle,
+            "S",
+            CARDINAL_DIRS_TEXTSIZE_S,
+            CARDINAL_DIRS_COLOR_S,
+            NavState.last_cardinal_S_label_X,
+            NavState.last_cardinal_S_label_Y,
+            NavState.last_cardinal_S_label_width,
+            NavState.last_cardinal_S_label_height
+        );
+        draw_CardinalNotch(
+            S_angle,
+            CARDINAL_DIRS_COLOR_S,
+            NavState.last_cardinal_S_notch_X0,
+            NavState.last_cardinal_S_notch_Y0,
+            NavState.last_cardinal_S_notch_X1,
+            NavState.last_cardinal_S_notch_Y1
         );
 
-        cardinal_north_X    -= cardinal_north_width / 2;
-        cardinal_north_Y    -= cardinal_north_height / 2;
-
-        display.setCursor(cardinal_south_X, cardinal_south_Y);
-        display.setTextColor(CARDINAL_DIRS_COLOR_S);
-        display.print("S");
-
-        NavState.last_cardinal_south_X  = cardinal_south_X;
-        NavState.last_cardinal_south_Y  = cardinal_south_Y;
-
-        // EAST
-        double east_angle           = south_angle + 90;
-        int16_t cardinal_east_X     = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (east_angle + 90) * (M_PI / 180.0));
-        int16_t cardinal_east_Y     = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (east_angle + 90) * (M_PI / 180.0));
-
-        display.getTextBounds(
-                "N",
-                cardinal_north_X,
-                cardinal_north_Y,
-                &cardinal_north_corner_X,
-                &cardinal_north_corner_Y,
-                &cardinal_north_width,
-                &cardinal_north_height
+        // DRAW "E" (EAST LABEL)
+        double E_angle   = S_angle + 90.0;
+        draw_CardinalLabel(
+            E_angle,
+            "E",
+            CARDINAL_DIRS_TEXTSIZE_E,
+            CARDINAL_DIRS_COLOR_E,
+            NavState.last_cardinal_E_label_X,
+            NavState.last_cardinal_E_label_Y,
+            NavState.last_cardinal_E_label_width,
+            NavState.last_cardinal_E_label_height
+        );
+        draw_CardinalNotch(
+            E_angle,
+            CARDINAL_DIRS_COLOR_E,
+            NavState.last_cardinal_E_notch_X0,
+            NavState.last_cardinal_E_notch_Y0,
+            NavState.last_cardinal_E_notch_X1,
+            NavState.last_cardinal_E_notch_Y1
         );
 
-        cardinal_north_X    -= cardinal_north_width / 2;
-        cardinal_north_Y    -= cardinal_north_height / 2;
+        // DRAW "NW" (NORTH-WEST LABEL)
+        double NW_angle     = N_angle + 45.0;
+        draw_CardinalLabel(
+            NW_angle,
+            "NW",
+            CARDINAL_DIRS_TEXTSIZE_NW,
+            CARDINAL_DIRS_COLOR_NW,
+            NavState.last_cardinal_NW_label_X,
+            NavState.last_cardinal_NW_label_Y,
+            NavState.last_cardinal_NW_label_width,
+            NavState.last_cardinal_NW_label_height
+        );
+        draw_CardinalNotch(
+            NW_angle,
+            CARDINAL_DIRS_COLOR_NW,
+            NavState.last_cardinal_NW_notch_X0,
+            NavState.last_cardinal_NW_notch_Y0,
+            NavState.last_cardinal_NW_notch_X1,
+            NavState.last_cardinal_NW_notch_Y1
+        );
 
-        display.setCursor(cardinal_east_X, cardinal_east_Y);
-        display.setTextColor(CARDINAL_DIRS_COLOR_E);
-        display.print("E");
+        // DRAW "SW" (SOUTH-WEST LABEL)
+        double SW_angle     = NW_angle + 90.0;
+        draw_CardinalLabel(
+            SW_angle,
+            "SW",
+            CARDINAL_DIRS_TEXTSIZE_SW,
+            CARDINAL_DIRS_COLOR_SW,
+            NavState.last_cardinal_SW_label_X,
+            NavState.last_cardinal_SW_label_Y,
+            NavState.last_cardinal_SW_label_width,
+            NavState.last_cardinal_SW_label_height
+        );
+        draw_CardinalNotch(
+            SW_angle,
+            CARDINAL_DIRS_COLOR_SW,
+            NavState.last_cardinal_SW_notch_X0,
+            NavState.last_cardinal_SW_notch_Y0,
+            NavState.last_cardinal_SW_notch_X1,
+            NavState.last_cardinal_SW_notch_Y1
+        );
 
-        NavState.last_cardinal_east_X   = cardinal_east_X;
-        NavState.last_cardinal_east_Y   = cardinal_east_Y;
+        // DRAW "SE" (SOUTH-EAST LABEL)
+        double SE_angle     = SW_angle + 90.0;
+        draw_CardinalLabel(
+            SE_angle,
+            "SE",
+            CARDINAL_DIRS_TEXTSIZE_SE,
+            CARDINAL_DIRS_COLOR_SE,
+            NavState.last_cardinal_SE_label_X,
+            NavState.last_cardinal_SE_label_Y,
+            NavState.last_cardinal_SE_label_width,
+            NavState.last_cardinal_SE_label_height
+        );
+        draw_CardinalNotch(
+            SE_angle,
+            CARDINAL_DIRS_COLOR_SE,
+            NavState.last_cardinal_SE_notch_X0,
+            NavState.last_cardinal_SE_notch_Y0,
+            NavState.last_cardinal_SE_notch_X1,
+            NavState.last_cardinal_SE_notch_Y1
+        );
+
+        // DRAW "NE" (NORTH-EAST LABEL)
+        double NE_angle     = SE_angle + 90.0;
+        draw_CardinalLabel(
+            NE_angle,
+            "NE",
+            CARDINAL_DIRS_TEXTSIZE_NE,
+            CARDINAL_DIRS_COLOR_NE,
+            NavState.last_cardinal_NE_label_X,
+            NavState.last_cardinal_NE_label_Y,
+            NavState.last_cardinal_NE_label_width,
+            NavState.last_cardinal_NE_label_height
+        );
+        draw_CardinalNotch(
+            NE_angle,
+            CARDINAL_DIRS_COLOR_SE,
+            NavState.last_cardinal_NE_notch_X0,
+            NavState.last_cardinal_NE_notch_Y0,
+            NavState.last_cardinal_NE_notch_X1,
+            NavState.last_cardinal_NE_notch_Y1
+        );
     }
 
-    void draw_Cardinal(
+    void draw_CardinalLabel(
         double      cardinal_angle,
-        const char* cardinal_label,
+        const char* cardinal_label_text,
+        uint8_t     cardinal_text_size,
         uint16_t    cardinal_color,
-        int16_t&    cardinal_X_save_to,
-        int16_t&    cardinal_Y_save_to,
-        uint16_t&   cardinal_width_save_to,
-        uint16_t&   cardinal_height_save_to
+        int16_t&    last_cardinal_label_X,
+        int16_t&    last_cardinal_label_Y,
+        uint16_t&   last_cardinal_label_width,
+        uint16_t&   last_cardinal_label_height
     ){
-        int16_t cardinal_X_raw  = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (cardinal_angle + 90) * (M_PI / 180.0));
-        int16_t cardinal_Y_raw  = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (cardinal_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_label_X_raw    = DISPLAY_CENTER_X + CARDINAL_DIRS_RADIUS * cos( (cardinal_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_label_Y_raw    = DISPLAY_CENTER_Y - CARDINAL_DIRS_RADIUS * sin( (cardinal_angle + 90) * (M_PI / 180.0));
 
-        int16_t cardinal_corner_X = 0;
-        int16_t cardinal_corner_Y = 0;
-        uint16_t cardinal_width   = 0;
-        uint16_t cardinal_height  = 0;
+        int16_t cardinal_label_corner_X = 0;
+        int16_t cardinal_label_corner_Y = 0;
+        uint16_t cardinal_label_width   = 0;
+        uint16_t cardinal_label_height  = 0;
 
+        display.setTextSize(cardinal_text_size);
         display.getTextBounds(
-                cardinal_label,
-                cardinal_X,
-                cardinal_Y,
-                &cardinal_corner_X,
-                &cardinal_corner_Y,
-                &cardinal_width,
-                &cardinal_height
+            cardinal_label_text,
+            cardinal_label_X_raw,
+            cardinal_label_Y_raw,
+            &cardinal_label_corner_X,
+            &cardinal_label_corner_Y,
+            &cardinal_label_width,
+            &cardinal_label_height
+        );
+        
+        int16_t cardinal_label_X  = cardinal_label_X_raw - (cardinal_label_corner_X - cardinal_label_X_raw) - (cardinal_label_width / 2)  + 2;
+        int16_t cardinal_label_Y  = cardinal_label_Y_raw - (cardinal_label_corner_Y - cardinal_label_Y_raw) - (cardinal_label_height / 2) + 2;
+
+        display.setCursor(cardinal_label_X, cardinal_label_Y);
+        display.setTextColor(cardinal_color);
+        display.print(cardinal_label_text);
+
+        last_cardinal_label_X       = cardinal_label_X;
+        last_cardinal_label_Y       = cardinal_label_Y;
+        last_cardinal_label_width   = cardinal_label_width;
+        last_cardinal_label_height  = cardinal_label_height;
+    }
+
+    void draw_CardinalNotch(
+        double      cardinal_angle,
+        uint16_t    cardinal_color,
+        int16_t&    last_cardinal_notch_X0,
+        int16_t&    last_cardinal_notch_Y0,
+        int16_t&    last_cardinal_notch_X1,
+        int16_t&    last_cardinal_notch_Y1
+    ){
+        int16_t cardinal_notch_X0   = DISPLAY_CENTER_X + (GUIDE_RAIL_RADIUS_INNER + 5) * cos( (cardinal_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_notch_Y0   = DISPLAY_CENTER_Y - (GUIDE_RAIL_RADIUS_INNER + 5) * sin( (cardinal_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_notch_X1   = DISPLAY_CENTER_X + (GUIDE_RAIL_RADIUS_OUTER - 5) * cos( (cardinal_angle + 90) * (M_PI / 180.0));
+        int16_t cardinal_notch_Y1   = DISPLAY_CENTER_Y - (GUIDE_RAIL_RADIUS_OUTER - 5) * sin( (cardinal_angle + 90) * (M_PI / 180.0));
+
+        display.drawLine(
+            cardinal_notch_X0,
+            cardinal_notch_Y0,
+            cardinal_notch_X1,
+            cardinal_notch_Y1,
+            cardinal_color
         );
 
-        cardinal_X  = cardinal_X_raw - - (cardinal_width / 2);
-        cardinal_Y  = cardinal_Y_raw - - cardinal_height / 2;
-
-        display.setCursor(cardinal_X, cardinal_Y);
-        display.setTextColor(cardinal_color);
-        display.print(cardinal_label);
-
-        NavState.last_cardinal_north_X  = cardinal_north_X;
-        NavState.last_cardinal_north_Y  = cardinal_north_Y;
+        last_cardinal_notch_X0 = cardinal_notch_X0;
+        last_cardinal_notch_Y0 = cardinal_notch_Y0;
+        last_cardinal_notch_X1 = cardinal_notch_X1;
+        last_cardinal_notch_Y1 = cardinal_notch_Y1;
     }
 
     void clear_LastCardinalDirections(){
         if (    
-            (NavState.last_cardinal_north_X >= 0)       && 
-            (NavState.last_cardinal_north_Y >= 0)       &&
-            (NavState.last_cardinal_north_width >= 0)   &&
-            (NavState.last_cardinal_north_height >= 0)
+            (NavState.last_cardinal_N_label_X >= 0)       && 
+            (NavState.last_cardinal_N_label_Y >= 0)       &&
+            (NavState.last_cardinal_N_label_width >= 0)   &&
+            (NavState.last_cardinal_N_label_height >= 0)
         ){
             display.fillRect(
-                NavState.last_cardinal_north_X,
-                NavState.last_cardinal_north_Y,
-                NavState.last_cardinal_north_width,
-                NavState.last_cardinal_north_height,
+                NavState.last_cardinal_N_label_X,
+                NavState.last_cardinal_N_label_Y,
+                NavState.last_cardinal_N_label_width,
+                NavState.last_cardinal_N_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_W_label_X >= 0)         && 
+            (NavState.last_cardinal_W_label_Y >= 0)         &&
+            (NavState.last_cardinal_W_label_width >= 0)     &&
+            (NavState.last_cardinal_W_label_height >= 0)    &&
+            (NavState.last_cardinal_W_notch_X0 >= 0)        &&
+            (NavState.last_cardinal_W_notch_Y0 >= 0)        &&
+            (NavState.last_cardinal_W_notch_X1 >= 0)        &&
+            (NavState.last_cardinal_W_notch_Y1 >= 0)        
+        ){
+            display.fillRect(
+                NavState.last_cardinal_W_label_X,
+                NavState.last_cardinal_W_label_Y,
+                NavState.last_cardinal_W_label_width,
+                NavState.last_cardinal_W_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+            display.drawLine(
+                NavState.last_cardinal_W_notch_X0,
+                NavState.last_cardinal_W_notch_Y0,
+                NavState.last_cardinal_W_notch_X1,
+                NavState.last_cardinal_W_notch_Y1,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_S_label_X >= 0)         && 
+            (NavState.last_cardinal_S_label_Y >= 0)         &&
+            (NavState.last_cardinal_S_label_width >= 0)     &&
+            (NavState.last_cardinal_S_label_height >= 0)    &&
+            (NavState.last_cardinal_S_notch_X0 >= 0)        &&
+            (NavState.last_cardinal_S_notch_Y0 >= 0)        &&
+            (NavState.last_cardinal_S_notch_X1 >= 0)        &&
+            (NavState.last_cardinal_S_notch_Y1 >= 0) 
+        ){
+            display.fillRect(
+                NavState.last_cardinal_S_label_X,
+                NavState.last_cardinal_S_label_Y,
+                NavState.last_cardinal_S_label_width,
+                NavState.last_cardinal_S_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+            display.drawLine(
+                NavState.last_cardinal_S_notch_X0,
+                NavState.last_cardinal_S_notch_Y0,
+                NavState.last_cardinal_S_notch_X1,
+                NavState.last_cardinal_S_notch_Y1,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_E_label_X >= 0)         && 
+            (NavState.last_cardinal_E_label_Y >= 0)         &&
+            (NavState.last_cardinal_E_label_width >= 0)     &&
+            (NavState.last_cardinal_E_label_height >= 0)    &&
+            (NavState.last_cardinal_E_notch_X0 >= 0)        &&
+            (NavState.last_cardinal_E_notch_Y0 >= 0)        &&
+            (NavState.last_cardinal_E_notch_X1 >= 0)        &&
+            (NavState.last_cardinal_E_notch_Y1 >= 0) 
+        ){
+            display.fillRect(
+                NavState.last_cardinal_E_label_X,
+                NavState.last_cardinal_E_label_Y,
+                NavState.last_cardinal_E_label_width,
+                NavState.last_cardinal_E_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+            display.drawLine(
+                NavState.last_cardinal_E_notch_X0,
+                NavState.last_cardinal_E_notch_Y0,
+                NavState.last_cardinal_E_notch_X1,
+                NavState.last_cardinal_E_notch_Y1,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_NW_label_X >= 0)        && 
+            (NavState.last_cardinal_NW_label_Y >= 0)        &&
+            (NavState.last_cardinal_NW_label_width >= 0)    &&
+            (NavState.last_cardinal_NW_label_height >= 0)   &&
+            (NavState.last_cardinal_NW_notch_X0 >= 0)       &&
+            (NavState.last_cardinal_NW_notch_Y0 >= 0)       &&
+            (NavState.last_cardinal_NW_notch_X1 >= 0)       &&
+            (NavState.last_cardinal_NW_notch_Y1 >= 0) 
+        ){
+            display.fillRect(
+                NavState.last_cardinal_NW_label_X,
+                NavState.last_cardinal_NW_label_Y,
+                NavState.last_cardinal_NW_label_width,
+                NavState.last_cardinal_NW_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+            display.drawLine(
+                NavState.last_cardinal_NW_notch_X0,
+                NavState.last_cardinal_NW_notch_Y0,
+                NavState.last_cardinal_NW_notch_X1,
+                NavState.last_cardinal_NW_notch_Y1,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_SW_label_X >= 0)        && 
+            (NavState.last_cardinal_SW_label_Y >= 0)        &&
+            (NavState.last_cardinal_SW_label_width >= 0)    &&
+            (NavState.last_cardinal_SW_label_height >= 0)   &&
+            (NavState.last_cardinal_SW_notch_X0 >= 0)       &&
+            (NavState.last_cardinal_SW_notch_Y0 >= 0)       &&
+            (NavState.last_cardinal_SW_notch_X1 >= 0)       &&
+            (NavState.last_cardinal_SW_notch_Y1 >= 0) 
+        ){
+            display.fillRect(
+                NavState.last_cardinal_SW_label_X,
+                NavState.last_cardinal_SW_label_Y,
+                NavState.last_cardinal_SW_label_width,
+                NavState.last_cardinal_SW_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+            display.drawLine(
+                NavState.last_cardinal_SW_notch_X0,
+                NavState.last_cardinal_SW_notch_Y0,
+                NavState.last_cardinal_SW_notch_X1,
+                NavState.last_cardinal_SW_notch_Y1,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_SE_label_X >= 0)        && 
+            (NavState.last_cardinal_SE_label_Y >= 0)        &&
+            (NavState.last_cardinal_SE_label_width >= 0)    &&
+            (NavState.last_cardinal_SE_label_height >= 0)   &&
+            (NavState.last_cardinal_SE_notch_X0 >= 0)       &&
+            (NavState.last_cardinal_SE_notch_Y0 >= 0)       &&
+            (NavState.last_cardinal_SE_notch_X1 >= 0)       &&
+            (NavState.last_cardinal_SE_notch_Y1 >= 0) 
+        ){
+            display.fillRect(
+                NavState.last_cardinal_SE_label_X,
+                NavState.last_cardinal_SE_label_Y,
+                NavState.last_cardinal_SE_label_width,
+                NavState.last_cardinal_SE_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+            display.drawLine(
+                NavState.last_cardinal_SE_notch_X0,
+                NavState.last_cardinal_SE_notch_Y0,
+                NavState.last_cardinal_SE_notch_X1,
+                NavState.last_cardinal_SE_notch_Y1,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_NE_label_X >= 0)        && 
+            (NavState.last_cardinal_NE_label_Y >= 0)        &&
+            (NavState.last_cardinal_NE_label_width >= 0)    &&
+            (NavState.last_cardinal_NE_label_height >= 0)   &&
+            (NavState.last_cardinal_NE_notch_X0 >= 0)       &&
+            (NavState.last_cardinal_NE_notch_Y0 >= 0)       &&
+            (NavState.last_cardinal_NE_notch_X1 >= 0)       &&
+            (NavState.last_cardinal_NE_notch_Y1 >= 0) 
+            
+        ){
+            display.fillRect(
+                NavState.last_cardinal_NE_label_X,
+                NavState.last_cardinal_NE_label_Y,
+                NavState.last_cardinal_NE_label_width,
+                NavState.last_cardinal_NE_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+            display.drawLine(
+                NavState.last_cardinal_NE_notch_X0,
+                NavState.last_cardinal_NE_notch_Y0,
+                NavState.last_cardinal_NE_notch_X1,
+                NavState.last_cardinal_NE_notch_Y1,
                 NAV_BACKGROUND_COLOR
             );
         }
     }
-
-    /*
-    void drawDistanceToNode(
-        double handheld_latitude_rad,
-        double handheld_longitude_rad,
-        double node_latitude_rad,
-        double node_longitude_rad
+    
+    void draw_DistanceToNode(
+        double distance_node_m
     ){
+        if (distance_node_m < DISTANCE_MAX_DISPL_VALUE){
+            char distance_str_buf[8];
+            snprintf(distance_str_buf, sizeof(distance_str_buf), "%.2f", distance_node_m);
+            const char* distance_str = distance_str_buf;
+
+            int16_t distance_label_X_raw    = DISPLAY_CENTER_X;
+            int16_t distance_label_Y_raw    = DISPLAY_CENTER_Y;
+
+            int16_t distance_label_corner_X = 0;
+            int16_t distance_label_corner_Y = 0;
+            uint16_t distance_label_width   = 0;
+            uint16_t distance_label_height  = 0;
+
+            display.setTextSize(DISTANCE_TEXT_SIZE);
+            display.getTextBounds(
+                distance_str,
+                distance_label_X_raw,
+                distance_label_Y_raw,
+                &distance_label_corner_X,
+                &distance_label_corner_Y,
+                &distance_label_width,
+                &distance_label_height
+            );
+            
+            int16_t distance_label_X    = distance_label_X_raw - (distance_label_width / 4.0);
+            int16_t distance_label_Y    = distance_label_Y_raw - (distance_label_corner_Y - distance_label_Y_raw) - (distance_label_height / 2.0) + 2;
+
+            display.setCursor(distance_label_X, distance_label_Y_raw);
+            display.setTextColor(DISTANCE_TEXT_COLOR);
+            display.print(distance_str);
+
+            NavState.last_distance_label_X       = distance_label_X;
+            NavState.last_distance_label_Y       = distance_label_Y;
+            NavState.last_distance_label_width   = distance_label_width;
+            NavState.last_distance_label_height  = distance_label_height;
+        } else {
+            ; // More than DISTANCE_MAX_DISPL_VALUE away case.
+        }
+    }
+
+    void clear_DistanceToNode(){
 
     }
-    */
 
     // --- UX CONTROLS -----------------------------------------------------------------------
 

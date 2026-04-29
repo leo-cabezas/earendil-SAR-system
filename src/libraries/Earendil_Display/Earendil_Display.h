@@ -60,35 +60,61 @@
 #define NAV_BACKGROUND_COLOR        GC9A01A_BLACK
 #define NAV_BACKGROUND_COLOR_INV    GC9A01A_WHITE
 
-#define HEADING_TRACK_RADIUS        100.0
-#define HEADING_CIRCLE_RADIUS       5.0
+#define HEADING_TRACK_RADIUS        110.0
+#define HEADING_TRIANGLE_HEIGHT     8.0
 #define HEADING_NORTH_COLOR         GC9A01A_RED
 #define HEADING_NORTH_COLOR_INV     GC9A01A_RED
 
-#define BEARING_TRACK_RADIUS        100.0
-#define BEARING_CIRCLE_RADIUS       HEADING_CIRCLE_RADIUS
+#define BEARING_TRACK_RADIUS        HEADING_TRACK_RADIUS
+#define BEARING_CIRCLE_RADIUS       5.0
 #define BEARING_NODE_COLOR          GC9A01A_YELLOW
 #define BEARING_NODE_COLOR_INV      GC9A01A_BLUE
 
 #define GUIDE_RAIL_PADDING_OUTER    4.0
-#define GUIDE_RAIL_PADDING_INNER    4.0
-#define GUIDE_RAIL_RADIUS_OUTER     (HEADING_TRACK_RADIUS + (HEADING_CIRCLE_RADIUS + GUIDE_RAIL_PADDING_OUTER))
-#define GUIDE_RAIL_RADIUS_INNER     (HEADING_TRACK_RADIUS - (HEADING_CIRCLE_RADIUS + GUIDE_RAIL_PADDING_INNER))
+#define GUIDE_RAIL_PADDING_INNER    3.0
+#define GUIDE_RAIL_RADIUS_OUTER     (HEADING_TRACK_RADIUS + (BEARING_CIRCLE_RADIUS + GUIDE_RAIL_PADDING_OUTER))
+#define GUIDE_RAIL_RADIUS_INNER     (HEADING_TRACK_RADIUS - (BEARING_CIRCLE_RADIUS + GUIDE_RAIL_PADDING_INNER))
 #define GUIDE_RAIL_COLOR            GC9A01A_WHITE
 #define GUIDE_RAIL_COLOR_INV        GC9A01A_BLACK
 
-
-#define CARDINAL_DIRS_TEXT_SIZE     2
-#define CARDINAL_DIRS_PADDING       30
+#define CARDINAL_DIRS_PADDING       21
 #define CARDINAL_DIRS_RADIUS        (HEADING_TRACK_RADIUS - CARDINAL_DIRS_PADDING)
+
+#define CARDINAL_DIRS_TEXTSIZE_N    2
 #define CARDINAL_DIRS_COLOR_N       GC9A01A_RED
-#define CARDINAL_DIRS_COLOR_W       GC9A01A_WHITE
-#define CARDINAL_DIRS_COLOR_S       GC9A01A_WHITE
-#define CARDINAL_DIRS_COLOR_E       GC9A01A_WHITE
 #define CARDINAL_DIRS_COLOR_N_INV   
+
+#define CARDINAL_DIRS_TEXTSIZE_W    2
+#define CARDINAL_DIRS_COLOR_W       GC9A01A_WHITE
 #define CARDINAL_DIRS_COLOR_W_INV   
+
+#define CARDINAL_DIRS_TEXTSIZE_S    2
+#define CARDINAL_DIRS_COLOR_S       GC9A01A_WHITE
 #define CARDINAL_DIRS_COLOR_S_INV   
-#define CARDINAL_DIRS_COLOR_E_INV       
+
+#define CARDINAL_DIRS_TEXTSIZE_E    2
+#define CARDINAL_DIRS_COLOR_E       GC9A01A_WHITE
+#define CARDINAL_DIRS_COLOR_E_INV   
+
+#define CARDINAL_DIRS_TEXTSIZE_NW   1
+#define CARDINAL_DIRS_COLOR_NW      GC9A01A_WHITE
+#define CARDINAL_DIRS_COLOR_NW_INV
+
+#define CARDINAL_DIRS_TEXTSIZE_SW   1
+#define CARDINAL_DIRS_COLOR_SW      GC9A01A_WHITE
+#define CARDINAL_DIRS_COLOR_SW_INV
+
+#define CARDINAL_DIRS_TEXTSIZE_SE   1
+#define CARDINAL_DIRS_COLOR_SE      GC9A01A_WHITE
+#define CARDINAL_DIRS_COLOR_SE_INV
+
+#define CARDINAL_DIRS_TEXTSIZE_NE   1
+#define CARDINAL_DIRS_COLOR_NE      GC9A01A_WHITE
+#define CARDINAL_DIRS_COLOR_NE_INV
+
+#define DISTANCE_MAX_DISPL_VALUE    10000   // In meters.
+#define DISTANCE_TEXT_SIZE          3
+#define DISTANCE_TEXT_COLOR         0x8E7D  // Baby blue.
 
 // =======================================================================================
 // MENU_UI Definitions
@@ -178,31 +204,88 @@ namespace Earendil_Display {
     // =======================================================================================
 
     typedef struct NavScreenState {
-        int16_t last_heading_north_X        = -1;
-        int16_t last_heading_north_Y        = -1;
+        int16_t heading_N_vertex_X0             = -1;
+        int16_t heading_N_vertex_Y0             = -1;
+        int16_t heading_N_vertex_X1             = -1;
+        int16_t heading_N_vertex_Y1             = -1;
+        int16_t heading_N_vertex_X2             = -1;
+        int16_t heading_N_vertex_Y2             = -1;
 
-        int16_t last_bearing_node_X         = -1;
-        int16_t last_bearing_node_Y         = -1;
+        int16_t last_bearing_node_X             = -1;
+        int16_t last_bearing_node_Y             = -1;
 
-        int16_t last_cardinal_north_X       = -1;
-        int16_t last_cardinal_north_Y       = -1;
-        uint16_t last_cardinal_north_width  = -1;
-        uint16_t last_cardinal_north_height = -1;
+        int16_t last_cardinal_N_label_X         = -1;
+        int16_t last_cardinal_N_label_Y         = -1;
+        uint16_t last_cardinal_N_label_width    = -1;
+        uint16_t last_cardinal_N_label_height   = -1;
 
-        int16_t last_cardinal_west_X        = -1;
-        int16_t last_cardinal_west_Y        = -1;
-        uint16_t last_cardinal_west_width   = -1;
-        uint16_t last_cardinal_west_height  = -1;
+        int16_t last_cardinal_W_label_X         = -1;
+        int16_t last_cardinal_W_label_Y         = -1;
+        uint16_t last_cardinal_W_label_width    = -1;
+        uint16_t last_cardinal_W_label_height   = -1;
+        int16_t last_cardinal_W_notch_X0        = -1;
+        int16_t last_cardinal_W_notch_Y0        = -1;
+        int16_t last_cardinal_W_notch_X1        = -1;
+        int16_t last_cardinal_W_notch_Y1        = -1;
 
-        int16_t last_cardinal_south_X       = -1;
-        int16_t last_cardinal_south_Y       = -1;
-        uint16_t last_cardinal_south_width  = -1;
-        uint16_t last_cardinal_south_height = -1;
+        int16_t last_cardinal_S_label_X         = -1;
+        int16_t last_cardinal_S_label_Y         = -1;
+        uint16_t last_cardinal_S_label_width    = -1;
+        uint16_t last_cardinal_S_label_height   = -1;
+        int16_t last_cardinal_S_notch_X0        = -1;
+        int16_t last_cardinal_S_notch_Y0        = -1;
+        int16_t last_cardinal_S_notch_X1        = -1;
+        int16_t last_cardinal_S_notch_Y1        = -1;
 
-        int16_t last_cardinal_east_X        = -1;
-        int16_t last_cardinal_east_Y        = -1;
-        uint16_t last_cardinal_east_width   = -1;
-        uint16_t last_cardinal_east_height  = -1;
+        int16_t last_cardinal_E_label_X         = -1;
+        int16_t last_cardinal_E_label_Y         = -1;
+        uint16_t last_cardinal_E_label_width    = -1;
+        uint16_t last_cardinal_E_label_height   = -1;
+        int16_t last_cardinal_E_notch_X0        = -1;
+        int16_t last_cardinal_E_notch_Y0        = -1;
+        int16_t last_cardinal_E_notch_X1        = -1;
+        int16_t last_cardinal_E_notch_Y1        = -1;
+
+        int16_t last_cardinal_NW_label_X        = -1;
+        int16_t last_cardinal_NW_label_Y        = -1;
+        uint16_t last_cardinal_NW_label_width   = -1;
+        uint16_t last_cardinal_NW_label_height  = -1;
+        int16_t last_cardinal_NW_notch_X0       = -1;
+        int16_t last_cardinal_NW_notch_Y0       = -1;
+        int16_t last_cardinal_NW_notch_X1       = -1;
+        int16_t last_cardinal_NW_notch_Y1       = -1;
+
+        int16_t last_cardinal_SW_label_X        = -1;
+        int16_t last_cardinal_SW_label_Y        = -1;
+        uint16_t last_cardinal_SW_label_width   = -1;
+        uint16_t last_cardinal_SW_label_height  = -1;
+        int16_t last_cardinal_SW_notch_X0       = -1;
+        int16_t last_cardinal_SW_notch_Y0       = -1;
+        int16_t last_cardinal_SW_notch_X1       = -1;
+        int16_t last_cardinal_SW_notch_Y1       = -1;
+
+        int16_t last_cardinal_SE_label_X        = -1;
+        int16_t last_cardinal_SE_label_Y        = -1;
+        uint16_t last_cardinal_SE_label_width   = -1;
+        uint16_t last_cardinal_SE_label_height  = -1;
+        int16_t last_cardinal_SE_notch_X0       = -1;
+        int16_t last_cardinal_SE_notch_Y0       = -1;
+        int16_t last_cardinal_SE_notch_X1       = -1;
+        int16_t last_cardinal_SE_notch_Y1       = -1;
+
+        int16_t last_cardinal_NE_label_X        = -1;
+        int16_t last_cardinal_NE_label_Y        = -1;
+        uint16_t last_cardinal_NE_label_width   = -1;
+        uint16_t last_cardinal_NE_label_height  = -1;
+        int16_t last_cardinal_NE_notch_X0       = -1;
+        int16_t last_cardinal_NE_notch_Y0       = -1;
+        int16_t last_cardinal_NE_notch_X1       = -1;
+        int16_t last_cardinal_NE_notch_Y1       = -1;
+
+        int16_t last_distance_label_X           = -1;
+        int16_t last_distance_label_Y           = -1;
+        uint16_t last_distance_label_width      = -1;
+        uint16_t last_distance_label_height     = -1;
     } NavScreenState_t;
 
     extern NavScreenState_t NavState;
@@ -225,8 +308,29 @@ namespace Earendil_Display {
     void draw_CardinalDirections(
         double heading_north_deg
     );
+    void draw_CardinalLabel(
+        double      cardinal_angle,
+        const char* cardinal_label_text,
+        uint8_t     cardinal_text_size,
+        uint16_t    cardinal_color,
+        int16_t&    last_cardinal_label_X,
+        int16_t&    last_cardinal_label_Y,
+        uint16_t&   last_cardinal_label_width,
+        uint16_t&   last_cardinal_label_height
+    );
+    void draw_CardinalNotch(
+        double      cardinal_angle,
+        uint16_t    cardinal_color,
+        int16_t&    last_cardinal_notch_X0,
+        int16_t&    last_cardinal_notch_Y0,
+        int16_t&    last_cardinal_notch_X1,
+        int16_t&    last_cardinal_notch_Y1
+    );
     void clear_LastCardinalDirections(void);
-    void drawDistance(void);
+    void draw_DistanceToNode(
+        double distance_node_m
+    );
+    void clear_DistanceToNode(void);
 
     // --- UX CONTROLS -----------------------------------------------------------------------
     void controlNav(void);

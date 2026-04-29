@@ -74,7 +74,7 @@ namespace Earendil_Display {
             }
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
 
-            vTaskDelay(pdMS_TO_TICKS(500));
+            vTaskDelay(pdMS_TO_TICKS(100));
         }
     }
 
