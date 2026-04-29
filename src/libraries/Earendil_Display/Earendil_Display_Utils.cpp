@@ -213,16 +213,15 @@ namespace Earendil_Display {
     }
 
     void moveUp(){
-        if (selectedIndex > 0) selectedIndex --; //if theres space to move up, then move up
-        if (selectedIndex < topIndex) topIndex --; //if theres stuff above the top index, that means it needs to be shown when it moves up
+        if (selectedIndex > 0) selectedIndex--;     // If theres space to move up, then move up
+        if (selectedIndex < topIndex) topIndex--;   // If theres stuff above the top index, that means it needs to be shown when it moves up
     }
 
     void moveDown(){
-        if (selectedIndex < itemCount - 1) selectedIndex++; //if theres still items in the index to move through, then move
-        if (selectedIndex >= topIndex + 3) topIndex++; //check if the selected index is larger than the top index by 3 to see if the top index should be moved down
+        if (selectedIndex < itemCount - 1) selectedIndex++; // If theres still items in the index to move through, then move
+        if (selectedIndex >= topIndex + 3) topIndex++;      // Check if the selected index is larger than the top index by 3 to see if the top index should be moved down
     }
 
-    //Working on getting the child submenu up and running. still working on it so dont select anything with a child node yet because it may break
     void selectItem(){
         MenuItem* selection = &currentMenu[selectedIndex];  // pointer to item inside of the current menu at the selected index
         if (selection -> children && selection -> childCount > 0){  // checks to see if the selection actually has a child menu to go to and has a childcount to ensure its indexed properly
@@ -230,8 +229,8 @@ namespace Earendil_Display {
             selectedIndex = 0;                  // keeps track of the selected index to put the little indicator in the menu, 1 byte space saver. doubt we need more than 255 menu items
             topIndex = 0;                       // keeps track of the scrolling window index
             itemCount = selection->childCount;  // total array size
-        } else if (selection->function) { // if theres no child menu, check if theres a function
-            selection->function(); // call the function
+        } else if (selection->function) {   // if theres no child menu, check if theres a function
+            selection->function();          // call the function
         }
     }
 
@@ -347,26 +346,15 @@ namespace Earendil_Display {
         
         clear_LastBearingToNode();
         clear_LastHeadingToNorth();
-        clear_LastCardinalDirections();
+        clear_AllCardinalLabels();
+        clear_AllCardinalNotches();
         clear_DistanceToNode();
-
-        draw_DistanceToNode(1488.123456789);
-        draw_CardinalDirections(heading_north_deg);
+        
+        draw_DistanceToNode(distance_node_m);
+        draw_AllCardinalNotches(heading_north_deg);
+        draw_AllCardinalLabels(heading_north_deg);
         draw_HeadingToNorth(heading_north_deg);
         draw_BearingToNode(heading_north_deg, bearing_node_deg);    
-        
-        /*
-        display.fillRect(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30, 120, 90, NAV_BACKGROUND_COLOR);
-
-        display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30);
-        display.setTextSize(3);
-        display.setTextColor(GC9A01A_RED);
-        display.print(heading_north_deg);
-
-        display.setCursor(DISPLAY_CENTER_X - 50, DISPLAY_CENTER_Y - 30 + 30);
-        display.setTextColor(GC9A01A_YELLOW);
-        display.print(bearing_node_deg);
-        */
     }
 
     void draw_HeadingToNorth(
@@ -450,7 +438,7 @@ namespace Earendil_Display {
         }
     }
 
-    void draw_CardinalDirections(
+    void draw_AllCardinalLabels(
         double heading_north_deg
     ){
         // DRAW "N" (NORTH LABEL)
@@ -478,15 +466,7 @@ namespace Earendil_Display {
             NavState.last_cardinal_W_label_width,
             NavState.last_cardinal_W_label_height
         );
-        draw_CardinalNotch(
-            W_angle,
-            CARDINAL_DIRS_COLOR_W,
-            NavState.last_cardinal_W_notch_X0,
-            NavState.last_cardinal_W_notch_Y0,
-            NavState.last_cardinal_W_notch_X1,
-            NavState.last_cardinal_W_notch_Y1
-        );
-
+        
         // DRAW "S" (SOUTH LABEL)
         double S_angle  = W_angle + 90.0;
         draw_CardinalLabel(
@@ -499,15 +479,7 @@ namespace Earendil_Display {
             NavState.last_cardinal_S_label_width,
             NavState.last_cardinal_S_label_height
         );
-        draw_CardinalNotch(
-            S_angle,
-            CARDINAL_DIRS_COLOR_S,
-            NavState.last_cardinal_S_notch_X0,
-            NavState.last_cardinal_S_notch_Y0,
-            NavState.last_cardinal_S_notch_X1,
-            NavState.last_cardinal_S_notch_Y1
-        );
-
+        
         // DRAW "E" (EAST LABEL)
         double E_angle   = S_angle + 90.0;
         draw_CardinalLabel(
@@ -519,14 +491,6 @@ namespace Earendil_Display {
             NavState.last_cardinal_E_label_Y,
             NavState.last_cardinal_E_label_width,
             NavState.last_cardinal_E_label_height
-        );
-        draw_CardinalNotch(
-            E_angle,
-            CARDINAL_DIRS_COLOR_E,
-            NavState.last_cardinal_E_notch_X0,
-            NavState.last_cardinal_E_notch_Y0,
-            NavState.last_cardinal_E_notch_X1,
-            NavState.last_cardinal_E_notch_Y1
         );
 
         // DRAW "NW" (NORTH-WEST LABEL)
@@ -541,14 +505,6 @@ namespace Earendil_Display {
             NavState.last_cardinal_NW_label_width,
             NavState.last_cardinal_NW_label_height
         );
-        draw_CardinalNotch(
-            NW_angle,
-            CARDINAL_DIRS_COLOR_NW,
-            NavState.last_cardinal_NW_notch_X0,
-            NavState.last_cardinal_NW_notch_Y0,
-            NavState.last_cardinal_NW_notch_X1,
-            NavState.last_cardinal_NW_notch_Y1
-        );
 
         // DRAW "SW" (SOUTH-WEST LABEL)
         double SW_angle     = NW_angle + 90.0;
@@ -561,14 +517,6 @@ namespace Earendil_Display {
             NavState.last_cardinal_SW_label_Y,
             NavState.last_cardinal_SW_label_width,
             NavState.last_cardinal_SW_label_height
-        );
-        draw_CardinalNotch(
-            SW_angle,
-            CARDINAL_DIRS_COLOR_SW,
-            NavState.last_cardinal_SW_notch_X0,
-            NavState.last_cardinal_SW_notch_Y0,
-            NavState.last_cardinal_SW_notch_X1,
-            NavState.last_cardinal_SW_notch_Y1
         );
 
         // DRAW "SE" (SOUTH-EAST LABEL)
@@ -583,14 +531,6 @@ namespace Earendil_Display {
             NavState.last_cardinal_SE_label_width,
             NavState.last_cardinal_SE_label_height
         );
-        draw_CardinalNotch(
-            SE_angle,
-            CARDINAL_DIRS_COLOR_SE,
-            NavState.last_cardinal_SE_notch_X0,
-            NavState.last_cardinal_SE_notch_Y0,
-            NavState.last_cardinal_SE_notch_X1,
-            NavState.last_cardinal_SE_notch_Y1
-        );
 
         // DRAW "NE" (NORTH-EAST LABEL)
         double NE_angle     = SE_angle + 90.0;
@@ -603,14 +543,6 @@ namespace Earendil_Display {
             NavState.last_cardinal_NE_label_Y,
             NavState.last_cardinal_NE_label_width,
             NavState.last_cardinal_NE_label_height
-        );
-        draw_CardinalNotch(
-            NE_angle,
-            CARDINAL_DIRS_COLOR_SE,
-            NavState.last_cardinal_NE_notch_X0,
-            NavState.last_cardinal_NE_notch_Y0,
-            NavState.last_cardinal_NE_notch_X1,
-            NavState.last_cardinal_NE_notch_Y1
         );
     }
 
@@ -635,16 +567,16 @@ namespace Earendil_Display {
         display.setTextSize(cardinal_text_size);
         display.getTextBounds(
             cardinal_label_text,
-            cardinal_label_X_raw,
-            cardinal_label_Y_raw,
+            0,
+            0,
             &cardinal_label_corner_X,
             &cardinal_label_corner_Y,
             &cardinal_label_width,
             &cardinal_label_height
         );
         
-        int16_t cardinal_label_X  = cardinal_label_X_raw - (cardinal_label_corner_X - cardinal_label_X_raw) - (cardinal_label_width / 2)  + 2;
-        int16_t cardinal_label_Y  = cardinal_label_Y_raw - (cardinal_label_corner_Y - cardinal_label_Y_raw) - (cardinal_label_height / 2) + 2;
+        int16_t cardinal_label_X  = cardinal_label_X_raw - (cardinal_label_width / 2)  + 2;
+        int16_t cardinal_label_Y  = cardinal_label_Y_raw - (cardinal_label_height / 2) + 2;
 
         display.setCursor(cardinal_label_X, cardinal_label_Y);
         display.setTextColor(cardinal_color);
@@ -654,6 +586,206 @@ namespace Earendil_Display {
         last_cardinal_label_Y       = cardinal_label_Y;
         last_cardinal_label_width   = cardinal_label_width;
         last_cardinal_label_height  = cardinal_label_height;
+    }
+
+    void clear_AllCardinalLabels(){
+        if (    
+            (NavState.last_cardinal_N_label_X >= 0)       && 
+            (NavState.last_cardinal_N_label_Y >= 0)       &&
+            (NavState.last_cardinal_N_label_width >= 0)   &&
+            (NavState.last_cardinal_N_label_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_cardinal_N_label_X,
+                NavState.last_cardinal_N_label_Y,
+                NavState.last_cardinal_N_label_width,
+                NavState.last_cardinal_N_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_W_label_X >= 0)         && 
+            (NavState.last_cardinal_W_label_Y >= 0)         &&
+            (NavState.last_cardinal_W_label_width >= 0)     &&
+            (NavState.last_cardinal_W_label_height >= 0)       
+        ){
+            display.fillRect(
+                NavState.last_cardinal_W_label_X,
+                NavState.last_cardinal_W_label_Y,
+                NavState.last_cardinal_W_label_width,
+                NavState.last_cardinal_W_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+            
+        }
+        if (    
+            (NavState.last_cardinal_S_label_X >= 0)         && 
+            (NavState.last_cardinal_S_label_Y >= 0)         &&
+            (NavState.last_cardinal_S_label_width >= 0)     &&
+            (NavState.last_cardinal_S_label_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_cardinal_S_label_X,
+                NavState.last_cardinal_S_label_Y,
+                NavState.last_cardinal_S_label_width,
+                NavState.last_cardinal_S_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_E_label_X >= 0)         && 
+            (NavState.last_cardinal_E_label_Y >= 0)         &&
+            (NavState.last_cardinal_E_label_width >= 0)     &&
+            (NavState.last_cardinal_E_label_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_cardinal_E_label_X,
+                NavState.last_cardinal_E_label_Y,
+                NavState.last_cardinal_E_label_width,
+                NavState.last_cardinal_E_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_NW_label_X >= 0)        && 
+            (NavState.last_cardinal_NW_label_Y >= 0)        &&
+            (NavState.last_cardinal_NW_label_width >= 0)    &&
+            (NavState.last_cardinal_NW_label_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_cardinal_NW_label_X,
+                NavState.last_cardinal_NW_label_Y,
+                NavState.last_cardinal_NW_label_width,
+                NavState.last_cardinal_NW_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_SW_label_X >= 0)        && 
+            (NavState.last_cardinal_SW_label_Y >= 0)        &&
+            (NavState.last_cardinal_SW_label_width >= 0)    &&
+            (NavState.last_cardinal_SW_label_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_cardinal_SW_label_X,
+                NavState.last_cardinal_SW_label_Y,
+                NavState.last_cardinal_SW_label_width,
+                NavState.last_cardinal_SW_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_SE_label_X >= 0)        && 
+            (NavState.last_cardinal_SE_label_Y >= 0)        &&
+            (NavState.last_cardinal_SE_label_width >= 0)    &&
+            (NavState.last_cardinal_SE_label_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_cardinal_SE_label_X,
+                NavState.last_cardinal_SE_label_Y,
+                NavState.last_cardinal_SE_label_width,
+                NavState.last_cardinal_SE_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+        if (    
+            (NavState.last_cardinal_NE_label_X >= 0)        && 
+            (NavState.last_cardinal_NE_label_Y >= 0)        &&
+            (NavState.last_cardinal_NE_label_width >= 0)    &&
+            (NavState.last_cardinal_NE_label_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_cardinal_NE_label_X,
+                NavState.last_cardinal_NE_label_Y,
+                NavState.last_cardinal_NE_label_width,
+                NavState.last_cardinal_NE_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
+    }
+
+    void draw_AllCardinalNotches(
+        double heading_north_deg
+    ){
+        // DRAW "N" (NORTH NOTCH)
+        double N_angle  = heading_north_deg;
+
+        // DRAW "W" (WEST LABEL)
+        double W_angle   = N_angle + 90.0;
+        draw_CardinalNotch(
+            W_angle,
+            CARDINAL_DIRS_COLOR_W,
+            NavState.last_cardinal_W_notch_X0,
+            NavState.last_cardinal_W_notch_Y0,
+            NavState.last_cardinal_W_notch_X1,
+            NavState.last_cardinal_W_notch_Y1
+        );
+
+        // DRAW "S" (SOUTH LABEL)
+        double S_angle  = W_angle + 90.0;
+        draw_CardinalNotch(
+            S_angle,
+            CARDINAL_DIRS_COLOR_S,
+            NavState.last_cardinal_S_notch_X0,
+            NavState.last_cardinal_S_notch_Y0,
+            NavState.last_cardinal_S_notch_X1,
+            NavState.last_cardinal_S_notch_Y1
+        );
+
+        // DRAW "E" (EAST LABEL)
+        double E_angle   = S_angle + 90.0;
+        draw_CardinalNotch(
+            E_angle,
+            CARDINAL_DIRS_COLOR_E,
+            NavState.last_cardinal_E_notch_X0,
+            NavState.last_cardinal_E_notch_Y0,
+            NavState.last_cardinal_E_notch_X1,
+            NavState.last_cardinal_E_notch_Y1
+        );
+
+        // DRAW "NW" (NORTH-WEST LABEL)
+        double NW_angle     = N_angle + 45.0;
+        draw_CardinalNotch(
+            NW_angle,
+            CARDINAL_DIRS_COLOR_NW,
+            NavState.last_cardinal_NW_notch_X0,
+            NavState.last_cardinal_NW_notch_Y0,
+            NavState.last_cardinal_NW_notch_X1,
+            NavState.last_cardinal_NW_notch_Y1
+        );
+
+        // DRAW "SW" (SOUTH-WEST LABEL)
+        double SW_angle     = NW_angle + 90.0;
+        draw_CardinalNotch(
+            SW_angle,
+            CARDINAL_DIRS_COLOR_SW,
+            NavState.last_cardinal_SW_notch_X0,
+            NavState.last_cardinal_SW_notch_Y0,
+            NavState.last_cardinal_SW_notch_X1,
+            NavState.last_cardinal_SW_notch_Y1
+        );
+
+        // DRAW "SE" (SOUTH-EAST LABEL)
+        double SE_angle     = SW_angle + 90.0;
+        draw_CardinalNotch(
+            SE_angle,
+            CARDINAL_DIRS_COLOR_SE,
+            NavState.last_cardinal_SE_notch_X0,
+            NavState.last_cardinal_SE_notch_Y0,
+            NavState.last_cardinal_SE_notch_X1,
+            NavState.last_cardinal_SE_notch_Y1
+        );
+
+        // DRAW "NE" (NORTH-EAST LABEL)
+        double NE_angle     = SE_angle + 90.0;
+        draw_CardinalNotch(
+            NE_angle,
+            CARDINAL_DIRS_COLOR_SE,
+            NavState.last_cardinal_NE_notch_X0,
+            NavState.last_cardinal_NE_notch_Y0,
+            NavState.last_cardinal_NE_notch_X1,
+            NavState.last_cardinal_NE_notch_Y1
+        );
     }
 
     void draw_CardinalNotch(
@@ -683,38 +815,13 @@ namespace Earendil_Display {
         last_cardinal_notch_Y1 = cardinal_notch_Y1;
     }
 
-    void clear_LastCardinalDirections(){
-        if (    
-            (NavState.last_cardinal_N_label_X >= 0)       && 
-            (NavState.last_cardinal_N_label_Y >= 0)       &&
-            (NavState.last_cardinal_N_label_width >= 0)   &&
-            (NavState.last_cardinal_N_label_height >= 0)
-        ){
-            display.fillRect(
-                NavState.last_cardinal_N_label_X,
-                NavState.last_cardinal_N_label_Y,
-                NavState.last_cardinal_N_label_width,
-                NavState.last_cardinal_N_label_height,
-                NAV_BACKGROUND_COLOR
-            );
-        }
-        if (    
-            (NavState.last_cardinal_W_label_X >= 0)         && 
-            (NavState.last_cardinal_W_label_Y >= 0)         &&
-            (NavState.last_cardinal_W_label_width >= 0)     &&
-            (NavState.last_cardinal_W_label_height >= 0)    &&
+    void clear_AllCardinalNotches(){
+        if (
             (NavState.last_cardinal_W_notch_X0 >= 0)        &&
             (NavState.last_cardinal_W_notch_Y0 >= 0)        &&
             (NavState.last_cardinal_W_notch_X1 >= 0)        &&
-            (NavState.last_cardinal_W_notch_Y1 >= 0)        
+            (NavState.last_cardinal_W_notch_Y1 >= 0) 
         ){
-            display.fillRect(
-                NavState.last_cardinal_W_label_X,
-                NavState.last_cardinal_W_label_Y,
-                NavState.last_cardinal_W_label_width,
-                NavState.last_cardinal_W_label_height,
-                NAV_BACKGROUND_COLOR
-            );
             display.drawLine(
                 NavState.last_cardinal_W_notch_X0,
                 NavState.last_cardinal_W_notch_Y0,
@@ -724,22 +831,11 @@ namespace Earendil_Display {
             );
         }
         if (    
-            (NavState.last_cardinal_S_label_X >= 0)         && 
-            (NavState.last_cardinal_S_label_Y >= 0)         &&
-            (NavState.last_cardinal_S_label_width >= 0)     &&
-            (NavState.last_cardinal_S_label_height >= 0)    &&
             (NavState.last_cardinal_S_notch_X0 >= 0)        &&
             (NavState.last_cardinal_S_notch_Y0 >= 0)        &&
             (NavState.last_cardinal_S_notch_X1 >= 0)        &&
             (NavState.last_cardinal_S_notch_Y1 >= 0) 
         ){
-            display.fillRect(
-                NavState.last_cardinal_S_label_X,
-                NavState.last_cardinal_S_label_Y,
-                NavState.last_cardinal_S_label_width,
-                NavState.last_cardinal_S_label_height,
-                NAV_BACKGROUND_COLOR
-            );
             display.drawLine(
                 NavState.last_cardinal_S_notch_X0,
                 NavState.last_cardinal_S_notch_Y0,
@@ -748,23 +844,12 @@ namespace Earendil_Display {
                 NAV_BACKGROUND_COLOR
             );
         }
-        if (    
-            (NavState.last_cardinal_E_label_X >= 0)         && 
-            (NavState.last_cardinal_E_label_Y >= 0)         &&
-            (NavState.last_cardinal_E_label_width >= 0)     &&
-            (NavState.last_cardinal_E_label_height >= 0)    &&
+        if (
             (NavState.last_cardinal_E_notch_X0 >= 0)        &&
             (NavState.last_cardinal_E_notch_Y0 >= 0)        &&
             (NavState.last_cardinal_E_notch_X1 >= 0)        &&
-            (NavState.last_cardinal_E_notch_Y1 >= 0) 
+            (NavState.last_cardinal_E_notch_Y1 >= 0)
         ){
-            display.fillRect(
-                NavState.last_cardinal_E_label_X,
-                NavState.last_cardinal_E_label_Y,
-                NavState.last_cardinal_E_label_width,
-                NavState.last_cardinal_E_label_height,
-                NAV_BACKGROUND_COLOR
-            );
             display.drawLine(
                 NavState.last_cardinal_E_notch_X0,
                 NavState.last_cardinal_E_notch_Y0,
@@ -773,23 +858,12 @@ namespace Earendil_Display {
                 NAV_BACKGROUND_COLOR
             );
         }
-        if (    
-            (NavState.last_cardinal_NW_label_X >= 0)        && 
-            (NavState.last_cardinal_NW_label_Y >= 0)        &&
-            (NavState.last_cardinal_NW_label_width >= 0)    &&
-            (NavState.last_cardinal_NW_label_height >= 0)   &&
+        if (
             (NavState.last_cardinal_NW_notch_X0 >= 0)       &&
             (NavState.last_cardinal_NW_notch_Y0 >= 0)       &&
             (NavState.last_cardinal_NW_notch_X1 >= 0)       &&
-            (NavState.last_cardinal_NW_notch_Y1 >= 0) 
+            (NavState.last_cardinal_NW_notch_Y1 >= 0)
         ){
-            display.fillRect(
-                NavState.last_cardinal_NW_label_X,
-                NavState.last_cardinal_NW_label_Y,
-                NavState.last_cardinal_NW_label_width,
-                NavState.last_cardinal_NW_label_height,
-                NAV_BACKGROUND_COLOR
-            );
             display.drawLine(
                 NavState.last_cardinal_NW_notch_X0,
                 NavState.last_cardinal_NW_notch_Y0,
@@ -798,23 +872,12 @@ namespace Earendil_Display {
                 NAV_BACKGROUND_COLOR
             );
         }
-        if (    
-            (NavState.last_cardinal_SW_label_X >= 0)        && 
-            (NavState.last_cardinal_SW_label_Y >= 0)        &&
-            (NavState.last_cardinal_SW_label_width >= 0)    &&
-            (NavState.last_cardinal_SW_label_height >= 0)   &&
+        if (
             (NavState.last_cardinal_SW_notch_X0 >= 0)       &&
             (NavState.last_cardinal_SW_notch_Y0 >= 0)       &&
             (NavState.last_cardinal_SW_notch_X1 >= 0)       &&
-            (NavState.last_cardinal_SW_notch_Y1 >= 0) 
+            (NavState.last_cardinal_SW_notch_Y1 >= 0)
         ){
-            display.fillRect(
-                NavState.last_cardinal_SW_label_X,
-                NavState.last_cardinal_SW_label_Y,
-                NavState.last_cardinal_SW_label_width,
-                NavState.last_cardinal_SW_label_height,
-                NAV_BACKGROUND_COLOR
-            );
             display.drawLine(
                 NavState.last_cardinal_SW_notch_X0,
                 NavState.last_cardinal_SW_notch_Y0,
@@ -823,23 +886,12 @@ namespace Earendil_Display {
                 NAV_BACKGROUND_COLOR
             );
         }
-        if (    
-            (NavState.last_cardinal_SE_label_X >= 0)        && 
-            (NavState.last_cardinal_SE_label_Y >= 0)        &&
-            (NavState.last_cardinal_SE_label_width >= 0)    &&
-            (NavState.last_cardinal_SE_label_height >= 0)   &&
+        if (
             (NavState.last_cardinal_SE_notch_X0 >= 0)       &&
             (NavState.last_cardinal_SE_notch_Y0 >= 0)       &&
             (NavState.last_cardinal_SE_notch_X1 >= 0)       &&
-            (NavState.last_cardinal_SE_notch_Y1 >= 0) 
+            (NavState.last_cardinal_SE_notch_Y1 >= 0)
         ){
-            display.fillRect(
-                NavState.last_cardinal_SE_label_X,
-                NavState.last_cardinal_SE_label_Y,
-                NavState.last_cardinal_SE_label_width,
-                NavState.last_cardinal_SE_label_height,
-                NAV_BACKGROUND_COLOR
-            );
             display.drawLine(
                 NavState.last_cardinal_SE_notch_X0,
                 NavState.last_cardinal_SE_notch_Y0,
@@ -848,24 +900,12 @@ namespace Earendil_Display {
                 NAV_BACKGROUND_COLOR
             );
         }
-        if (    
-            (NavState.last_cardinal_NE_label_X >= 0)        && 
-            (NavState.last_cardinal_NE_label_Y >= 0)        &&
-            (NavState.last_cardinal_NE_label_width >= 0)    &&
-            (NavState.last_cardinal_NE_label_height >= 0)   &&
+        if (
             (NavState.last_cardinal_NE_notch_X0 >= 0)       &&
             (NavState.last_cardinal_NE_notch_Y0 >= 0)       &&
             (NavState.last_cardinal_NE_notch_X1 >= 0)       &&
             (NavState.last_cardinal_NE_notch_Y1 >= 0) 
-            
         ){
-            display.fillRect(
-                NavState.last_cardinal_NE_label_X,
-                NavState.last_cardinal_NE_label_Y,
-                NavState.last_cardinal_NE_label_width,
-                NavState.last_cardinal_NE_label_height,
-                NAV_BACKGROUND_COLOR
-            );
             display.drawLine(
                 NavState.last_cardinal_NE_notch_X0,
                 NavState.last_cardinal_NE_notch_Y0,
@@ -881,7 +921,7 @@ namespace Earendil_Display {
     ){
         if (distance_node_m < DISTANCE_MAX_DISPL_VALUE){
             char distance_str_buf[8];
-            snprintf(distance_str_buf, sizeof(distance_str_buf), "%.2f", distance_node_m);
+            snprintf(distance_str_buf, sizeof(distance_str_buf), "%.1f", distance_node_m);
             const char* distance_str = distance_str_buf;
 
             int16_t distance_label_X_raw    = DISPLAY_CENTER_X;
@@ -895,18 +935,18 @@ namespace Earendil_Display {
             display.setTextSize(DISTANCE_TEXT_SIZE);
             display.getTextBounds(
                 distance_str,
-                distance_label_X_raw,
-                distance_label_Y_raw,
+                0,
+                0,
                 &distance_label_corner_X,
                 &distance_label_corner_Y,
                 &distance_label_width,
                 &distance_label_height
             );
             
-            int16_t distance_label_X    = distance_label_X_raw - (distance_label_width / 4.0);
-            int16_t distance_label_Y    = distance_label_Y_raw - (distance_label_corner_Y - distance_label_Y_raw) - (distance_label_height / 2.0) + 2;
+            int16_t distance_label_X    = distance_label_X_raw - (distance_label_width / 2.0)  + 2;
+            int16_t distance_label_Y    = distance_label_Y_raw - (distance_label_height / 2.0) + 2;
 
-            display.setCursor(distance_label_X, distance_label_Y_raw);
+            display.setCursor(distance_label_X, distance_label_Y);
             display.setTextColor(DISTANCE_TEXT_COLOR);
             display.print(distance_str);
 
@@ -915,12 +955,54 @@ namespace Earendil_Display {
             NavState.last_distance_label_width   = distance_label_width;
             NavState.last_distance_label_height  = distance_label_height;
         } else {
-            ; // More than DISTANCE_MAX_DISPL_VALUE away case.
+            int16_t distance_label_X_raw    = DISPLAY_CENTER_X;
+            int16_t distance_label_Y_raw    = DISPLAY_CENTER_Y;
+
+            int16_t distance_label_corner_X = 0;
+            int16_t distance_label_corner_Y = 0;
+            uint16_t distance_label_width   = 0;
+            uint16_t distance_label_height  = 0;
+
+            display.setTextSize(DISTANCE_TEXT_SIZE);
+            display.getTextBounds(
+                ">10000m",
+                0,
+                0,
+                &distance_label_corner_X,
+                &distance_label_corner_Y,
+                &distance_label_width,
+                &distance_label_height
+            );
+            
+            int16_t distance_label_X    = distance_label_X_raw - (distance_label_width / 2.0)  + 2;
+            int16_t distance_label_Y    = distance_label_Y_raw - (distance_label_height / 2.0) + 2;
+
+            display.setCursor(distance_label_X, distance_label_Y);
+            display.setTextColor(DISTANCE_TEXT_COLOR);
+            display.print(">10000m");
+
+            NavState.last_distance_label_X       = distance_label_X;
+            NavState.last_distance_label_Y       = distance_label_Y;
+            NavState.last_distance_label_width   = distance_label_width;
+            NavState.last_distance_label_height  = distance_label_height;
         }
     }
 
     void clear_DistanceToNode(){
-
+        if (
+            (NavState.last_distance_label_X >= 0)       && 
+            (NavState.last_distance_label_Y >= 0)       &&
+            (NavState.last_distance_label_width >= 0)   &&
+            (NavState.last_distance_label_height >= 0)
+        ){
+            display.fillRect(
+                NavState.last_distance_label_X,
+                NavState.last_distance_label_Y,
+                NavState.last_distance_label_width,
+                NavState.last_distance_label_height,
+                NAV_BACKGROUND_COLOR
+            );
+        }
     }
 
     // --- UX CONTROLS -----------------------------------------------------------------------
