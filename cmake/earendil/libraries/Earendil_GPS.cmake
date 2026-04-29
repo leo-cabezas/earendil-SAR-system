@@ -19,7 +19,8 @@
 include_guard()
 
 add_library(Earendil_GPS STATIC
-        ./src/libraries/Earendil_GPS/Earendil_GPS.cpp
+        ./src/libraries/Earendil_GPS/Earendil_GPS_Tasks.cpp
+        ./src/libraries/Earendil_GPS/Earendil_GPS_Utils.cpp
 )
 target_compile_definitions(Earendil_GPS PUBLIC
         EARENDIL_GPS_ENABLED    # Compile definition to enable Earendil_GPS within the source code.
@@ -30,6 +31,11 @@ target_link_libraries(Earendil_GPS PUBLIC       # Link all pico-sdk / FreeRTOS-K
         pico_stdlib             # Includes hardware_divider, hardware_gpio, hardware_uart, pico_runtime, pico_platform, pico_stdio, pico_time, and pico_util.
 )
 target_link_libraries(Earendil_GPS PUBLIC       # Link all non-(pico-sdk / FreeRTOS-Kernel) dependencies
+        # cmake/earendil/core
+        Earendil_TaskHandles
+        Earendil_SharedData
+        Earendil_Mutexes
+        # cmake/earendil/libraries        
         Adafruit_GPS
 )
 target_include_directories(Earendil_GPS PUBLIC

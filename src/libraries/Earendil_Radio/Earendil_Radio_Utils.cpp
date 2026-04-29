@@ -1,0 +1,315 @@
+#include <Earendil_Radio.h>
+
+namespace Earendil_Radio {
+
+    RH_RF95 radio = RH_RF95(RFM95_CS_PIN, RFM95_IRQ_PIN);
+
+    void setup(){
+        setupRadio();
+    }
+
+    void setupRadio(void){
+        // Reset the LoRa module
+        pinMode(RFM95_RST_PIN, OUTPUT);
+        digitalWrite(RFM95_RST_PIN, LOW);
+        digitalWrite(RFM95_RST_PIN, HIGH);
+
+        // Initialize RF95
+        if (!radio.init()){
+            while (1){
+                gpio_put(LED_BUILTIN, 1);
+                vTaskDelay(pdMS_TO_TICKS(10));
+                gpio_put(LED_BUILTIN, 0);
+                vTaskDelay(pdMS_TO_TICKS(10));
+            }
+        }
+
+        radio.setFrequency(915.0);
+        radio.setTxPower(23, false); // Power in dBm.
+        radio.setModeRx();
+
+        gpio_init(LED_BUILTIN);
+        gpio_set_dir(LED_BUILTIN, GPIO_OUT);
+    }
+
+    void sendPing_TX(
+        uint16_t recipient_id,
+        uint16_t sender_id,
+        uint16_t message_type,
+        uint16_t message_id,
+        uint16_t message_att,
+        uint32_t date_sent,
+        uint32_t time_sent
+    ){        
+        std::vector<uint8_t> radio_packet;
+        std::vector<uint8_t> metadata;
+        std::vector<uint8_t> data;
+
+        if (message_type == 1){
+            // Mutex here if necessary
+            double latitude_rad     = Earendil_Data->GPS_Data.latitude_rad;
+            double longitude_rad    = Earendil_Data->GPS_Data.longitude_rad;
+            // Mutex here if necessary
+
+            encodeGPSData(
+                data,
+                latitude_rad,
+                longitude_rad
+            );
+        }
+
+        encodeMetadata(
+            metadata,
+            recipient_id,
+            sender_id, 
+            message_type, 
+            message_id, 
+            message_att, 
+            date_sent, 
+            time_sent
+        );
+
+        encodePacket(
+            radio_packet, 
+            metadata, 
+            data
+        );
+
+        gpio_put(LED_BUILTIN, 1);
+
+        xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
+        // radio.setModeTx();
+        if (radio.send(radio_packet.data(), radio_packet.size())) {
+            radio.waitPacketSent();
+        }
+        // radio.setModeRx();
+        xSemaphoreGive(Earendil_Mutexes->spi_mutex);
+
+        gpio_put(LED_BUILTIN, 0);
+    }
+
+    void listen_RX(){
+        uint8_t radio_rx_buffer[RH_RF95_MAX_MESSAGE_LEN];
+        uint8_t buffer_len = sizeof(radio_rx_buffer);
+        bool radio_recv = false;
+
+        xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
+        if (radio.available()){
+            radio_recv = radio.recv(radio_rx_buffer, &buffer_len);
+        }   
+        xSemaphoreGive(Earendil_Mutexes->spi_mutex);
+
+        if (!radio_recv){
+            return;
+        }
+
+        gpio_xor_mask(1u << LED_BUILTIN);
+
+        // int rssi = radio.lastRssi()
+
+        std::vector<uint8_t> radio_packet = std::vector<uint8_t>(radio_rx_buffer, radio_rx_buffer + buffer_len);
+        std::vector<uint8_t> metadata;
+        std::vector<uint8_t> data;
+        
+        decodePacket(
+            radio_packet,
+            metadata,
+            data
+        );
+        
+        uint16_t recipient_id;
+        uint16_t sender_id;
+        uint16_t message_type;
+        uint16_t message_id;
+        uint16_t message_att;
+        uint32_t date_sent;
+        uint32_t time_sent;
+
+        decodeMetadata(
+            metadata,
+            recipient_id,
+            sender_id, 
+            message_type, 
+            message_id, 
+            message_att, 
+            date_sent, 
+            time_sent
+        );
+
+        if (message_type == 1){
+            double rx_latitude_rad;
+            double rx_longitude_rad;
+
+            decodeGPSData(
+                data,
+                rx_latitude_rad,
+                rx_longitude_rad
+            );
+
+            Earendil_Data->Radio_Data.rx_latitude_rad   = rx_latitude_rad;
+            Earendil_Data->Radio_Data.rx_longitude_rad  = rx_longitude_rad;
+            
+            Earendil_Data->Radio_Data.rx_latitude_deg   = rx_latitude_rad   * (180.0 / M_PI);
+            Earendil_Data->Radio_Data.rx_longitude_deg  = rx_longitude_rad  * (180.0 / M_PI);
+            // timestamp here.
+        }
+    }
+
+    void encodePacket(
+        std::vector<uint8_t>&       radio_packet,
+        const std::vector<uint8_t>& metadata,
+        const std::vector<uint8_t>& data
+    ){
+        for (size_t i = 0; i < metadata.size(); i++){
+            radio_packet.push_back(metadata[i]);
+        }
+
+        for (size_t i = 0; i < data.size(); i++){
+            radio_packet.push_back(data[i]);
+        }
+    }
+
+    void decodePacket(
+        const std::vector<uint8_t>& radio_packet,
+        std::vector<uint8_t>&       metadata,
+        std::vector<uint8_t>&       data
+    ){  
+        constexpr size_t METADATA_SIZE_BYTES    = 18;
+        constexpr size_t DATA_SIZE_BYTES        = 8;    // MAY BE DIFFERENT FOR DIFFERENT DATA
+        size_t byte = 0;
+
+        metadata.clear();
+        metadata.reserve(METADATA_SIZE_BYTES);
+        for (size_t i = 0; (i < METADATA_SIZE_BYTES) && (byte < radio_packet.size()); i++){
+            metadata.push_back(radio_packet[byte++]);
+        }
+
+        data.clear();
+        data.reserve(DATA_SIZE_BYTES);
+        for (size_t i = 0; (i < DATA_SIZE_BYTES) && (byte < radio_packet.size()); i++){
+            data.push_back(radio_packet[byte++]);
+        }
+    }
+
+    void encodeMetadata(
+        std::vector<uint8_t>&   metadata,
+        uint16_t                recipient_id,
+        uint16_t                sender_id, 
+        uint16_t                message_type,
+        uint16_t                message_id,
+        uint16_t                message_att,
+        uint32_t                date_sent,
+        uint32_t                time_sent
+    ){  
+        metadata.push_back(static_cast<uint8_t>( (recipient_id >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (recipient_id >> 0 ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (sender_id >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (sender_id >> 0 ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (message_type >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (message_type >> 0 ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (message_id >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (message_id >> 0 ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (message_att >> 8 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (message_att >> 0 ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (date_sent >> 24 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (date_sent >> 16 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (date_sent >> 8  ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (date_sent >> 0  ) & 0xFF ));
+
+        metadata.push_back(static_cast<uint8_t>( (time_sent >> 24 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (time_sent >> 16 ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (time_sent >> 8  ) & 0xFF ));
+        metadata.push_back(static_cast<uint8_t>( (time_sent >> 0  ) & 0xFF ));
+    }
+
+    void decodeMetadata(
+        const std::vector<uint8_t>& metadata,
+        uint16_t&                   recipient_id, 
+        uint16_t&                   sender_id, 
+        uint16_t&                   message_type,
+        uint16_t&                   message_id,
+        uint16_t&                   message_att,
+        uint32_t&                   date_sent,
+        uint32_t&                   time_sent
+    ){
+        size_t byte = 0;
+
+        recipient_id = 0;
+        recipient_id |= (static_cast<uint16_t>( metadata[byte++] )) << 8;
+        recipient_id |= (static_cast<uint16_t>( metadata[byte++] )) << 0;
+
+        sender_id = 0;
+        sender_id |= (static_cast<uint16_t>( metadata[byte++] )) << 8;
+        sender_id |= (static_cast<uint16_t>( metadata[byte++] )) << 0;
+
+        message_type = 0;
+        message_type |= (static_cast<uint16_t>( metadata[byte++] )) << 8;
+        message_type |= (static_cast<uint16_t>( metadata[byte++] )) << 0;
+
+        message_id = 0;
+        message_id |= (static_cast<uint16_t>( metadata[byte++] )) << 8;
+        message_id |= (static_cast<uint16_t>( metadata[byte++] )) << 0;
+
+        message_att = 0;
+        message_att |= (static_cast<uint16_t>( metadata[byte++] )) << 8;
+        message_att |= (static_cast<uint16_t>( metadata[byte++] )) << 0;
+
+        date_sent = 0;
+        date_sent |= (static_cast<uint32_t>( metadata[byte++] )) << 24;
+        date_sent |= (static_cast<uint32_t>( metadata[byte++] )) << 16;
+        date_sent |= (static_cast<uint32_t>( metadata[byte++] )) << 8;
+        date_sent |= (static_cast<uint32_t>( metadata[byte++] )) << 0;
+
+        time_sent = 0;
+        time_sent |= (static_cast<uint32_t>( metadata[byte++] )) << 24;
+        time_sent |= (static_cast<uint32_t>( metadata[byte++] )) << 16;
+        time_sent |= (static_cast<uint32_t>( metadata[byte++] )) << 8;
+        time_sent |= (static_cast<uint32_t>( metadata[byte++] )) << 0;
+    }
+
+    void encodeGPSData(
+        std::vector<uint8_t>&   data,
+        double                  latitude_rad,
+        double                  longitude_rad
+    ){
+        int32_t int_latitude_rad = static_cast<int32_t>(latitude_rad * 1000000.0);
+        data.push_back(static_cast<uint8_t>( (int_latitude_rad >> 24 ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_latitude_rad >> 16 ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_latitude_rad >> 8  ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_latitude_rad >> 0  ) & 0xFF )); 
+
+        int32_t int_longitude_rad = static_cast<int32_t>(longitude_rad * 1000000.0);
+        data.push_back(static_cast<uint8_t>( (int_longitude_rad >> 24 ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_longitude_rad >> 16 ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_longitude_rad >> 8  ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_longitude_rad >> 0  ) & 0xFF ));
+    }
+
+    void decodeGPSData(
+        const std::vector<uint8_t>& data,
+        double&                     latitude_rad,
+        double&                     longitude_rad
+    ){
+        size_t byte = 0;
+            
+        int32_t int_latitude_rad = 0;
+        int_latitude_rad |= (static_cast<int32_t>( data[byte++] )) << 24;
+        int_latitude_rad |= (static_cast<int32_t>( data[byte++] )) << 16;
+        int_latitude_rad |= (static_cast<int32_t>( data[byte++] )) << 8;
+        int_latitude_rad |= (static_cast<int32_t>( data[byte++] )) << 0;
+        latitude_rad = int_latitude_rad / 1000000.0;
+
+        int32_t int_longitude_rad = 0;
+        int_longitude_rad |= (static_cast<int32_t>( data[byte++] )) << 24;
+        int_longitude_rad |= (static_cast<int32_t>( data[byte++] )) << 16;
+        int_longitude_rad |= (static_cast<int32_t>( data[byte++] )) << 8;
+        int_longitude_rad |= (static_cast<int32_t>( data[byte++] )) << 0;
+        longitude_rad = int_longitude_rad / 1000000.0;
+    }
+
+}

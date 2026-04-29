@@ -4,27 +4,30 @@
 #include <FreeRTOS.h>           // For pdMS_TO_TICKS(), etc. Needed for task.h, semphr.h, etc.
 #include <task.h>               // For vTaskDelay(), etc.
 #include <semphr.h>             // For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
-#include <event_groups.h>       // For IPC communication between tasks during calibration.
-#include <queue.h>              // For IPC communication between the LCD and buttons.
+// #include <event_groups.h>       // For IPC communication between tasks during calibration.
+// #include <queue.h>              // For IPC communication between the LCD and buttons.
+
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
 // #include <pico/multicore.h>     // Enable as needed. Not needed at the moment
+
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_LSM6DSOX.h>  // Adafruit_LSM6DS library.
+<<<<<<< HEAD
 #include <Earendil_Utils.h>
+=======
+
+// --- DEPENDENCIES // EARENDIL LIBRARIES ---
+#include <Earendil_TaskHandles.h>
+#include <Earendil_SharedData.h>
+#include <Earendil_Mutexes.h>
+
+// --- OTHER DEPENDENCIES ---
+>>>>>>> c0783c551938a72d0a6db3035aeb50d75a520b3a
 
 // --- Calibration State ------------------------------------------------
 #define CALIB_SAMPLES 500
 #define GRAVITY 9.80665f
-
-// --- Event bits -------------------------------------------------------
-#define GYRO_EVT_CALIBRATE_REQUEST  ( 1 << 0 )
-#define GYRO_EVT_CALIBRATE_COMPLETE ( 1 << 1 )
-#define GYRO_EVT_CALIBRATE_CANCELLED ( 1 << 2 )
-
-// --- Button IDs -------------------------------------------------------
-// #define BTN_CONFIRM  0x01
-// #define BTN_CANCEL   0x02
 
 // --- LCD message ------------------------------------------------------
 // Adapt this struct to match your existing LCD task's message format
@@ -32,7 +35,43 @@
 
 // --- Gyro metrics -----------------------------------------------------
 // [0..2] = accel X/Y/Z (m/s^2), [3..5] = gyro X/Y/Z (rad/s)
-typedef float GyroMetrics_t[6];
+
 
 // --- Public API ------------------------------------------------------
+<<<<<<< HEAD
 void vAccelGyro(void* pvParameters); // FreeRTOS task entry point
+=======
+// void gyroSetup(QueueHandle_t lcdQueue,
+//                QueueHandle_t buttonQueue,
+//                SemaphoreHandle_t i2cMutex);
+  
+// void gyroReading(GyroMetrics_t metrics);
+// void gyroShow(GyroMetrics_t metrics);
+
+namespace Earendil_AccelGyro {
+    // --------------------------------- TASKS ---------------------------------
+    extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
+    extern Earendil::Earendil_SharedData_t*     Earendil_Data;
+    extern Earendil::Earendil_Mutexes_t*        Earendil_Mutexes;
+    
+    void linkSharedStructs(
+        Earendil::Earendil_TaskHandles_t*   global_Earendil_Handles,
+        Earendil::Earendil_SharedData_t*    global_Earendil_Data,
+        Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
+    );
+
+    void createTasks(void);
+
+    void createTask_vAccelGyro(void);
+    void vAccelGyro(void* pvParameters);
+    // --------------------------------- UTILS ---------------------------------
+    extern Adafruit_LSM6DSOX accelgyro;
+    void gyroSetup();
+    void gyroShow();
+    void gyroReading();
+    void setup();
+
+}
+
+
+>>>>>>> c0783c551938a72d0a6db3035aeb50d75a520b3a
