@@ -10,8 +10,6 @@
 #include <FreeRTOS.h>           // For pdMS_TO_TICKS(), etc. Needed for task.h, semphr.h, etc.
 #include <task.h>               // For vTaskDelay(), etc.
 #include <semphr.h>             // For SemaphoreHandle_t, xSemaphoreTake(), xSemaphoreGive(), etc.
-#include <queue.h>              // For IPC communication between the LCD and buttons.
-#include <event_groups.h>
 
 // --- DEPENDENCIES // pico-sdk ---
 #include <pico/stdlib.h>        // For gpio_init(), gpio_set_dir(), gpio_put(), I/O with printf(), etc.
