@@ -6,6 +6,6 @@
 
 namespace Earendil_Altimeter {
     typedef struct Altimeter_TaskHandles {
-        
+        TaskHandle_t task_vAltimeter_Update;
     } Altimeter_TaskHandles_t;
 }

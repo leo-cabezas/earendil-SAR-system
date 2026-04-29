@@ -36,7 +36,7 @@ namespace Earendil_Altimeter {
         Earendil::Earendil_SharedData_t*    global_Earendil_Data,
         Earendil::Earendil_Mutexes_t*       global_Earendil_Mutexes
     );
-    
+
     void createTasks(void);
 
     void createTask_vAltimeter_(void);
@@ -44,6 +44,7 @@ namespace Earendil_Altimeter {
 
     // --------------------------------- UTILS ---------------------------------
     Adafruit_BMP3XX altimeter;
+    
     void setup();
     
 }

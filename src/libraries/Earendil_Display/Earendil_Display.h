@@ -202,6 +202,7 @@ namespace Earendil_Display {
     // =======================================================================================
 
     typedef struct NavScreenState {
+        // HEADING MARK
         int16_t heading_N_vertex_X0             = -1;
         int16_t heading_N_vertex_Y0             = -1;
         int16_t heading_N_vertex_X1             = -1;
@@ -209,9 +210,11 @@ namespace Earendil_Display {
         int16_t heading_N_vertex_X2             = -1;
         int16_t heading_N_vertex_Y2             = -1;
 
+        // BEARING MARKS
         int16_t last_bearing_node_X             = -1;
         int16_t last_bearing_node_Y             = -1;
 
+        // CARDINAL LABELS
         int16_t last_cardinal_N_label_X         = -1;
         int16_t last_cardinal_N_label_Y         = -1;
         uint16_t last_cardinal_N_label_width    = -1;
@@ -221,65 +224,74 @@ namespace Earendil_Display {
         int16_t last_cardinal_W_label_Y         = -1;
         uint16_t last_cardinal_W_label_width    = -1;
         uint16_t last_cardinal_W_label_height   = -1;
-        int16_t last_cardinal_W_notch_X0        = -1;
-        int16_t last_cardinal_W_notch_Y0        = -1;
-        int16_t last_cardinal_W_notch_X1        = -1;
-        int16_t last_cardinal_W_notch_Y1        = -1;
 
         int16_t last_cardinal_S_label_X         = -1;
         int16_t last_cardinal_S_label_Y         = -1;
         uint16_t last_cardinal_S_label_width    = -1;
         uint16_t last_cardinal_S_label_height   = -1;
-        int16_t last_cardinal_S_notch_X0        = -1;
-        int16_t last_cardinal_S_notch_Y0        = -1;
-        int16_t last_cardinal_S_notch_X1        = -1;
-        int16_t last_cardinal_S_notch_Y1        = -1;
 
         int16_t last_cardinal_E_label_X         = -1;
         int16_t last_cardinal_E_label_Y         = -1;
         uint16_t last_cardinal_E_label_width    = -1;
         uint16_t last_cardinal_E_label_height   = -1;
-        int16_t last_cardinal_E_notch_X0        = -1;
-        int16_t last_cardinal_E_notch_Y0        = -1;
-        int16_t last_cardinal_E_notch_X1        = -1;
-        int16_t last_cardinal_E_notch_Y1        = -1;
 
         int16_t last_cardinal_NW_label_X        = -1;
         int16_t last_cardinal_NW_label_Y        = -1;
         uint16_t last_cardinal_NW_label_width   = -1;
         uint16_t last_cardinal_NW_label_height  = -1;
-        int16_t last_cardinal_NW_notch_X0       = -1;
-        int16_t last_cardinal_NW_notch_Y0       = -1;
-        int16_t last_cardinal_NW_notch_X1       = -1;
-        int16_t last_cardinal_NW_notch_Y1       = -1;
 
         int16_t last_cardinal_SW_label_X        = -1;
         int16_t last_cardinal_SW_label_Y        = -1;
         uint16_t last_cardinal_SW_label_width   = -1;
         uint16_t last_cardinal_SW_label_height  = -1;
-        int16_t last_cardinal_SW_notch_X0       = -1;
-        int16_t last_cardinal_SW_notch_Y0       = -1;
-        int16_t last_cardinal_SW_notch_X1       = -1;
-        int16_t last_cardinal_SW_notch_Y1       = -1;
 
         int16_t last_cardinal_SE_label_X        = -1;
         int16_t last_cardinal_SE_label_Y        = -1;
         uint16_t last_cardinal_SE_label_width   = -1;
         uint16_t last_cardinal_SE_label_height  = -1;
-        int16_t last_cardinal_SE_notch_X0       = -1;
-        int16_t last_cardinal_SE_notch_Y0       = -1;
-        int16_t last_cardinal_SE_notch_X1       = -1;
-        int16_t last_cardinal_SE_notch_Y1       = -1;
 
         int16_t last_cardinal_NE_label_X        = -1;
         int16_t last_cardinal_NE_label_Y        = -1;
         uint16_t last_cardinal_NE_label_width   = -1;
         uint16_t last_cardinal_NE_label_height  = -1;
+
+        // CARDINAL NOTCHES
+        int16_t last_cardinal_W_notch_X0        = -1;
+        int16_t last_cardinal_W_notch_Y0        = -1;
+        int16_t last_cardinal_W_notch_X1        = -1;
+        int16_t last_cardinal_W_notch_Y1        = -1;
+
+        int16_t last_cardinal_S_notch_X0        = -1;
+        int16_t last_cardinal_S_notch_Y0        = -1;
+        int16_t last_cardinal_S_notch_X1        = -1;
+        int16_t last_cardinal_S_notch_Y1        = -1;
+
+        int16_t last_cardinal_E_notch_X0        = -1;
+        int16_t last_cardinal_E_notch_Y0        = -1;
+        int16_t last_cardinal_E_notch_X1        = -1;
+        int16_t last_cardinal_E_notch_Y1        = -1;
+
+        int16_t last_cardinal_NW_notch_X0       = -1;
+        int16_t last_cardinal_NW_notch_Y0       = -1;
+        int16_t last_cardinal_NW_notch_X1       = -1;
+        int16_t last_cardinal_NW_notch_Y1       = -1;
+
+        int16_t last_cardinal_SW_notch_X0       = -1;
+        int16_t last_cardinal_SW_notch_Y0       = -1;
+        int16_t last_cardinal_SW_notch_X1       = -1;
+        int16_t last_cardinal_SW_notch_Y1       = -1;
+
+        int16_t last_cardinal_SE_notch_X0       = -1;
+        int16_t last_cardinal_SE_notch_Y0       = -1;
+        int16_t last_cardinal_SE_notch_X1       = -1;
+        int16_t last_cardinal_SE_notch_Y1       = -1;
+
         int16_t last_cardinal_NE_notch_X0       = -1;
         int16_t last_cardinal_NE_notch_Y0       = -1;
         int16_t last_cardinal_NE_notch_X1       = -1;
         int16_t last_cardinal_NE_notch_Y1       = -1;
 
+        // DISTANCE LABELS
         int16_t last_distance_label_X           = -1;
         int16_t last_distance_label_Y           = -1;
         uint16_t last_distance_label_width      = -1;
@@ -294,16 +306,22 @@ namespace Earendil_Display {
 
     // --- DYNAMIC UI ELEMENTS ---------------------------------------------------------------
     void draw_NavScreen_Dynamic(void);
+
+    // HEADING MARK
     void draw_HeadingToNorth(
         double heading_north_deg
     );
     void clear_LastHeadingToNorth(void);
+
+    // BEARING MARKS
     void draw_BearingToNode(
         double heading_north_deg,
         double bearing_node_deg
     );
     void clear_LastBearingToNode(void);
-    void draw_CardinalDirections(
+
+    // CARDINAL LABELS
+    void draw_AllCardinalLabels(
         double heading_north_deg
     );
     void draw_CardinalLabel(
@@ -316,6 +334,12 @@ namespace Earendil_Display {
         uint16_t&   last_cardinal_label_width,
         uint16_t&   last_cardinal_label_height
     );
+    void clear_AllCardinalLabels(void);
+
+    // CARDINAL NOTCHES
+    void draw_AllCardinalNotches(
+        double heading_north_deg
+    );
     void draw_CardinalNotch(
         double      cardinal_angle,
         uint16_t    cardinal_color,
@@ -324,7 +348,9 @@ namespace Earendil_Display {
         int16_t&    last_cardinal_notch_X1,
         int16_t&    last_cardinal_notch_Y1
     );
-    void clear_LastCardinalDirections(void);
+    void clear_AllCardinalNotches(void);
+
+    // DISTANCE LABELS
     void draw_DistanceToNode(
         double distance_node_m
     );
