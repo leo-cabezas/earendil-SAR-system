@@ -13,20 +13,17 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
 
 // ─── Internal helpers ──────────────────────────────────────────────
 
-<<<<<<< HEAD:src/libraries/Earendil_AccelGyro/Earendil_AccelGyro.cpp
-static void lcdPrint(const char* msg)
-{
-    char text[LCD_MSG_LEN];
-    snprintf(text, LCD_MSG_LEN, "%s", msg);
-    xQueueSend(calQueue, &text, pdMS_TO_TICKS(50));
-}
-=======
->>>>>>> c0783c551938a72d0a6db3035aeb50d75a520b3a:src/libraries/Earendil_AccelGyro/Earendil_AccelGyro_Utils.cpp
+// static void lcdPrint(const char* msg)
+// {
+//     char text[LCD_MSG_LEN];
+//     snprintf(text, LCD_MSG_LEN, "%s", msg);
+//     xQueueSend(calQueue, &text, pdMS_TO_TICKS(50));
+// }
 
-    void setup()
-    {
-        gyroSetup();
-    }
+void setup()
+{
+    gyroSetup();
+}
 
 static void countdown(int n){
     char cd_buf[32];
@@ -144,11 +141,7 @@ static bool gyroCalibrate(void)
 
         snprintf(buf, LCD_MSG_LEN, "%.3f %.3f %.3f",
                  posData[p][0], posData[p][1], posData[p][2]);
-<<<<<<< HEAD:src/libraries/Earendil_AccelGyro/Earendil_AccelGyro.cpp
-        lcdPrint(buf);
-=======
         //lcdPrint(2, buf);
->>>>>>> c0783c551938a72d0a6db3035aeb50d75a520b3a:src/libraries/Earendil_AccelGyro/Earendil_AccelGyro_Utils.cpp
         vTaskDelay(pdMS_TO_TICKS(3000));
     }
 
@@ -307,37 +300,4 @@ void gyroShow()
     // lcdPrint(1, buf);
 }
 
-<<<<<<< HEAD:src/libraries/Earendil_AccelGyro/Earendil_AccelGyro.cpp
-// ─── FreeRTOS task ─────────────────────────────────────────────────
-void vAccelGyro(void* pvParameters){
-  (void) pvParameters;
-  vTaskDelay(pdMS_TO_TICKS(10000));
-  printf("Accell-oscope started!\n");
-
-  GyroMetrics_t metrics;
-  EventBits_t   bits;
-  gyroSetup();
-  // gyroCalibrate();
-  
-  while (1){
-    bits = xEventGroupGetBits(gyroEventGroup);
-
-    if (bits & GYRO_EVT_CALIBRATE_REQUEST) {
-        // Clear the request bit before starting
-        xEventGroupClearBits(gyroEventGroup, GYRO_EVT_CALIBRATE_REQUEST);
-
-        bool success = gyroCalibrate();
-
-        // Signal completion or cancellation back to the requester
-        xEventGroupSetBits(gyroEventGroup, success ? GYRO_EVT_CALIBRATE_COMPLETE : GYRO_EVT_CALIBRATE_CANCELLED);
-    } else {
-        // Normal operation: read and expose sensor data
-        gyroReading(metrics);
-        gyroShow(metrics); //For debugging
-    }
-    vTaskDelay(pdMS_TO_TICKS(1000));
-  }
 }
-=======
-}
->>>>>>> c0783c551938a72d0a6db3035aeb50d75a520b3a:src/libraries/Earendil_AccelGyro/Earendil_AccelGyro_Utils.cpp

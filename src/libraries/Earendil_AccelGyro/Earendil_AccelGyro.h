@@ -13,9 +13,6 @@
 
 // --- DEPENDENCIES // THIRD-PARTY LIBRARIES ---
 #include <Adafruit_LSM6DSOX.h>  // Adafruit_LSM6DS library.
-<<<<<<< HEAD
-#include <Earendil_Utils.h>
-=======
 
 // --- DEPENDENCIES // EARENDIL LIBRARIES ---
 #include <Earendil_TaskHandles.h>
@@ -23,7 +20,6 @@
 #include <Earendil_Mutexes.h>
 
 // --- OTHER DEPENDENCIES ---
->>>>>>> c0783c551938a72d0a6db3035aeb50d75a520b3a
 
 // --- Calibration State ------------------------------------------------
 #define CALIB_SAMPLES 500
@@ -38,9 +34,6 @@
 
 
 // --- Public API ------------------------------------------------------
-<<<<<<< HEAD
-void vAccelGyro(void* pvParameters); // FreeRTOS task entry point
-=======
 // void gyroSetup(QueueHandle_t lcdQueue,
 //                QueueHandle_t buttonQueue,
 //                SemaphoreHandle_t i2cMutex);
@@ -74,4 +67,3 @@ namespace Earendil_AccelGyro {
 }
 
 
->>>>>>> c0783c551938a72d0a6db3035aeb50d75a520b3a

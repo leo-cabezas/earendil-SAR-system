@@ -54,16 +54,6 @@ void vAltitudeUtility(void* pvParameters){
 //     *lon2 = *lon2 * 180.0f / M_PI;
 // }
 
-<<<<<<< HEAD
-// void updateDistance(float& distance){    // Is float enough precision?
-//     float handheld_latitude_rad = GPS_Handheld.latitudeRadians;
-//     float handheld_longitude_rad = GPS_Handheld.longitudeRadians;
-//     // float handheld_altitude = GPS_Handheld.;
-
-//     float node_latitude_rad = GPS_Node.latitudeRadians;
-//     float node_longitude_rad = GPS_Node.longitudeRadians;
-//     // float node_altitude = GPS_Node.
-=======
 void updateDistance(float& distance){    // Is float enough precision?
     //float handheld_latitude_rad = GPS_Handheld.latitudeRadians;
     //float handheld_longitude_rad = GPS_Handheld.longitudeRadians;
@@ -72,7 +62,6 @@ void updateDistance(float& distance){    // Is float enough precision?
     //float node_latitude_rad = GPS_Node.latitudeRadians;
     //float node_longitude_rad = GPS_Node.longitudeRadians;
     // float node_altitude = GPS_Node.
->>>>>>> 5120ffec7afcdeaeab4aa2f56daf3bf69c4b94cb
 
 //     /*
 //     float handheld_X = (EARTH_RADIUS + handheld_altitude) * sin(handheld_longitude) * cos(handheld_latitude - 90.0);
