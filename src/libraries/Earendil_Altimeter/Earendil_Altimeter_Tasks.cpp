@@ -46,8 +46,8 @@ namespace Earendil_Altimeter {
           
           while (1){
 
-            altRead_hh();//Handheld
-            //altRead_node();//Node
+            //altRead_hh();//Handheld
+            altRead_node();//Node
 
             vTaskDelay(pdMS_TO_TICKS(5000));  
           }

@@ -61,7 +61,7 @@ namespace Earendil_Altimeter {
         float sea_level = hypsometricPressure(temp + 273.15, press);
 
         //Print line for debugging if we need it
-        //printf("\n============ALTIMETER READING============\nTemperature: %.2f *C\nPressure: %.2f hPa\nCalculated Sea-level Pressure: %.2f hPa\n=========================================\n", temp, press, sea_level);
+        printf("\n============ALTIMETER READING============\nTemperature: %.2f *C\nPressure: %.2f hPa\nCalculated Sea-level Pressure: %.2f hPa\n=========================================\n", temp, press, sea_level);
 
         Earendil_Data-> Altimeter_Data.temperature = temp;
         Earendil_Data-> Altimeter_Data.pressure = press;
