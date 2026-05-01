@@ -42,6 +42,12 @@ namespace Earendil_Altimeter {
     void vAltimeter(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
         
+        TickType_t xLastWakeTime;
+        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VDISPLAY_UI);
+        BaseType_t xWasDelayed;
+        
+        xLastWakeTime = xTaskGetTickCount();
+
         vTaskDelay(pdMS_TO_TICKS(10000));
           
           while (1){
@@ -49,7 +55,7 @@ namespace Earendil_Altimeter {
             //altRead_hh();//Handheld
             altRead_node();//Node
 
-            vTaskDelay(pdMS_TO_TICKS(5000));  
+            xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
           }
     }
 }
