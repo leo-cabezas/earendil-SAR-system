@@ -151,7 +151,6 @@ namespace Earendil_Radio {
             
             Earendil_Data->Radio_Data.rx_latitude_deg   = rx_latitude_rad   * (180.0 / M_PI);
             Earendil_Data->Radio_Data.rx_longitude_deg  = rx_longitude_rad  * (180.0 / M_PI);
-            // timestamp here.
         }
     }
 

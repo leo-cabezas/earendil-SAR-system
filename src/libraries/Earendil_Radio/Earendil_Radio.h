@@ -1,5 +1,11 @@
 #pragma once    // To prevent duplicate library imports.
 
+// ///////////////////////////////////////////////////////////////////////////////////////
+// =======================================================================================
+// EARENDIL_RADIO DEPENDENCIES
+// =======================================================================================
+// ///////////////////////////////////////////////////////////////////////////////////////
+
 // --- DEPENDENCIES // FreeRTOS-Kernel ---
 #include <FreeRTOS.h>           // Core FreeRTOS library.
 #include <task.h>               // FreeRTOS library. For xTaskCreate(), vTaskDelay(), vTaskNotify(), etc.
@@ -21,6 +27,12 @@
 #include <cstdint>
 #include <vector>
 
+// ///////////////////////////////////////////////////////////////////////////////////////
+// =======================================================================================
+// EARENDIL_RADIO DEFINITIONS
+// =======================================================================================
+// ///////////////////////////////////////////////////////////////////////////////////////
+
 // --- RADIO TRANSCEIVER PINOUT CONFIGURATION ---
 #define RFM95_CS_PIN        16      // SPI chip-select
 #define RFM95_IRQ_PIN       21      // Interrupt pin
@@ -29,6 +41,12 @@
 // #define RFM95_SPI_MOSI      15      // SPI MOSI (Master-Out, Slave-In)
 // #define RFM95_SPI_MISO      8       // SPI MISO (Master-In, Slave-Out)
 // #define RFM95_SPI_SCLK      14      // SPI clock
+
+// =======================================================================================
+// TASK Definitions
+// =======================================================================================
+
+#define DELAY_VRADIO_LISTEN_RX      50
 
 namespace Earendil_Radio {
     // --------------------------------- TASKS ---------------------------------
@@ -87,6 +105,7 @@ namespace Earendil_Radio {
         std::vector<uint8_t>&       metadata,
         std::vector<uint8_t>&       data
     );
+
     void encodeMetadata(
         std::vector<uint8_t>&   metadata,
         uint16_t                recipient_id,

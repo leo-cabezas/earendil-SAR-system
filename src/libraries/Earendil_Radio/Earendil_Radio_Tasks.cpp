@@ -25,7 +25,6 @@ namespace Earendil_Radio {
     // vRadio_Ping_TX
     // =======================================================================================
     
-    // MAYBE CALL IT RADIO_MANUALPING_TX INSTEAD???????????????????????''
     void createTask_vRadio_Ping_TX(void){
         TaskHandle_t* task_handle_ptr = &Earendil_Handles->Radio_Handles.task_vRadio_Ping_TX;
         xTaskCreate(
@@ -50,7 +49,7 @@ namespace Earendil_Radio {
         uint16_t message_id     = 0;
         uint16_t message_att    = 0;
         uint32_t date_sent      = 20260420;
-        uint32_t time_sent      = 1488;
+        uint32_t time_sent      = 1333;
 
         while (1){
             // ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // COMMENT OUT FOR CONTINUOUS PING TEST
@@ -60,7 +59,7 @@ namespace Earendil_Radio {
             // message_id     = 0;
             message_att    += 1;
             date_sent      = 20260420;
-            time_sent      = 1488;
+            time_sent      = 1333;
 
             sendPing_TX(
                 recipient_id,
@@ -98,9 +97,14 @@ namespace Earendil_Radio {
     void vRadio_Listen_RX(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
+        TickType_t xLastWakeTime;
+        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VRADIO_LISTEN_RX);
+        BaseType_t xWasDelayed;
+        
+        xLastWakeTime = xTaskGetTickCount();
         while (1){
             listen_RX();
-            vTaskDelay(pdMS_TO_TICKS(50));
+            xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
         }
     }
 

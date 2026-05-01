@@ -43,6 +43,11 @@ namespace Earendil_Display {
     void vDisplay_UI(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
         
+        TickType_t xLastWakeTime;
+        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VDISPLAY_UI);
+        BaseType_t xWasDelayed;
+        
+        xLastWakeTime = xTaskGetTickCount();
         while(1){
             xSemaphoreTake(Earendil_Mutexes->spi_mutex, portMAX_DELAY);
             if (previous_ui != active_ui){
@@ -74,7 +79,7 @@ namespace Earendil_Display {
             }
             xSemaphoreGive(Earendil_Mutexes->spi_mutex);
 
-            vTaskDelay(pdMS_TO_TICKS(250));
+            xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
         }
     }
 
@@ -100,6 +105,11 @@ namespace Earendil_Display {
     void vDisplay_Controls(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
         
+        TickType_t xLastWakeTime;
+        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VDISPLAY_CONTROLS);
+        BaseType_t xWasDelayed;
+
+        xLastWakeTime = xTaskGetTickCount();
         while(1){
             /*
             if (ulTaskNotifyTake(pdTRUE, 0) > 0)
@@ -125,7 +135,8 @@ namespace Earendil_Display {
                 case CALIBRATING_UI:
                     break;
             }
-            vTaskDelay(pdMS_TO_TICKS(50));
+
+            xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
         }
     }
     
