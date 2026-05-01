@@ -47,6 +47,7 @@ namespace Earendil_GPS {
                 Earendil_Data->GPS_Data.hour             = gps.hour;
                 Earendil_Data->GPS_Data.minute           = gps.minute;
                 Earendil_Data->GPS_Data.second           = gps.seconds;
+                xTaskNotifyGive(Earendil_Handles->uSDReader_Handles.task_vuSDReader);
                 //xSemaphoreGive(gpsDataMutex);
             }
         }

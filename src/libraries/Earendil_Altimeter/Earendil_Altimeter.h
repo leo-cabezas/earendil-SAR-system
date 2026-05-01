@@ -31,8 +31,8 @@
 #define LOCAL_ALTITUDE (291.7)//m
 #define LAPSE_RATE (0.0065)//K/m
 #define HYPSOMETRIC_CONSTANT (0.190284)// GAS_CONSTANT * LAPSE_RATE / GRAVITY = (287.05 J/kg*K) * (0.0065 K/m) / (9.80665 m/s²)
-#define DELAY_VALTIMETER (150)//150 for Node
-// #define DELAY_VALTIMETER (250)//250 for Handheld
+#define DELAY_VALTIMETER (3000)//3000 for Node
+// #define DELAY_VALTIMETER (5000)//5000 for Handheld
 
 namespace Earendil_Altimeter {
     // --------------------------------- TASKS ---------------------------------

@@ -43,7 +43,7 @@ namespace Earendil_Altimeter {
         (void)pvParameters;     // Parameters unused.
         
         TickType_t xLastWakeTime;
-        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VDISPLAY_UI);
+        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VALTIMETER);
         BaseType_t xWasDelayed;
         
         xLastWakeTime = xTaskGetTickCount();

@@ -44,6 +44,7 @@ namespace Earendil_GPS {
 
         while(1){
             gpsUpdate();
+            //xTaskNotifyGive(Earendil_Handles->uSDReader_Handles.task_vuSDReader);
             vTaskDelay(1);
         }
     }

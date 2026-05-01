@@ -42,12 +42,14 @@ namespace Earendil_Altimeter {
         float press = altimeter.pressure / 100;
         float alt = hypsometricAltitude(temp + 273.15, press);
 
-        //Print line for debugging if we need it
-        //printf("\n============ALTIMETER READING============\nTemperature: %.2f *C\nPressure: %.2f hPa\nCalculated Altitude: %.2f m\n=========================================\n", temp, press, alt);
-
+        
         Earendil_Data-> Altimeter_Data.temperature = temp;
         Earendil_Data-> Altimeter_Data.pressure = press;
         Earendil_Data-> Altimeter_Data.altitude = alt;
+
+        //Print line for debugging if we need it
+        //printf("\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Altitude: %f m\n=========================================\n", Earendil_Data-> Altimeter_Data.temperature, Earendil_Data-> Altimeter_Data.pressure = press, Earendil_Data-> Altimeter_Data.altitude);
+
     }
 
     void altRead_node(){
@@ -60,12 +62,14 @@ namespace Earendil_Altimeter {
         float press = altimeter.pressure / 100;
         float sea_level = hypsometricPressure(temp + 273.15, press);
 
-        //Print line for debugging if we need it
-        printf("\n============ALTIMETER READING============\nTemperature: %.2f *C\nPressure: %.2f hPa\nCalculated Sea-level Pressure: %.2f hPa\n=========================================\n", temp, press, sea_level);
-
         Earendil_Data-> Altimeter_Data.temperature = temp;
         Earendil_Data-> Altimeter_Data.pressure = press;
         Earendil_Data-> Altimeter_Data.sea_level = sea_level;
+
+        //Print line for debugging if we need it
+        printf("\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Sea-level Pressure: %f hPa\n=========================================\n", Earendil_Data-> Altimeter_Data.temperature, Earendil_Data-> Altimeter_Data.pressure = press, Earendil_Data-> Altimeter_Data.sea_level);
+
+        
     }
 
 }
