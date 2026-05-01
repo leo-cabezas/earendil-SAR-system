@@ -21,7 +21,7 @@ include_guard()
 
 add_library(SdFat STATIC
         ./third_party/libraries/SdFat/src/FreeStack.cpp
-        ./third_party/libraries/SdFat/src/MinimumSerial.cpp
+        #./third_party/libraries/SdFat/src/MinimumSerial.cpp
         ./third_party/libraries/SdFat/src/common/FmtNumber.cpp
         ./third_party/libraries/SdFat/src/common/FsCache.cpp
         ./third_party/libraries/SdFat/src/common/FsDateTime.cpp
@@ -64,7 +64,7 @@ add_library(SdFat STATIC
         ./third_party/libraries/SdFat/src/SdCard/TeensySdio/TeensySdio.cpp
 )
 target_compile_definitions(SdFat PUBLIC
-        ARDUINO
+        ARDUINO=20308
 )
 target_link_libraries(SdFat PUBLIC
         # None.

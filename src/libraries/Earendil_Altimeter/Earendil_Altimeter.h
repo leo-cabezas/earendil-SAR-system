@@ -50,8 +50,7 @@ namespace Earendil_Altimeter {
     void vAltimeter(void* pvParameters);
 
     // --------------------------------- UTILS ---------------------------------
-    Adafruit_BMP3XX altimeter;
-    
+    extern Adafruit_BMP3XX altimeter;
     void setup();
     void altRead_hh();
     void altRead_node();

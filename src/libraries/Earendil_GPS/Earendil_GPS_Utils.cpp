@@ -41,13 +41,13 @@ namespace Earendil_GPS {
                 Earendil_Data->GPS_Data.latitude_deg    = gps.latitudeDegrees;
                 Earendil_Data->GPS_Data.longitude_deg   = gps.longitudeDegrees;
 
-                // gpsBench.year             = gps.year;
-                // gpsBench.month            = gps.month;
-                // gpsBench.day              = gps.day;
-                // gpsBench.hour             = gps.hour;
-                // gpsBench.minute           = gps.minute;
-                // gpsBench.seconds          = gps.seconds;
-                // xSemaphoreGive(gpsDataMutex);
+                Earendil_Data->GPS_Data.year             = gps.year;
+                Earendil_Data->GPS_Data.month            = gps.month;
+                Earendil_Data->GPS_Data.day              = gps.day;
+                Earendil_Data->GPS_Data.hour             = gps.hour;
+                Earendil_Data->GPS_Data.minute           = gps.minute;
+                Earendil_Data->GPS_Data.second           = gps.seconds;
+                //xSemaphoreGive(gpsDataMutex);
             }
         }
     }
