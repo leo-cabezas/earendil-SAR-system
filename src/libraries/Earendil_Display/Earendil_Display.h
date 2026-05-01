@@ -33,23 +33,31 @@
 // ///////////////////////////////////////////////////////////////////////////////////////
 
 // --- ROUND LCD DISPLAY PINOUT CONFIGURATION ---
-#define TFT_CS      29     // SPI chip select
-#define TFT_RST     24     // RESET pin
-#define TFT_DC      25     // DATA/COMMAND pin
-#define TFT_MOSI    3      // SPI MOSI (Master-Out, Slave-In)
-#define TFT_MISO    0      // SPI MISO (Master-In, Slave-Out)
-#define TFT_SCLK    2      // SPI clock
+#define TFT_CS      24      // SPI chip select
+#define TFT_RST     26      // RESET pin
+#define TFT_DC      6       // DATA/COMMAND pin
+
+#define TFT_MOSI    3       // SPI MOSI (Master-Out, Slave-In)
+#define TFT_MISO    0       // SPI MISO (Master-In, Slave-Out)
+#define TFT_SCLK    2       // SPI clock
 
 // --- HARDWARE BUTTONS GPIO PINS ---
 #define BUTTON1         12
 #define BUTTON_BACK     11
 #define BUTTON_SELECT   10
 #define BUTTON_DOWN     9
-#define BUTTON_UP       6
+#define BUTTON_UP       5
 
 // --- ROUND LCD DISPLAY SOFTWARE DEFINITIONS ---
 #define DISPLAY_CENTER_X    120
 #define DISPLAY_CENTER_Y    120
+
+// =======================================================================================
+// TASK Definitions
+// =======================================================================================
+
+#define DELAY_VDISPLAY_UI           150
+#define DELAY_VDISPLAY_CONTROLS     50
 
 // =======================================================================================
 // NAVIGATION_UI Definitions
@@ -112,7 +120,7 @@
 
 #define DISTANCE_MAX_DISPL_VALUE    10000   // In meters.
 #define DISTANCE_TEXT_SIZE          3
-#define DISTANCE_TEXT_COLOR         0x8E7D  // Baby blue.
+#define DISTANCE_TEXT_COLOR         0x8E7D
 
 // =======================================================================================
 // MENU_UI Definitions

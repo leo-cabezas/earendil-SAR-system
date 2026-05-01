@@ -128,12 +128,3 @@ int main() {
 
     while(1); // Must not return from main() in FreeRTOS.
 }
-
-/*
-QueueHandle_t auQueue = xQueueCreate(2, sizeof(SensorData_t));
-QueueHandle_t guQueue = xQueueCreate(2, sizeof(GPSData_t));
-QueueHandle_t calQueue = xQueueCreate(6, 64);
-SemaphoreHandle_t g_printMutex;
-SemaphoreHandle_t gpsDataMutex;
-EventGroupHandle_t gyroEventGroup = xEventGroupCreate();
-*/
