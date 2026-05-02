@@ -43,6 +43,13 @@ namespace Earendil_Magnetometer {
     void vMagnetometer_UpdateHeading(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
+
+        TickType_t xLastWakeTime;
+        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VMAGNETOMETER);
+        BaseType_t xWasDelayed;
+        
+        xLastWakeTime = xTaskGetTickCount();
+
         sensors_event_t event;
         double raw[3] = {0, 0, 0};
 
@@ -64,7 +71,7 @@ namespace Earendil_Magnetometer {
             
             Earendil_Data->Magnetometer_Data.heading_deg = getHeading(calibrated);
 
-            vTaskDelay(pdMS_TO_TICKS(50));
+            xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
         }
     }
 

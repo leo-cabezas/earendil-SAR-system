@@ -21,6 +21,10 @@
 #include <cmath>
 #include <stdio.h>
 
+
+#define DELAY_VMAGNETOMETER 150
+
+
 namespace Earendil_Magnetometer {
     // --------------------------------- TASKS ---------------------------------
     extern Earendil::Earendil_TaskHandles_t*    Earendil_Handles;
