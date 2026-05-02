@@ -17,8 +17,8 @@ namespace Earendil_Radio {
     }
     
     void createTasks(void){
-        // createTask_vRadio_Ping_TX();
-        createTask_vRadio_Listen_RX();
+        createTask_vRadio_Ping_TX();
+        //createTask_vRadio_Listen_RX();
     }
 
     // =======================================================================================
@@ -43,6 +43,10 @@ namespace Earendil_Radio {
     void vRadio_Ping_TX(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
 
+        TickType_t xLastWakeTime;
+        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VRADIO_PING_TX);
+        BaseType_t xWasDelayed;
+
         uint16_t recipient_id   = 1;
         uint16_t sender_id      = 0;
         uint16_t message_type   = 1;
@@ -55,7 +59,8 @@ namespace Earendil_Radio {
             // ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // COMMENT OUT FOR CONTINUOUS PING TEST
 
             // recipient_id   = 1488;
-            // message_type   = 1;
+            // message_type   = 1; //Handheld
+            message_type = 2; //Node
             // message_id     = 0;
             message_att    += 1;
             date_sent      = 20260420;
@@ -70,8 +75,8 @@ namespace Earendil_Radio {
                 date_sent,
                 time_sent
             );
-
-            vTaskDelay(pdMS_TO_TICKS(2000)); // FOR TESTING ONLY
+            xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
+            //vTaskDelay(pdMS_TO_TICKS(2000)); // FOR TESTING ONLY
         }
     }
 

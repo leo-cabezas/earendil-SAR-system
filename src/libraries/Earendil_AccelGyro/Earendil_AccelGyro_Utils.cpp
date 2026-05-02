@@ -17,6 +17,7 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
  {
      char text[LCD_MSG_LEN];
      snprintf(text, LCD_MSG_LEN, "%s", msg);
+     puts(text);
 }
 
 void setup()
@@ -28,6 +29,7 @@ static void countdown(int n){
     char cd_buf[32];
     for (; n>0; n--){
         snprintf(cd_buf, sizeof(cd_buf), "%d...\n", n);
+        puts(cd_buf);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -280,14 +282,14 @@ void gyroReading()
 
 void gyroShow()
 {
-    printf("\n============ACCELL-OSCOPE READING===============\nAX:%.2f AY:%.2f AZ:%.2f\nGX:%.2f GY:%.2f GZ:%.2f\n================================================\n", 
-        Earendil_Data-> AccelGyro_Data.GyroMetrics[0], 
-        Earendil_Data-> AccelGyro_Data.GyroMetrics[1], 
-        Earendil_Data-> AccelGyro_Data.GyroMetrics[2], 
-        Earendil_Data-> AccelGyro_Data.GyroMetrics[3], 
-        Earendil_Data-> AccelGyro_Data.GyroMetrics[4], 
-        Earendil_Data-> AccelGyro_Data.GyroMetrics[5]
-    );
+    //printf("\n============ACCELL-OSCOPE READING===============\nAX:%.2f AY:%.2f AZ:%.2f\nGX:%.2f GY:%.2f GZ:%.2f\n================================================\n", 
+    //     Earendil_Data-> AccelGyro_Data.GyroMetrics[0], 
+    //     Earendil_Data-> AccelGyro_Data.GyroMetrics[1], 
+    //     Earendil_Data-> AccelGyro_Data.GyroMetrics[2], 
+    //     Earendil_Data-> AccelGyro_Data.GyroMetrics[3], 
+    //     Earendil_Data-> AccelGyro_Data.GyroMetrics[4], 
+    //     Earendil_Data-> AccelGyro_Data.GyroMetrics[5]
+    // );
     // char buf[LCD_MSG_LEN];
     // snprintf(buf, LCD_MSG_LEN, "AX:%.2f AY:%.2f AZ:%.2f",
     //          metrics[0], metrics[1], metrics[2]);

@@ -7,5 +7,7 @@ namespace Earendil_Radio {
         
         double rx_latitude_deg;
         double rx_longitude_deg;
+        
+        float rx_sea_level_hpa;
     } Radio_SharedData_t;
 }

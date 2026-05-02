@@ -30,6 +30,8 @@ namespace Earendil_Radio {
 
         gpio_init(LED_BUILTIN);
         gpio_set_dir(LED_BUILTIN, GPIO_OUT);
+
+        Earendil_Data->Radio_Data.rx_sea_level_hpa = -1;
     }
 
     void sendPing_TX(
@@ -45,17 +47,31 @@ namespace Earendil_Radio {
         std::vector<uint8_t> metadata;
         std::vector<uint8_t> data;
 
-        if (message_type == 1){
-            // Mutex here if necessary
-            double latitude_rad     = Earendil_Data->GPS_Data.latitude_rad;
-            double longitude_rad    = Earendil_Data->GPS_Data.longitude_rad;
-            // Mutex here if necessary
+        switch (message_type){
+            case 1: {
+                // Mutex here if necessary
+                double latitude_rad     = Earendil_Data->GPS_Data.latitude_rad;
+                double longitude_rad    = Earendil_Data->GPS_Data.longitude_rad;
+                // Mutex here if necessary
 
-            encodeGPSData(
-                data,
-                latitude_rad,
-                longitude_rad
-            );
+                encodeGPSData(
+                    data,
+                    latitude_rad,
+                    longitude_rad
+                );
+                break;
+            }
+            case 2: {
+                // Mutex here if necessary
+                float sea_level         = Earendil_Data->Altimeter_Data.sea_level;
+                // Mutex here if necessary
+
+                encodeAltimeterData(
+                    data,
+                    sea_level
+                );
+                break;
+            }
         }
 
         encodeMetadata(
@@ -136,21 +152,35 @@ namespace Earendil_Radio {
             time_sent
         );
 
-        if (message_type == 1){
-            double rx_latitude_rad;
-            double rx_longitude_rad;
+        switch (message_type){
+            case 1: {
+                double rx_latitude_rad;
+                double rx_longitude_rad;
 
-            decodeGPSData(
-                data,
-                rx_latitude_rad,
-                rx_longitude_rad
-            );
+                decodeGPSData(
+                    data,
+                    rx_latitude_rad,
+                    rx_longitude_rad
+                );
 
-            Earendil_Data->Radio_Data.rx_latitude_rad   = rx_latitude_rad;
-            Earendil_Data->Radio_Data.rx_longitude_rad  = rx_longitude_rad;
-            
-            Earendil_Data->Radio_Data.rx_latitude_deg   = rx_latitude_rad   * (180.0 / M_PI);
-            Earendil_Data->Radio_Data.rx_longitude_deg  = rx_longitude_rad  * (180.0 / M_PI);
+                Earendil_Data->Radio_Data.rx_latitude_rad   = rx_latitude_rad;
+                Earendil_Data->Radio_Data.rx_longitude_rad  = rx_longitude_rad;
+                
+                Earendil_Data->Radio_Data.rx_latitude_deg   = rx_latitude_rad   * (180.0 / M_PI);
+                Earendil_Data->Radio_Data.rx_longitude_deg  = rx_longitude_rad  * (180.0 / M_PI);
+                break;
+            }
+            case 2: {
+                float  rx_sea_level;
+
+                decodeAltimeterData(
+                    data,
+                    rx_sea_level
+                );
+
+                Earendil_Data->Radio_Data.rx_sea_level_hpa  = rx_sea_level;
+            break;
+            }
         }
     }
 
@@ -159,9 +189,13 @@ namespace Earendil_Radio {
         const std::vector<uint8_t>& metadata,
         const std::vector<uint8_t>& data
     ){
+        radio_packet.push_back(metadata.size());
+
         for (size_t i = 0; i < metadata.size(); i++){
             radio_packet.push_back(metadata[i]);
         }
+
+        radio_packet.push_back(data.size());
 
         for (size_t i = 0; i < data.size(); i++){
             radio_packet.push_back(data[i]);
@@ -173,19 +207,21 @@ namespace Earendil_Radio {
         std::vector<uint8_t>&       metadata,
         std::vector<uint8_t>&       data
     ){  
-        constexpr size_t METADATA_SIZE_BYTES    = 18;
-        constexpr size_t DATA_SIZE_BYTES        = 8;    // MAY BE DIFFERENT FOR DIFFERENT DATA
         size_t byte = 0;
 
+        uint8_t metadata_size_bytes = radio_packet[byte++];
+
         metadata.clear();
-        metadata.reserve(METADATA_SIZE_BYTES);
-        for (size_t i = 0; (i < METADATA_SIZE_BYTES) && (byte < radio_packet.size()); i++){
+        metadata.reserve(metadata_size_bytes);
+        for (size_t i = 0; (i < metadata_size_bytes) && (byte < radio_packet.size()); i++){
             metadata.push_back(radio_packet[byte++]);
         }
 
+        uint8_t data_size_bytes = radio_packet[byte++];
+
         data.clear();
-        data.reserve(DATA_SIZE_BYTES);
-        for (size_t i = 0; (i < DATA_SIZE_BYTES) && (byte < radio_packet.size()); i++){
+        data.reserve(data_size_bytes);
+        for (size_t i = 0; (i < data_size_bytes) && (byte < radio_packet.size()); i++){
             data.push_back(radio_packet[byte++]);
         }
     }
@@ -309,6 +345,32 @@ namespace Earendil_Radio {
         int_longitude_rad |= (static_cast<int32_t>( data[byte++] )) << 8;
         int_longitude_rad |= (static_cast<int32_t>( data[byte++] )) << 0;
         longitude_rad = int_longitude_rad / 1000000.0;
+    }
+
+    void encodeAltimeterData(
+        std::vector<uint8_t>&   data,
+        float                   sea_level
+    ){
+        
+        int32_t int_sea_level = static_cast<int32_t>(sea_level * 1000000.0);
+        data.push_back(static_cast<uint8_t>( (int_sea_level >> 24 ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_sea_level >> 16 ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_sea_level >> 8  ) & 0xFF ));
+        data.push_back(static_cast<uint8_t>( (int_sea_level >> 0  ) & 0xFF ));
+    }
+
+    void decodeAltimeterData(
+        const std::vector<uint8_t>& data,
+        float&                      sea_level
+    ){
+        size_t byte = 0;
+        
+        int32_t int_sea_level = 0;
+        int_sea_level |= (static_cast<int32_t>( data[byte++] )) << 24;
+        int_sea_level |= (static_cast<int32_t>( data[byte++] )) << 16;
+        int_sea_level |= (static_cast<int32_t>( data[byte++] )) << 8;
+        int_sea_level |= (static_cast<int32_t>( data[byte++] )) << 0;
+        sea_level = int_sea_level / 1000000.0;
     }
 
 }

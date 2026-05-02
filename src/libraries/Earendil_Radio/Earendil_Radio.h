@@ -47,6 +47,7 @@
 // =======================================================================================
 
 #define DELAY_VRADIO_LISTEN_RX      50
+#define DELAY_VRADIO_PING_TX        5000
 
 namespace Earendil_Radio {
     // --------------------------------- TASKS ---------------------------------
@@ -133,9 +134,26 @@ namespace Earendil_Radio {
         double                  longitude_rad
     );
 
+    void encodeNodeData(
+        std::vector<uint8_t>&   data,
+        double                  latitude_rad,
+        double                  longitude_rad,
+        float                   sea_level
+    );
+
     void decodeGPSData(
         const std::vector<uint8_t>& data,
         double&                     latitude_rad,
         double&                     longitude_rad
+    );
+    
+    void encodeAltimeterData(
+        std::vector<uint8_t>&   data,
+        float                   sea_level
+    );
+
+    void decodeAltimeterData(
+        const std::vector<uint8_t>& data,
+        float&                      sea_level
     );
 }

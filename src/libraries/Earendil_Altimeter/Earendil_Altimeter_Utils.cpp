@@ -6,7 +6,7 @@ namespace Earendil_Altimeter {
 
     void setup(){
         if (! altimeter.begin_I2C()) {   // hardware I2C mode, can pass in address & alt Wire
-            printf("Could not find a valid BMP3 sensor, check wiring!");
+            //printf("Could not find a valid BMP3 sensor, check wiring!");
             vTaskDelete(NULL);
         }
 
@@ -15,15 +15,19 @@ namespace Earendil_Altimeter {
         altimeter.setPressureOversampling(BMP3_OVERSAMPLING_16X);
         altimeter.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_7);
         altimeter.setOutputDataRate(BMP3_ODR_1_5_HZ);
-
-        // Earendil_Data-> Altimeter_Data.sea-level = SEALEVELPRESSURE_HPA; //Hardcoded handheld, not needed if getting this value dynamically over the air from the Node.
-        // Earendil_Data-> Altimeter_Data.altitude = LOCAL_ALTITUDE; //Node setup requirement
     }
 
     //Hypsometric equation function used to calculate the altitude based on temperature in Kelvin and pressure in hPa
     static inline float hypsometricAltitude(float temp, float pressure){
-        float altitude = (temp / LAPSE_RATE) * (1 - pow(pressure / SEALEVELPRESSURE_HPA, HYPSOMETRIC_CONSTANT));
-        return altitude;
+        float sea_level_rx = Earendil_Data->Radio_Data.rx_sea_level_hpa;
+        if (sea_level_rx == -1){
+            float altitude = (temp / LAPSE_RATE) * (1 - pow(pressure / SEALEVELPRESSURE_HPA, HYPSOMETRIC_CONSTANT));
+            return altitude;
+        }
+        else{
+            float altitude = (temp / LAPSE_RATE) * (1 - pow(pressure / sea_level_rx, HYPSOMETRIC_CONSTANT));
+            return altitude;
+        }
     }
 
     //Hypsometric equation function used to calculate the local sea level pressure based on temperature in Kelvin and pressure in hPa
@@ -34,7 +38,7 @@ namespace Earendil_Altimeter {
     
     void altRead_hh(){
         if (! altimeter.performReading()) {
-            printf("Failed to perform reading :(");
+            //printf("Failed to perform reading :(");
             vTaskDelete(NULL);
         }
 
@@ -54,7 +58,7 @@ namespace Earendil_Altimeter {
 
     void altRead_node(){
         if (! altimeter.performReading()) {
-            printf("Failed to perform reading :(");
+            //printf("Failed to perform reading :(");
             vTaskDelete(NULL);
         }
 
@@ -67,7 +71,7 @@ namespace Earendil_Altimeter {
         Earendil_Data-> Altimeter_Data.sea_level = sea_level;
 
         //Print line for debugging if we need it
-        printf("\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Sea-level Pressure: %f hPa\n=========================================\n", Earendil_Data-> Altimeter_Data.temperature, Earendil_Data-> Altimeter_Data.pressure = press, Earendil_Data-> Altimeter_Data.sea_level);
+        //printf("\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Sea-level Pressure: %f hPa\n=========================================\n", Earendil_Data-> Altimeter_Data.temperature, Earendil_Data-> Altimeter_Data.pressure = press, Earendil_Data-> Altimeter_Data.sea_level);
 
         
     }

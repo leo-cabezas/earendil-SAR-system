@@ -9,7 +9,7 @@ namespace Earendil_uSDReader {
 
         if (!sd.begin(USD_CS)) {
             while(1){
-                printf("SD Card Module failed initializaion!");
+                //printf("SD Card Module failed initializaion!");
                 vTaskDelay(pdMS_TO_TICKS(5000));
             };
         }
@@ -42,7 +42,7 @@ namespace Earendil_uSDReader {
 
         if (!file.open("logs.txt", O_WRONLY | O_CREAT | O_APPEND)) {
             while(1) {
-                printf("SD Card: File open failed.");
+                //printf("SD Card: File open failed.");
                 vTaskDelay(pdMS_TO_TICKS(5000));
             };
           }
