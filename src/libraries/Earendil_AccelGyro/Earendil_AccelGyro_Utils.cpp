@@ -13,12 +13,11 @@ static float accelScale[3]  = {1.0f, 1.0f, 1.0f};
 
 // ─── Internal helpers ──────────────────────────────────────────────
 
-// static void lcdPrint(const char* msg)
-// {
-//     char text[LCD_MSG_LEN];
-//     snprintf(text, LCD_MSG_LEN, "%s", msg);
-//     xQueueSend(calQueue, &text, pdMS_TO_TICKS(50));
-// }
+ static void lcdPrint(const char* msg)
+ {
+     char text[LCD_MSG_LEN];
+     snprintf(text, LCD_MSG_LEN, "%s", msg);
+}
 
 void setup()
 {
@@ -66,7 +65,7 @@ static bool collectSamples(float outAccel[3], float outGyro[3], int n)
 
 // ─── Calibration routine ───────────────────────────────────────────
 
-static bool gyroCalibrate(void)
+void gyroCalibrate()
 {
     char buf[LCD_MSG_LEN];
     float avgA[3], avgG[3];
@@ -81,14 +80,14 @@ static bool gyroCalibrate(void)
     //     lcdPrint(2, "");
     //     return false;
     // }
-
-    //lcdPrint("Sampling gyro...");
-    //lcdPrint("");
-
+    lcdPrint("Lay Flat and Still");
+    countdown(5);
+    lcdPrint("Sampling gyro...");
+    lcdPrint("");
+    
     if (!collectSamples(avgA, avgG, CALIB_SAMPLES)) {
         //lcdPrint(1, "I2C Error!");
         //lcdPrint("Collection Error!");
-        return false;
     }
 
     gyroBias[0] = avgG[0];
@@ -96,8 +95,8 @@ static bool gyroCalibrate(void)
     gyroBias[2] = avgG[2];
 
     snprintf(buf, LCD_MSG_LEN, "X:%.4f", gyroBias[0]);
-    //lcdPrint("Gyro bias done:");
-    //lcdPrint(buf);
+    lcdPrint("Gyro bias done:");
+    lcdPrint(buf);
     vTaskDelay(pdMS_TO_TICKS(1500));
 
     // ── Accel 6-position calibration ──────────────────────────────
@@ -115,12 +114,12 @@ static bool gyroCalibrate(void)
 
     float posData[6][3];
 
-    //lcdPrint("Get ready, Y arrow away, X arrow right");
+    lcdPrint("Get ready, Y arrow away, X arrow right");
 
     for (int p = 0; p < 6; p++) {
         snprintf(buf, LCD_MSG_LEN, "%d/6: %s", p + 1, posLabels[p]);
-        //lcdPrint("Accel Calibration");
-        //lcdPrint(buf);
+        lcdPrint("Accel Calibration");
+        lcdPrint(buf);
         vTaskDelay(pdMS_TO_TICKS(3000));
         // lcdPrint("Confirm/Cancel");
 
@@ -136,12 +135,11 @@ static bool gyroCalibrate(void)
         if (!collectSamples(posData[p], avgG, CALIB_SAMPLES)) {
             //lcdPrint(1, "I2C Error!");
             //lcdPrint("Collection Error!");
-            return false;
         }
 
         snprintf(buf, LCD_MSG_LEN, "%.3f %.3f %.3f",
                  posData[p][0], posData[p][1], posData[p][2]);
-        //lcdPrint(2, buf);
+        lcdPrint(buf);
         vTaskDelay(pdMS_TO_TICKS(3000));
     }
 
@@ -158,16 +156,15 @@ static bool gyroCalibrate(void)
         accelScale[ax]  = GRAVITY / ((posReading - negReading) / 2.0f);
     }
 
-    //lcdPrint("Calibration Done");
+    lcdPrint("Calibration Done");
     snprintf(buf, LCD_MSG_LEN, "Offsets: %.3f %.3f %.3f",
              accelOffset[0], accelOffset[1], accelOffset[2]);
-    //lcdPrint(buf);
+    lcdPrint(buf);
     snprintf(buf, LCD_MSG_LEN, "Scale:   %.3f %.3f %.3f",
              accelScale[0], accelScale[1], accelScale[2]);
-    //lcdPrint(buf);
+    lcdPrint(buf);
     vTaskDelay(pdMS_TO_TICKS(2000));
 
-    return true;
 }
 
 // ─── Setup ─────────────────────────────────────────────────────────

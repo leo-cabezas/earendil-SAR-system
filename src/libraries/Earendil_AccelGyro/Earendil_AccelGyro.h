@@ -40,6 +40,7 @@
   
 // void gyroReading(GyroMetrics_t metrics);
 // void gyroShow(GyroMetrics_t metrics);
+#define DELAY_VACCELGYRO 150
 
 namespace Earendil_AccelGyro {
     // --------------------------------- TASKS ---------------------------------
@@ -62,6 +63,7 @@ namespace Earendil_AccelGyro {
     void gyroSetup();
     void gyroShow();
     void gyroReading();
+    void gyroCalibrate();
     void setup();
 
 }

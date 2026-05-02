@@ -41,18 +41,36 @@ namespace Earendil_AccelGyro {
 
     void vAccelGyro(void* pvParameters){
         (void) pvParameters;
+<<<<<<< HEAD
         vTaskDelay(pdMS_TO_TICKS(10000));
         //printf("Accell-oscope started!\n");
+=======
+        TickType_t xLastWakeTime;
+        const TickType_t xFrequency = pdMS_TO_TICKS(DELAY_VACCELGYRO);
+        BaseType_t xWasDelayed;
+        
+        xLastWakeTime = xTaskGetTickCount();
+        printf("Accell-oscope started!\n");
+>>>>>>> 46e08d3470f069e4b2b71bcf508691b637b326ac
 
 
-        gyroSetup();
+
+        //gyroSetup();
         // gyroCalibrate();
         
         while (1){
             // Normal operation: read and expose sensor data
+<<<<<<< HEAD
             // gyroReading();
             // gyroShow(); //For debugging
             vTaskDelay(pdMS_TO_TICKS(1000));
+=======
+            //gyroReading();
+            gyroCalibrate();
+            //gyroShow(); //For debugging
+            //vTaskDelay(pdMS_TO_TICKS(1000));
+            xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
+>>>>>>> 46e08d3470f069e4b2b71bcf508691b637b326ac
         }
     }
 
