@@ -7,7 +7,7 @@ namespace Earendil_Altimeter {
     void setup(){
         if (! altimeter.begin_I2C()) {   // hardware I2C mode, can pass in address & alt Wire
             //printf("Could not find a valid BMP3 sensor, check wiring!");
-            vTaskDelete(NULL);
+            return;
         }
 
           // Set up oversampling and filter initialization
@@ -71,9 +71,13 @@ namespace Earendil_Altimeter {
         Earendil_Data-> Altimeter_Data.sea_level = sea_level;
 
         //Print line for debugging if we need it
-        //printf("\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Sea-level Pressure: %f hPa\n=========================================\n", Earendil_Data-> Altimeter_Data.temperature, Earendil_Data-> Altimeter_Data.pressure = press, Earendil_Data-> Altimeter_Data.sea_level);
-
-        
+        char buf[192];
+        snprintf(buf, sizeof(buf), "\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Sea-level Pressure: %f hPa\n=========================================\n",
+            Earendil_Data-> Altimeter_Data.temperature, 
+            Earendil_Data-> Altimeter_Data.pressure = press, 
+            Earendil_Data-> Altimeter_Data.sea_level
+        );
+        puts(buf);        
     }
 
 }

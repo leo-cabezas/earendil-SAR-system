@@ -186,16 +186,16 @@ void gyroSetup(){
         bool found = accelgyro.begin_I2C();
         //xSemaphoreGive(s_i2cMutex);
         if (!found) {
-            //lcdPrint("LSM6DSOX");
-            //lcdPrint("NOT FOUND");
+            lcdPrint("LSM6DSOX");
+            lcdPrint("NOT FOUND");
             while (1) { 
-                vTaskDelay(pdMS_TO_TICKS(100));
+                sleep_ms(100);
             }
         }
     //}
 
     //lcdPrint("LSM6DSOX Found!");
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    sleep_ms(1000);
     
     // Log accel range
     // accelgyro.setAccelRange(LSM6DS_ACCEL_RANGE_2_G);
@@ -208,7 +208,7 @@ void gyroSetup(){
         default:                      snprintf(a_buf, LCD_MSG_LEN, "Accel: Unknown"); break;
     }
     //lcdPrint(a_buf);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    sleep_ms(1000);
 
     // accelgyro.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS );
     switch (accelgyro.getGyroRange()) {
@@ -220,7 +220,7 @@ void gyroSetup(){
     case ISM330DHCX_GYRO_RANGE_4000_DPS: snprintf(a_buf, LCD_MSG_LEN, "Gyro Range: N/A"); break; // unsupported range for the DSOX
     }
     //lcdPrint(a_buf);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    sleep_ms(1000);
 
     // accelgyro.setAccelDataRate(LSM6DS_RATE_12_5_HZ);
     switch (accelgyro.getAccelDataRate()) {
@@ -237,7 +237,7 @@ void gyroSetup(){
     case LSM6DS_RATE_6_66K_HZ: snprintf(a_buf, LCD_MSG_LEN, "Accel Data Rate:  6.66 KHz"); break;
     }
     //lcdPrint(a_buf);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    sleep_ms(1000);
 
     // accelgyro.setGyroDataRate(LSM6DS_RATE_12_5_HZ);
     switch (accelgyro.getGyroDataRate()) {
@@ -254,7 +254,7 @@ void gyroSetup(){
     case LSM6DS_RATE_6_66K_HZ: snprintf(a_buf, LCD_MSG_LEN, "Gyro Data Rate:  6.66 KHz"); break;
     }
 
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    sleep_ms(1000);
 }
 
 // ─── Reading (calibration applied) ────────────────────────────────
