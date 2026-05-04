@@ -21,6 +21,18 @@ namespace Earendil_GPS {
         gps.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
         // Request updates on antenna status, comment out to keep quiet
         // GPS.sendCommand(PGCMD_ANTENNA);
+        Earendil_Data->GPS_Data.latitude_rad    = -1;
+        Earendil_Data->GPS_Data.longitude_rad   = -1;
+
+        Earendil_Data->GPS_Data.latitude_deg    = -1;
+        Earendil_Data->GPS_Data.longitude_deg   = -1;
+
+        Earendil_Data->GPS_Data.year             = -1;
+        Earendil_Data->GPS_Data.month            = -1;
+        Earendil_Data->GPS_Data.day              = -1;
+        Earendil_Data->GPS_Data.hour             = -1;
+        Earendil_Data->GPS_Data.minute           = -1;
+        Earendil_Data->GPS_Data.second           = -1;
     }
 
     void gpsUpdate(){
@@ -47,7 +59,7 @@ namespace Earendil_GPS {
                 Earendil_Data->GPS_Data.hour             = gps.hour;
                 Earendil_Data->GPS_Data.minute           = gps.minute;
                 Earendil_Data->GPS_Data.second           = gps.seconds;
-                xTaskNotifyGive(Earendil_Handles->uSDReader_Handles.task_vuSDReader);
+                //xTaskNotifyGive(Earendil_Handles->uSDReader_Handles.task_vuSDReader);
                 //xSemaphoreGive(gpsDataMutex);
             }
         }

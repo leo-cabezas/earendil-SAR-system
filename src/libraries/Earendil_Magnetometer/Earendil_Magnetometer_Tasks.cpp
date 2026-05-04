@@ -67,9 +67,14 @@ namespace Earendil_Magnetometer {
             updateFilter(raw);
             double calibrated[3];
             applyCalibration(calibrated);
-            
-            
-            Earendil_Data->Magnetometer_Data.heading_deg = getHeading(calibrated);
+
+            taskENTER_CRITICAL();
+            float ax = Earendil_Data->AccelGyro_Data.GyroMetrics[0];
+            float ay = Earendil_Data->AccelGyro_Data.GyroMetrics[1];
+            float az = Earendil_Data->AccelGyro_Data.GyroMetrics[2];
+            taskEXIT_CRITICAL();
+
+            Earendil_Data->Magnetometer_Data.heading_deg = getHeading(calibrated, ax, ay, az);
 
             xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
         }

@@ -48,17 +48,13 @@ namespace Earendil_AccelGyro {
         xLastWakeTime = xTaskGetTickCount();
         //printf("Accell-oscope started!\n");
 
-
-
-        //gyroSetup();
-        // gyroCalibrate();
+        gyroCalibrate();
         
         while (1){
             // Normal operation: read and expose sensor data
-            //gyroReading();
-            gyroCalibrate();
+            //gyroCalibrate();
+            gyroReading();
             //gyroShow(); //For debugging
-            //vTaskDelay(pdMS_TO_TICKS(1000));
             xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
         }
     }

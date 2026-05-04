@@ -18,9 +18,11 @@ namespace Earendil_Radio {
         if (!radio.init()){
             while (1){
                 gpio_put(LED_BUILTIN, 1);
-                vTaskDelay(pdMS_TO_TICKS(10));
+                //vTaskDelay(pdMS_TO_TICKS(10));
+                sleep_ms(10);
                 gpio_put(LED_BUILTIN, 0);
-                vTaskDelay(pdMS_TO_TICKS(10));
+                //vTaskDelay(pdMS_TO_TICKS(10));
+                sleep_ms(10);
             }
         }
 
@@ -151,6 +153,8 @@ namespace Earendil_Radio {
             date_sent, 
             time_sent
         );
+        
+        char debug_buf[64];
 
         switch (message_type){
             case 1: {
@@ -168,6 +172,11 @@ namespace Earendil_Radio {
                 
                 Earendil_Data->Radio_Data.rx_latitude_deg   = rx_latitude_rad   * (180.0 / M_PI);
                 Earendil_Data->Radio_Data.rx_longitude_deg  = rx_longitude_rad  * (180.0 / M_PI);
+
+                snprintf(debug_buf, sizeof(debug_buf), "Latitude: %f *\n", Earendil_Data->Radio_Data.rx_latitude_deg);
+                puts(debug_buf);
+                snprintf(debug_buf, sizeof(debug_buf), "Longitude: %f *\n", Earendil_Data->Radio_Data.rx_longitude_deg);
+                puts(debug_buf);
                 break;
             }
             case 2: {
@@ -179,7 +188,10 @@ namespace Earendil_Radio {
                 );
 
                 Earendil_Data->Radio_Data.rx_sea_level_hpa  = rx_sea_level;
-            break;
+
+                snprintf(debug_buf, sizeof(debug_buf), "Sea-Level Pressure: %f *\n", Earendil_Data->Radio_Data.rx_sea_level_hpa);
+                puts(debug_buf);
+                break;
             }
         }
     }

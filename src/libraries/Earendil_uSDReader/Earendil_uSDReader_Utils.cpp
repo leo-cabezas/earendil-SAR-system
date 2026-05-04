@@ -9,19 +9,18 @@ namespace Earendil_uSDReader {
 
         if (!sd.begin(USD_CS)) {
             while(1){
-                //printf("SD Card Module failed initializaion!");
-                vTaskDelay(pdMS_TO_TICKS(5000));
+                printf("SD Card Module failed initialization!\n");
+                sleep_ms(5000);
             };
         }
         // if (!file.open("logs.txt", O_WRONLY | O_CREAT | O_APPEND)) {
         //     while(1) {
-        //         printf("SD Card: File open failed.");
-        //         vTaskDelay(pdMS_TO_TICKS(5000));
+        //         printf("SD Card Setup: File open failed.");
+        //         sleep_ms(5000);
         //     };
         //   }
 
-        // vTaskDelay(pdMS_TO_TICKS(20000)); //This delay is to allow the GPS to get a fix. Not sure where the task is that calls the setup function for the SD card so not sure how to get the GPS to let it know when it first turns on.
-        // //ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        // sleep_ms(20000); //This delay is to allow the GPS to get a fix. Not sure where the task is that calls the setup function for the SD card so not sure how to get the GPS to let it know when it first turns on.
         
         // char buf[64];
         // snprintf(buf, sizeof(buf), "System Start: %d:%02d:%02d %02d:%02d:%02d\n",
@@ -42,23 +41,29 @@ namespace Earendil_uSDReader {
 
         if (!file.open("logs.txt", O_WRONLY | O_CREAT | O_APPEND)) {
             while(1) {
-                //printf("SD Card: File open failed.");
+                printf("SD Card: File open failed.");
                 vTaskDelay(pdMS_TO_TICKS(5000));
             };
           }
 
-        char buf[64];
-        snprintf(buf, sizeof(buf), "User packet received: %d:%02d:%02d %02d:%02d:%02d - \n",
-            Earendil_Data->GPS_Data.year,
-            Earendil_Data->GPS_Data.month,
-            Earendil_Data->GPS_Data.day,
-            Earendil_Data->GPS_Data.hour,
-            Earendil_Data->GPS_Data.minute,
-            Earendil_Data->GPS_Data.second
+        char buf[SD_BUFF_SIZE];
+        snprintf(buf, SD_BUFF_SIZE, "Data sent: %f *,  %f * - %f hPa \n",
+            Earendil_Data->GPS_Data.latitude_deg,
+            Earendil_Data->GPS_Data.longitude_deg,
+            Earendil_Data->Altimeter_Data.sea_level
         );
-
-        file.print(buf);
+        // snprintf(buf, SD_BUFF_SIZE, "User packet received: %d:%02d:%02d %02d:%02d:%02d - \n",
+        //     Earendil_Data->GPS_Data.year,
+        //     Earendil_Data->GPS_Data.month,
+        //     Earendil_Data->GPS_Data.day,
+        //     Earendil_Data->GPS_Data.hour,
+        //     Earendil_Data->GPS_Data.minute,
+        //     Earendil_Data->GPS_Data.second
+        // );
+        // snprintf(buf, sizeof(buf), "Test write.");
+        file.println(buf);
         file.close();
+        // puts(buf);
     }
 
 }

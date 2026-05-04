@@ -31,9 +31,19 @@ namespace Earendil_Magnetometer {
         magnetometer.begin(MMC56X3_DEFAULT_ADDRESS, &Wire);
     }
 
-    double getHeading(double calibrated[3]){
-        double heading = (-1) * atan2(calibrated[0], calibrated[1]) * 180.0 / M_PI; //get the heading in degrees
-        return heading;                   // return the heading angle
+    double getHeading(double calibrated[3], float ax, float ay, float az) {
+        // Derive pitch and roll from the gravity vector so the mag vector
+        // can be rotated into the horizontal plane before computing heading.
+        float roll  = atan2f(ay, az);
+        float pitch = atan2f(-ax, sqrtf(ay*ay + az*az));
+
+        float mx_h = (float)calibrated[0] * cosf(pitch)
+                   + (float)calibrated[2] * sinf(pitch);
+        float my_h = (float)calibrated[0] * sinf(roll) * sinf(pitch)
+                   + (float)calibrated[1] * cosf(roll)
+                   - (float)calibrated[2] * sinf(roll) * cosf(pitch);
+
+        return (double)(atan2f(-my_h, mx_h) * 180.0f / (float)M_PI);
     }
 
     void applyCalibration(double* calibrated){

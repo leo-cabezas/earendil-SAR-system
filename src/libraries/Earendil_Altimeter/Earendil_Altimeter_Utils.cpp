@@ -52,8 +52,13 @@ namespace Earendil_Altimeter {
         Earendil_Data-> Altimeter_Data.altitude = alt;
 
         //Print line for debugging if we need it
-        //printf("\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Altitude: %f m\n=========================================\n", Earendil_Data-> Altimeter_Data.temperature, Earendil_Data-> Altimeter_Data.pressure = press, Earendil_Data-> Altimeter_Data.altitude);
-
+        // char buf[192];
+        // snprintf(buf, sizeof(buf), "\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Altitude: %f hPa\n=========================================\n",
+        //     Earendil_Data-> Altimeter_Data.temperature, 
+        //     Earendil_Data-> Altimeter_Data.pressure, 
+        //     Earendil_Data-> Altimeter_Data.altitude
+        // );
+        // puts(buf);     
     }
 
     void altRead_node(){
@@ -74,7 +79,7 @@ namespace Earendil_Altimeter {
         char buf[192];
         snprintf(buf, sizeof(buf), "\n============ALTIMETER READING============\nTemperature: %f *C\nPressure: %f hPa\nCalculated Sea-level Pressure: %f hPa\n=========================================\n",
             Earendil_Data-> Altimeter_Data.temperature, 
-            Earendil_Data-> Altimeter_Data.pressure = press, 
+            Earendil_Data-> Altimeter_Data.pressure, 
             Earendil_Data-> Altimeter_Data.sea_level
         );
         puts(buf);        

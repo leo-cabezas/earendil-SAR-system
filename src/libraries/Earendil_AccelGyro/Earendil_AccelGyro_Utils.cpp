@@ -96,9 +96,9 @@ void gyroCalibrate()
     gyroBias[1] = avgG[1];
     gyroBias[2] = avgG[2];
 
-    snprintf(buf, LCD_MSG_LEN, "X:%.4f", gyroBias[0]);
-    lcdPrint("Gyro bias done:");
-    lcdPrint(buf);
+    // snprintf(buf, LCD_MSG_LEN, "X:%.4f", gyroBias[0]);
+    // lcdPrint("Gyro bias done:");
+    // lcdPrint(buf);
     vTaskDelay(pdMS_TO_TICKS(1500));
 
     // ── Accel 6-position calibration ──────────────────────────────
@@ -139,9 +139,9 @@ void gyroCalibrate()
             //lcdPrint("Collection Error!");
         }
 
-        snprintf(buf, LCD_MSG_LEN, "%.3f %.3f %.3f",
-                 posData[p][0], posData[p][1], posData[p][2]);
-        lcdPrint(buf);
+        // snprintf(buf, LCD_MSG_LEN, "%.3f %.3f %.3f",
+        //          posData[p][0], posData[p][1], posData[p][2]);
+        // lcdPrint(buf);
         vTaskDelay(pdMS_TO_TICKS(3000));
     }
 
@@ -159,10 +159,14 @@ void gyroCalibrate()
     }
 
     lcdPrint("Calibration Done");
-    snprintf(buf, LCD_MSG_LEN, "Offsets: %.3f %.3f %.3f",
+
+    snprintf(buf, LCD_MSG_LEN, "Gyro Bias: %f %f %f",
+             gyroBias[0], gyroBias[1], gyroBias[2]);
+    lcdPrint(buf);
+    snprintf(buf, LCD_MSG_LEN, "Accel Offsets: %f %f %f",
              accelOffset[0], accelOffset[1], accelOffset[2]);
     lcdPrint(buf);
-    snprintf(buf, LCD_MSG_LEN, "Scale:   %.3f %.3f %.3f",
+    snprintf(buf, LCD_MSG_LEN, "Accel Scale: %f %f %f",
              accelScale[0], accelScale[1], accelScale[2]);
     lcdPrint(buf);
     vTaskDelay(pdMS_TO_TICKS(2000));
@@ -267,12 +271,14 @@ void gyroReading()
     accelgyro.getEvent(&accel, &gyro, &temp);
     //xSemaphoreGive(s_i2cMutex);
 
-    Earendil_Data-> AccelGyro_Data.GyroMetrics[0] = (accel.acceleration.x - accelOffset[0]) * accelScale[0];
-    Earendil_Data-> AccelGyro_Data.GyroMetrics[1] = (accel.acceleration.y - accelOffset[1]) * accelScale[1];
-    Earendil_Data-> AccelGyro_Data.GyroMetrics[2] = (accel.acceleration.z - accelOffset[2]) * accelScale[2];
-    Earendil_Data-> AccelGyro_Data.GyroMetrics[3] = gyro.gyro.x - gyroBias[0];
-    Earendil_Data-> AccelGyro_Data.GyroMetrics[4] = gyro.gyro.y - gyroBias[1];
-    Earendil_Data-> AccelGyro_Data.GyroMetrics[5] = gyro.gyro.z - gyroBias[2];
+    taskENTER_CRITICAL();
+    Earendil_Data->AccelGyro_Data.GyroMetrics[0] = (accel.acceleration.x - accelOffset[0]) * accelScale[0];
+    Earendil_Data->AccelGyro_Data.GyroMetrics[1] = (accel.acceleration.y - accelOffset[1]) * accelScale[1];
+    Earendil_Data->AccelGyro_Data.GyroMetrics[2] = (accel.acceleration.z - accelOffset[2]) * accelScale[2];
+    Earendil_Data->AccelGyro_Data.GyroMetrics[3] = gyro.gyro.x - gyroBias[0];
+    Earendil_Data->AccelGyro_Data.GyroMetrics[4] = gyro.gyro.y - gyroBias[1];
+    Earendil_Data->AccelGyro_Data.GyroMetrics[5] = gyro.gyro.z - gyroBias[2];
+    taskEXIT_CRITICAL();
 
 
     //send data to a shared struct
@@ -282,7 +288,7 @@ void gyroReading()
 
 void gyroShow()
 {
-    //printf("\n============ACCELL-OSCOPE READING===============\nAX:%.2f AY:%.2f AZ:%.2f\nGX:%.2f GY:%.2f GZ:%.2f\n================================================\n", 
+    //snprintf("\n============ACCELL-OSCOPE READING===============\nAX:%.2f AY:%.2f AZ:%.2f\nGX:%.2f GY:%.2f GZ:%.2f\n================================================\n", 
     //     Earendil_Data-> AccelGyro_Data.GyroMetrics[0], 
     //     Earendil_Data-> AccelGyro_Data.GyroMetrics[1], 
     //     Earendil_Data-> AccelGyro_Data.GyroMetrics[2], 

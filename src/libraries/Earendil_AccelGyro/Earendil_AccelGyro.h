@@ -27,7 +27,7 @@
 
 // --- LCD message ------------------------------------------------------
 // Adapt this struct to match your existing LCD task's message format
-#define LCD_MSG_LEN 64
+#define LCD_MSG_LEN 128
 
 // --- Gyro metrics -----------------------------------------------------
 // [0..2] = accel X/Y/Z (m/s^2), [3..5] = gyro X/Y/Z (rad/s)

@@ -47,7 +47,7 @@
 // =======================================================================================
 
 #define DELAY_VRADIO_LISTEN_RX      50
-#define DELAY_VRADIO_PING_TX        5000
+#define DELAY_VRADIO_PING_TX        3000
 
 namespace Earendil_Radio {
     // --------------------------------- TASKS ---------------------------------

@@ -16,8 +16,9 @@
 #include <Earendil_Mutexes.h>
 
 
-#define USD_CS 11
+#define USD_CS 25
 #define DISABLE_FS_H_WARNING
+#define SD_BUFF_SIZE 128
 
 namespace Earendil_uSDReader{
     // --------------------------------- TASKS ---------------------------------

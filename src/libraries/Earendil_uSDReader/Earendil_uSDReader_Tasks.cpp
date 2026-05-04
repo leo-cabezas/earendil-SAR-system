@@ -42,7 +42,7 @@ namespace Earendil_uSDReader {
     void vuSDReader(void* pvParameters){
         (void)pvParameters;     // Parameters unused.
         
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(10000));
           
           while (1){
             //ulTaskNotifyTake(pdTRUE, portMAX_DELAY);  // sleep until notified
