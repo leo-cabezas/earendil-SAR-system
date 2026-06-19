@@ -1,4 +1,7 @@
 theme: jekyll-theme-minimal
 
+sass:
+  style: compressed
+
 title: Electronic Pathfinder
 description: Short project description

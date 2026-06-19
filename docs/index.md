@@ -4,9 +4,9 @@
 
 The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. They exchange location data with each other using the 915 MHz ISM radio band to determine where the user should head toward to find the node, which represents a safe known location.
 
-<img src="images/earendil_handheld.png" alt="Handheld" width="500">
+<img src="images/earendil_handheld.png" alt="Handheld" width="50%">
 
-<img src="images/earendil_node.png" alt="Handheld" width="500">
+<img src="images/earendil_node.png" alt="Handheld" width="50%">
 
 ## Objectives
 
@@ -26,11 +26,7 @@ Summarize your findings and outcomes.
 
 [Download the report](files/capstone-report.pdf)
 
-<iframe
-    src="files/electronic_pathfinder_poster.png"
-    width="100%"
-    height="800">
-</iframe>
+<img src="files/electronic_pathfinder_poster.png" alt="Handheld" width="50%">
 
 ## Team
 
