@@ -1,22 +1,22 @@
-# Capstone Project Title
+# Electronic Pathfinder (Capstone Project)
 
 ## Overview
 
-Brief description of the project and its goals.
+The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. They exchange location data with each other using the 915 MHz ISM radio band to determine where the user should head toward to find the node, which represents a safe known location.
+
+<img src="images/earendil_handheld.png" alt="Handheld" width="500">
+
+<img src="images/earendil_node.png" alt="Handheld" width="500">
 
 ## Objectives
 
-- Objective 1
-- Objective 2
-- Objective 3
+- The Handheld system should guide lost users toward the location of the Node, within an accuracy of 10 meters (to accound for GPS fix drift).
+- The Pathfinder must be independent of the Internet and cell reception.
+- Battery life should allow for continuous operation for a minimum of 48 hours.
 
 ## Methodology
 
 Describe your approach and technologies used.
-
-![Handheld](images/earendil_handheld.png)
-
-![Node](images/earendil_node.png)
 
 ## Results
 
@@ -34,9 +34,10 @@ Summarize your findings and outcomes.
 
 ## Team
 
-- Alice
-- Bob
-- Carol
+- Leo Cabezas Amigo
+- Stephen Schmidt
+- Jacob Nonoyama
+- Matthew Ridgeway
 
 ## Repository
 
