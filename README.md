@@ -1,12 +1,14 @@
-# Electronic Pathfinder
-University of Kansas --- EECS 542 (Senior Design Project) --- Team 1
+# Electronic Pathfinder (Capstone Project)
+*Institution:* University of Kansas
+*Course:* EECS 542 (Computer Systems Design Lab II)
+*Awards:* Winner of the Rummer Award (best Capstone project)
 
 The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. These devices exchange location data on the 915 MHz ISM band to determine where the user should head toward to find the node, which represents a safe known location.
 
 <table>
   <tr>
     <td align="center">
-      <img src="docs/images/earendil_handheld.png" alt="Image 1" width="300"><br>
+      <img src="docs/images/earendil_handheld.png" alt="Image 1" width="200"><br>
       <em>Figure 1: Electronic Pathfinder's Handheld system.</em>
     </td>
     <td align="center">
@@ -48,14 +50,11 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 | Precision Altimeter | [Adafruit BMP390 - Precision Barometric Pressure and Altimeter - STEMMA QT / Qwiic](https://www.adafruit.com/product/4816) | I²C | |
 | Accelerometer + Gyroscope | [Adafruit LSM6DSOX 6 DoF Accelerometer and Gyroscope - STEMMA QT / Qwiic](https://www.adafruit.com/product/4438) | I²C | |
 | MicroSD reader | [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682) | SPI | 3.50 |
+| 915MHz radio antenna | [Abracon AEACAC054010-S915 RF Antenna](Abracon AEACAC054010-S915 RF Antenna) | N/A | 6.58 |
+| uFL to SMA adapter | [SMA to uFL/u.FL/IPX/IPEX RF Adapter Cable](https://www.adafruit.com/product/1781) | N/A | 3.95 |
+| LiIon battery | [Lithium Ion Cylindrical Battery - 3.7v 2200mAh](https://www.adafruit.com/product/1781) | N/A | 9.50 |
 
-Other hardware includes
-- Radio antenna
-- Antenna connector
-- PCB (design pending)
-- Case (design pending)
-
-*Total Handheld cost = $X *
+*Total Handheld cost:* $X
 
 ### A.2. Node hardware
 
@@ -66,7 +65,7 @@ Other hardware includes
 | Precision Altimeter | [Adafruit BMP390 - Precision Barometric Pressure and Altimeter - STEMMA QT / Qwiic](https://www.adafruit.com/product/4816) | I²C | |
 | MicroSD reader | [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682) | SPI | 3.50 |
 
-*Total Node cost = $X *
+*Total Node cost:* $Y
 
 ## B. Software dependencies
 
@@ -104,8 +103,9 @@ Make sure the GNU Arm Embedded Toolchain is installed and available in your $PAT
 ### B.2. Node software dependencies
 
 
-## C. Compilation instructions (Linux)
+## C. Compilation instructions (Linux
 
+### C.1. Handheld compilation instructions
 SUPER DUPER EXTREMELY IMPORTANT OR SERIALUSB WILL NOT WORK:
 ```
 cd [path_to_pico_sdk]
@@ -131,13 +131,15 @@ make
 ```
 You will use this .uf2 file to program the Adafruit Feather RP2040 + RFM95 via its on-board FLASH memory.
 
-### 2.2.1. Recompilation instructions (optional)
+### C.2. Node compilation instructions
+
+### C.3. Recompilation instructions (optional)
 
 When recompiling the project after modifying the source files:
 - **If CMakeLists.txt was modified:** Do ```rm -rf *```in /build, then proceed with Steps 1 and 2.
 - **Otherwise:** Proceed with Step 2. If errors are raised, use ```make clean``` then ```make```.
 
-## 2.3. Upload instructions
+### C.4. File upload instructions
 
 **Step 0** - Grab a USB-C-to-USB-A cable and plug it into the Feather's USB-C port.
  
