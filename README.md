@@ -1,12 +1,30 @@
 # Electronic Pathfinder
 University of Kansas --- EECS 542 (Senior Design Project) --- Team 1
 
-The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. They exchange location data with each other using the 915 MHz ISM radio band to determine where the user should head toward to find the node, which represents a safe known location.
+The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. These devices exchange location data on the 915 MHz ISM band to determine where the user should head toward to find the node, which represents a safe known location.
 
-<figure>
-  <img src="docs/images/earendil_handheld.png" alt="Earendil Handheld" width="600">
-  <figcaption><em>Figure 1: Electronic Pathfinder's Handheld system.</em></figcaption>
-</figure>
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/images/earendil_handheld.png" alt="Image 1" width="300"><br>
+      <em>Figure 1: Electronic Pathfinder's Handheld system.</em>
+    </td>
+    <td align="center">
+      <img src="docs/images/earendil_node.png" alt="Image 2" width="300"><br>
+      <em>Caption for Image 2</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/images/gui_design.png" alt="Image 3" width="300"><br>
+      <em>Caption for Image 3</em>
+    </td>
+    <td align="center">
+      <img src="docs/images/software_stack_diagram.png" alt="Image 4" width="300"><br>
+      <em>Caption for Image 4</em>
+    </td>
+  </tr>
+</table>
 
 # Team roster
 
