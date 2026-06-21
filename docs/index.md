@@ -1,8 +1,8 @@
-# Electronic Pathfinder (Capstone Project)
+# Electronic Pathfinder (Capstone)
 
 ## Overview
 
-The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. They exchange location data with each other using the 915 MHz ISM radio band to determine where the user should head toward to find the node, which represents a safe known location.
+Designed and built at the University of Kansas, the Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. These systems exchange location data with each other in the 915 MHz ISM radio band, to determine in which direction the user should walk to find the Node, which is to be placed at a safe and well-known location.
 
 <img src="images/earendil_handheld.png" alt="Handheld" width="50%">
 
