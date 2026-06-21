@@ -1,19 +1,25 @@
-# TO-DO:
-
-Need to add Windows + WSL section (USB attach command, etc.)
-
-# EARENDIL: A portable search-and-rescue (SAR) system
+# Electronic Pathfinder
 University of Kansas --- EECS 542 (Senior Design Project) --- Team 1
 
-EARENDIL simplifies SAR operations by letting lost users know where they are, and which direction safety is in.
+The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. They exchange location data with each other using the 915 MHz ISM radio band to determine where the user should head toward to find the node, which represents a safe known location.
 
-# 1. Hardware
+<figure>
+  <img src="docs/images/earendil_handheld.png" alt="Earendil Handheld" width="600">
+  <figcaption><em>Figure 1: Electronic Pathfinder's Handheld system.</em></figcaption>
+</figure>
 
-## 1.1. Target platform
+# Team roster
 
-This project is build around Raspberry Pi's RP2040 microcontroller. 
+- **Leo Cabezas Amigo**: Embedded Systems Lead, UI/UX Software Engineer.
+- **Stephen Schmidt**: Project Lead, Embedded Software Engineer.
+- **Jacob Nonoyama**: UI/UX Software Engineer.
+- **Matthew Ridgeway**: Power Systems Engineer.
 
-## 1.2. Handheld components
+# Deployment instructions
+
+## A. Required Hardware
+
+### A.1. Handheld hardware
 
 | Subsystem | Component | Relevant standards | Cost (as of 2026-03-21) |
 | :-------- | :-------- | :----------------- | :---------------------- |
@@ -21,9 +27,9 @@ This project is build around Raspberry Pi's RP2040 microcontroller.
 | Round Display | [Adafruit 1.28" 240x240 Round TFT LCD Display with MicroSD - GC9A01A with EYESPI Connector](https://www.adafruit.com/product/6178) | SPI | $17.50
 | GNSS (GPS) receiver | [Adafruit Ultimate GPS Breakout with GLONASS + GPS - PA1616D - 99 channel w/10 Hz updates](https://www.adafruit.com/product/5440) | UART | $29.95 |
 | Magnetometer | [Adafruit Triple-axis Magnetometer - MMC5603 - STEMMA QT / Qwiic](https://www.adafruit.com/product/5579) | I²C | $5.95 |
-| Precision Altimeter | | I²C | |
-| Accelerometer + Gyroscope | | I²C | |
-| MicroSD reader | | SPI | |
+| Precision Altimeter | [Adafruit BMP390 - Precision Barometric Pressure and Altimeter - STEMMA QT / Qwiic](https://www.adafruit.com/product/4816) | I²C | |
+| Accelerometer + Gyroscope | [Adafruit LSM6DSOX 6 DoF Accelerometer and Gyroscope - STEMMA QT / Qwiic](https://www.adafruit.com/product/4438) | I²C | |
+| MicroSD reader | [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682) | SPI | 3.50 |
 
 Other hardware includes
 - Radio antenna
@@ -31,18 +37,22 @@ Other hardware includes
 - PCB (design pending)
 - Case (design pending)
 
-## 1.3. Node components
+*Total Handheld cost = $X *
+
+### A.2. Node hardware
 
 | Subsystem | Component | Relevant standards | Cost (as of 2026-03-21) |
 | :-------- | :-------- | :----------------- | :---------------------- |
 | Microcontroller + Radio Transceiver | [Adafruit Feather RP2040 with RFM95 LoRa Radio - 915MHz - RadioFruit and STEMMA QT](https://www.adafruit.com/product/5714) | UART, SPI, I²C, USB | $29.95 |
 | GNSS (GPS) receiver | [Adafruit Ultimate GPS Breakout with GLONASS + GPS - PA1616D - 99 channel w/10 Hz updates](https://www.adafruit.com/product/5440) | UART | $29.95 |
-| Precision Altimeter | | I²C | |
-| MicroSD reader | | SPI | |
+| Precision Altimeter | [Adafruit BMP390 - Precision Barometric Pressure and Altimeter - STEMMA QT / Qwiic](https://www.adafruit.com/product/4816) | I²C | |
+| MicroSD reader | [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682) | SPI | 3.50 |
 
-# Software
+*Total Node cost = $X *
 
-## 2.1. Software dependencies
+## B. Software dependencies
+
+### B.1. Handheld software dependencies
 
 TO-DO: REVISE MINIMUM REQUIRED VERSIONS, DEP. VERSIONS IN GENERAL
 
@@ -73,7 +83,10 @@ Make sure the GNU Arm Embedded Toolchain is installed and available in your $PAT
 
 [Mention the other repos that are implicitly included in EARENDIL, that they are lean-ified, and that users are free to instead use the original repo. Annotate versions too, for completion.]
 
-## 2.2. Compilation instructions (Linux)
+### B.2. Node software dependencies
+
+
+## C. Compilation instructions (Linux)
 
 SUPER DUPER EXTREMELY IMPORTANT OR SERIALUSB WILL NOT WORK:
 ```
@@ -120,14 +133,3 @@ When recompiling the project after modifying the source files:
 
 *Done! The Feather should be now programmed and functional.*
 
-# 3. Team roles
-[Subject to change as the project moves forward]
-
-- **Leo**: Embedded Systems Lead, Software Engineer (?), project ideation/vision/hardware selection (?)
-- **Stephen**: Project Lead, Software Engineer, ...
-- **Jacob**: UI/UX Software Engineer, ...
-- **Matthew**: Power Systems Engineer, ...
-
-
-
-# 4. Remarks (if any)
