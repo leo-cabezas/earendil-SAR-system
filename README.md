@@ -49,6 +49,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 <figure align="center">
   <img src="docs/images/handheld_hardware_diagram.png" alt="handheld_hardware_diagram" width="500" />
 </figure>
+
 *Figure 5: Handheld hardware diagram.*
 
 | Component | Product link | Relevant standards | Cost |
