@@ -23,19 +23,19 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
   </tr>
   <tr>
     <td align="center">
-      <img src="docs/images/gui_design.png" alt="Image 3" width="300"><br>
-      <em>Figure 3: Caption for Image 3</em>
+      <img src="docs/images/handheld_interior" alt="handheld_interior" width="300"><br>
+      <em>Figure 3: Interior of the Handheld system.</em>
     </td>
     <td align="center">
-      <img src="docs/images/software_stack_diagram.png" alt="Image 4" width="300"><br>
-      <em>Figure 4: Caption for Image 4</em>
+      <img src="docs/images/gui_design.png" alt="gui_design" width="300"><br>
+      <em>Figure 4: GUI for the Handheld system.</em>
     </td>
   </tr>
 </table>
 
 # Team roster
 
-- **Leo Cabezas Amigo**: Embedded Systems Lead, UI/UX Software Engineer, Mathematician.
+- **Leo Cabezas Amigo**: Embedded Systems Lead, UI/UX Software Engineer, Applied Mathematician.
 - **Stephen Schmidt**: Project Lead, Software Engineer.
 - **Jacob Nonoyama**: UI/UX Software Engineer.
 - **Matthew Ridgeway**: Power Systems Engineer.
@@ -177,6 +177,10 @@ You will use this .uf2 file in section C.2 to program the Adafruit Feather RP204
 
 # How it works
 
+## A. Direction-finding algorithm
 
+## B. Distance-finding algorithm
+
+## C. Finding magnetic north
 
 
