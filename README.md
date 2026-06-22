@@ -51,7 +51,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
   <figcaption><em>Figure 7: Electronic Pathfinder software stack diagram.</em></figcaption>
 </figure>
 
-
+Table 1: Hardware components for the Handheld.
 | Component | Product link | Relevant standards | Cost |
 | :-------- | :-------- | :----------------- | :---------------------- |
 | Microcontroller + Radio Transceiver | [Adafruit Feather RP2040 with RFM95 LoRa Radio - 915MHz - RadioFruit and STEMMA QT](https://www.adafruit.com/product/5714) | UART, SPI, I²C, USB | 1 x $29.95 |
