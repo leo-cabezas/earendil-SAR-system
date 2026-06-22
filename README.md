@@ -13,7 +13,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 <table>
   <tr>
     <td align="center">
-      <img src="docs/images/earendil_handheld.png" alt="Image 1" width="250"><br>
+      <img src="docs/images/earendil_handheld.png" alt="Image 1" width="300"><br>
       <em>Figure 1: Electronic Pathfinder's Handheld system.</em>
     </td>
     <td align="center">
