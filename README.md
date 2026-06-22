@@ -50,7 +50,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
   <img src="docs/images/handheld_hardware_diagram.png" alt="handheld_hardware_diagram" width="500" />
 </figure>
 
-| Subsystem | Component | Relevant standards | Cost |
+| Component | Product link | Relevant standards | Cost |
 | :-------- | :-------- | :----------------- | :---------------------- |
 | Microcontroller + Radio Transceiver | [Adafruit Feather RP2040 with RFM95 LoRa Radio - 915MHz - RadioFruit and STEMMA QT](https://www.adafruit.com/product/5714) | UART, SPI, I²C, USB | 1 x $29.95 |
 | Round Display | [Adafruit 1.28" 240x240 Round TFT LCD Display with MicroSD - GC9A01A with EYESPI Connector](https://www.adafruit.com/product/6178) | SPI | 1 x $17.50
@@ -71,7 +71,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
   <img src="docs/images/node_hardware_diagram.png" alt="handheld_hardware_diagram" width="500" />
 </figure>
 
-| Subsystem | Component | Relevant standards | Cost |
+| Component | Product link | Relevant standards | Cost |
 | :-------- | :-------- | :----------------- | :---------------------- |
 | Microcontroller + Radio Transceiver | [Adafruit Feather RP2040 with RFM95 LoRa Radio - 915MHz - RadioFruit and STEMMA QT](https://www.adafruit.com/product/5714) | UART, SPI, I²C, USB | 1 x $29.95 |
 | GNSS (GPS) receiver | [Adafruit Ultimate GPS Breakout with GLONASS + GPS - PA1616D - 99 channel w/10 Hz updates](https://www.adafruit.com/product/5440) | UART | 1 x $29.95 |
@@ -88,38 +88,24 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 
 ## B. Software dependencies
 
-### B.1. Handheld software dependencies
+### B.1. Required software dependencies
+
+The following is a comprehensive list of all software dependencies that users are **REQUIRED** to install themselves to be able to compile the Electronic Pathfinder repository, along with instructions and useful clarifications.
 
 TO-DO: REVISE MINIMUM REQUIRED VERSIONS, DEP. VERSIONS IN GENERAL
 
 - [**pico-sdk (2.2.0)**](https://github.com/raspberrypi/pico-sdk)
-```
-git clone [pico_sdk_repo]
-```
-```
-
-```
-
 - [**FreeRTOS-Kernel (11.2.0)**](https://github.com/FreeRTOS/FreeRTOS-Kernel)
-- [**CMake (minimum 3.13)**](https://github.com/Kitware/CMake) => Must be available in your $PATH
-- [**arm-none-eabi-gcc (version?)**]() => Must be available in your $PATH
+- [**picotool (2.2.0)**](https://github.com/raspberrypi/pico-sdk-tools/releases) (download precompiled executable from official repo)
+- [**CMake (minimum 3.13)**](https://github.com/Kitware/CMake) ---> Must be available in your $PATH
+- [**arm-none-eabi-gcc (version?)**]() ---> Must be available in your $PATH
 - [**arm-none-eabi-binutils**]
 - [**arm-none-eabi-newlib**]
-- picotools (download precompiled executable from official repo)
 
 In Debian based systems, do
 ```
 sudo apt-get install build-essential gcc-arm-none-eabi
 ```
-
-- [**arm-none-eabi-g++ (version?)**]() => Must be available in your $PATH
-- What else? Need to make sure nothing's missing.
-
-Make sure the GNU Arm Embedded Toolchain is installed and available in your $PATH.
-
-[Mention the other repos that are implicitly included in EARENDIL, that they are lean-ified, and that users are free to instead use the original repo. Annotate versions too, for completion.]
-
-### B.2. Node software dependencies
 
 SUPER DUPER EXTREMELY IMPORTANT OR SERIALUSB WILL NOT WORK:
 ```
@@ -128,6 +114,28 @@ cd [path_to_pico_sdk]
 ```
 git submodule update --init
 ```
+
+- [**arm-none-eabi-g++ (version?)**]() => Must be available in your $PATH
+- What else? Need to make sure nothing's missing.
+
+Make sure the GNU Arm Embedded Toolchain is installed and available in your $PATH.
+
+### B.2. Pre-installed software dependencies
+
+The Electronic Pathfinder repository already contains most of the required software dependencies for interfacing with the external sensor modules. **The user is NOT required to install these dependencies themselves**; we list them here only for the sake of clarity and transparency:
+
+- [Adafruit_BMP3XX](https://github.com/adafruit/Adafruit_BMP3XX)
+- [Adafruit_BusIO](https://github.com/adafruit/Adafruit_BusIO)
+- [Adafruit_GC9A01A](https://github.com/adafruit/Adafruit_GC9A01A)
+- [Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
+- [Adafruit_GPS](https://github.com/adafruit/Adafruit_GPS)
+- [Adafruit_LSM6DS](https://github.com/adafruit/Adafruit_LSM6DS)
+- [Adafruit_MMC56x3](https://github.com/adafruit/Adafruit_MMC56x3)
+- [Adafruit_Sensor](https://github.com/adafruit/Adafruit_Sensor)
+- [RadioHead](https://www.airspayce.com/mikem/arduino/RadioHead/)
+- [SdFat](https://github.com/greiman/SdFat)
+- [arduino-pico](https://github.com/earlephilhower/arduino-pico)
+- [ArduinoCore-API](https://github.com/arduino/ArduinoCore-API)
 
 ## C. Compilation instructions (Linux)
 
