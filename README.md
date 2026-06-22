@@ -48,7 +48,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 
 <figure align="center">
   <img src="docs/images/handheld_hardware_diagram.png" alt="handheld_hardware_diagram" width="500" />
-  <figcaption><em>Figure 7: Electronic Pathfinder software stack diagram.</em></figcaption>
+  <figcaption><em>Figure 5: Handheld hardware diagram.</em></figcaption>
 </figure>
 <br><br>
 
@@ -71,8 +71,9 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 
 <figure align="center">
   <img src="docs/images/node_hardware_diagram.png" alt="node_hardware_diagram" width="400" />
-  <figcaption>Figure 6: Node hardware diagram.</figcaption>
+  <figcaption><em>Figure 6: Node hardware diagram.</em></figcaption>
 </figure>
+<br><br>
 
 | Component | Product link | Relevant standards | Cost |
 | :-------- | :-------- | :----------------- | :---------------------- |
