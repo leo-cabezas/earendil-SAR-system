@@ -17,18 +17,18 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
       <em>Figure 1: Electronic Pathfinder's Handheld system.</em>
     </td>
     <td align="center">
-      <img src="docs/images/earendil_node.png" alt="node_handheld" width="300"><br>
-      <em>Figure 2: Electronic Pathfinder's Node system.</em>
+      <img src="docs/images/handheld_interior.png" alt="handheld_interior" width="300"><br>
+      <em>Figure 2: Interior of the Handheld system.</em>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <img src="docs/images/handheld_interior" alt="handheld_interior" width="300"><br>
-      <em>Figure 3: Interior of the Handheld system.</em>
+      <img src="docs/images/gui_design.png" alt="gui_design" width="300"><br>
+      <em>Figure 3: GUI for the Handheld system.</em>
     </td>
     <td align="center">
-      <img src="docs/images/gui_design.png" alt="gui_design" width="300"><br>
-      <em>Figure 4: GUI for the Handheld system.</em>
+      <img src="docs/images/earendil_node.png" alt="node_handheld" width="300"><br>
+      <em>Figure 4: Electronic Pathfinder's Node system.</em>
     </td>
   </tr>
 </table>
