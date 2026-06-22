@@ -94,12 +94,12 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 
 <figure align="center">
   <img src="docs/images/software_stack_diagram.png" alt="software_stack_diagram" width="600" />
-  <figcaption><em>Figure 7: Electronic Pathfinder software stack diagram.</em></figcaption>
+  <figcaption><em>Figure 7: [OUTDATED] Electronic Pathfinder software stack diagram.</em></figcaption>
 </figure>
 
 ### B.1. Required software dependencies
 
-The following is a comprehensive list of all software dependencies that users are **REQUIRED** to install themselves to be able to compile the Electronic Pathfinder repository, along with instructions and useful clarifications.
+The following is a comprehensive list of all software dependencies that users are **REQUIRED** to install themselves to be able to compile the Electronic Pathfinder repository, along with instructions and clarifications.
 
 - [**pico-sdk (2.2.0)**](https://github.com/raspberrypi/pico-sdk)
 - 
