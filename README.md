@@ -102,6 +102,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 The following is a comprehensive list of all software dependencies that users are **REQUIRED** to install themselves to be able to compile the Electronic Pathfinder repository, along with instructions and useful clarifications.
 
 - [**pico-sdk (2.2.0)**](https://github.com/raspberrypi/pico-sdk)
+- 
   *Note: Perform the following actions after cloning pico-sdk.*
 ```
 cd [path_to_pico_sdk]
@@ -113,6 +114,7 @@ git submodule update --init
 - [**picotool (2.2.0)**](https://github.com/raspberrypi/pico-sdk-tools/releases) (download precompiled executable from official repo)
 - [**CMake (>=3.13)**](https://github.com/Kitware/CMake) ---> Must be available in your $PATH
 - [**ARM GNU Toolchain**](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
+- 
   *Note: Ensure that the ARM GNU Toolchain is available in your $PATH.*
 
 ### B.2. Pre-installed software dependencies
