@@ -2,7 +2,11 @@
 
 - **Institution:** University of Kansas
 - **Course:** EECS 542 (Computer Systems Design Lab II)
-- **Honors & Awards:** Winner of the Rummer Award (best overall Capstone project)
+- **Honors & Awards:** Winner of the Rummer Award (<u>best overall Capstone project</u>)
+
+<figure align="center">
+  <img src="docs/images/earendil_summary.png" alt="earendil_summary" width="800" />
+</figure>
 
 The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. These devices exchange location data on the 915 MHz ISM band to determine where the user should head toward to find the node, which represents a safe known location.
 
@@ -109,10 +113,6 @@ Make sure the GNU Arm Embedded Toolchain is installed and available in your $PAT
 
 ### B.2. Node software dependencies
 
-
-## C. Compilation instructions (Linux
-
-### C.1. Handheld compilation instructions
 SUPER DUPER EXTREMELY IMPORTANT OR SERIALUSB WILL NOT WORK:
 ```
 cd [path_to_pico_sdk]
@@ -121,42 +121,45 @@ cd [path_to_pico_sdk]
 git submodule update --init
 ```
 
-**Step 0** - Navigate to /build in your CLI:
+## C. Compilation instructions (Linux)
+
+### C.1. Handheld / Node compilation instructions
+
+
+- **Step 1:** Navigate to /build in your CLI:
 ```
 cd [path_to_earendil-SAR-system]/build
 ```
 
-**Step 1** - Generate the project's Makefile using CMake and the provided CMakeLists.txt:
+- **Step 2:** Generate the project's Makefile using CMake and the provided CMakeLists.txt:
 
 ```
-cmake .. -DPICO_SDK_PATH=[path_to_pico-sdk] -DFREERTOS_KERNEL_PATH=[path_to_FreeRTOS-Kernel]
+cmake .. -DOUTPUT=HANDHELD -DPICO_SDK_PATH=[path_to_pico-sdk] -DFREERTOS_KERNEL_PATH=[path_to_FreeRTOS-Kernel] -DPICOTOOL_PATH=[path_to_picotool]
 ```
 
-**Step 2** - Make the Makefile to generate the project's .uf2 file.
+If pico-sdk, FreeRTOS-Kernel, and picotool are all located in your $HOME, you can simply do
+```
+cmake .. -DOUTPUT=HANDHELD
+```
+instead.
+
+- **Step 3:** Use the Makefile to generate the project's .uf2 file.
 ```
 make
 ```
-You will use this .uf2 file to program the Adafruit Feather RP2040 + RFM95 via its on-board FLASH memory.
+You will use this .uf2 file in section C.2 to program the Adafruit Feather RP2040 + RFM95 via its on-board FLASH memory.
 
-### C.2. Node compilation instructions
+### C.2. File upload instructions
 
-### C.3. Recompilation instructions (optional)
-
-When recompiling the project after modifying the source files:
-- **If CMakeLists.txt was modified:** Do ```rm -rf *```in /build, then proceed with Steps 1 and 2.
-- **Otherwise:** Proceed with Step 2. If errors are raised, use ```make clean``` then ```make```.
-
-### C.4. File upload instructions
-
-**Step 0** - Grab a USB-C-to-USB-A cable and plug it into the Feather's USB-C port.
+- **Step 1:** Grab a data-capable USB-C cable and plug it into the Feather's USB-C port.
  
-**Step 1** - Press and hold the 'Boot' button on the Adafruit Feather RP2040 + RFM95.
+- **Step 2** - Press and hold the 'Boot' button on the Adafruit Feather RP2040 + RFM95.
 
-**Step 2** - While holding the 'Boot' button, plug the USB-A end of the cable to your computer.
+- **Step 3** - While holding the 'Boot' button, plug the other end of the cable into your computer.
 
-**Step 3** - Release the 'Boot' button. The Feather should be recognized as storage volume 'RPI-RP2'.
+- **Step 4** - Release the 'Boot' button. The Feather should be recognized as storage volume 'RPI-RP2'.
 
-**Step 4** - Mount the 'RPI-RP2' storage volume and upload the project's .uf2 to it.
+- **Step 5** - Mount the 'RPI-RP2' storage volume and upload the project's .uf2 to it.
 
-*Done! The Feather should be now programmed and functional.*
+**Done! The Feather should be now programmed and functional.**
 
