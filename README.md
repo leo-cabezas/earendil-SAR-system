@@ -209,6 +209,4 @@ For the purposes of this project, we employ the great-circle distance between th
 
 where *R_Earth* is the radius of the Earth in meters, and *Handheld*, *Node* are the vectors corresponding to the locations of the Handheld and Node in Euclidean coordinates, respectively. Note that the argument for arctan is scale-invariant, so the radius of the Earth may be set to 1 when determining the vectors Handheld and Node to save on computational resources. This does not apply to however, which must correspond to the actual radius of Earth.
 
-## C. [PENDING] Finding magnetic north
-
 
