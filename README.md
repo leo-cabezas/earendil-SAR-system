@@ -2,10 +2,10 @@
 
 - **Institution:** University of Kansas
 - **Course:** EECS 542 (Computer Systems Design Lab II)
-- **Honors & Awards:** Winner of the Rummer Award (best overall Capstone project)
+- **Honors & Awards:** Winner of the Rummer Award (<u>best overall Capstone project</u>)
 
 <figure align="center">
-  <img src="docs/images/earendil_summary.png" alt="earendil_summary" width="700" />
+  <img src="docs/images/earendil_summary.png" alt="earendil_summary" width="800" />
 </figure>
 
 The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. These devices exchange location data on the 915 MHz ISM band to determine where the user should head toward to find the node, which represents a safe known location.
