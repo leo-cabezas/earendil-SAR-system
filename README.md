@@ -2,7 +2,7 @@
 
 - **Institution:** University of Kansas
 - **Course:** EECS 542 (Computer Systems Design Lab II)
-- **Honors & Awards:** Winner of the Rummer Award (<u>best overall Capstone project</u>)
+- **Honors & Awards:** Winner of the Rummer Award (**best overall Capstone Project**)
 
 <figure align="center">
   <img src="docs/images/earendil_summary.png" alt="earendil_summary" width="800" />
@@ -36,7 +36,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 # Team roster
 
 - **Leo Cabezas Amigo**: Embedded Systems Lead, UI/UX Software Engineer.
-- **Stephen Schmidt**: Project Lead, Embedded Software Engineer.
+- **Stephen Schmidt**: Project Lead, Software Engineer.
 - **Jacob Nonoyama**: UI/UX Software Engineer.
 - **Matthew Ridgeway**: Power Systems Engineer.
 
@@ -45,6 +45,10 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 ## A. Required Hardware
 
 ### A.1. Handheld hardware
+
+<figure align="center">
+  <img src="docs/images/handheld_hardware_diagram.png" alt="handheld_hardware_diagram" width="500" />
+</figure>
 
 | Subsystem | Component | Relevant standards | Cost |
 | :-------- | :-------- | :----------------- | :---------------------- |
@@ -62,6 +66,10 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 **Total Handheld cost:** $129.78 (as of 2026-06-21)
 
 ### A.2. Node hardware
+
+<figure align="center">
+  <img src="docs/images/node_hardware_diagram.png" alt="handheld_hardware_diagram" width="500" />
+</figure>
 
 | Subsystem | Component | Relevant standards | Cost |
 | :-------- | :-------- | :----------------- | :---------------------- |
@@ -134,12 +142,12 @@ cd [path_to_earendil-SAR-system]/build
 - **Step 2:** Generate the project's Makefile using CMake and the provided CMakeLists.txt:
 
 ```
-cmake .. -DOUTPUT=HANDHELD -DPICO_SDK_PATH=[path_to_pico-sdk] -DFREERTOS_KERNEL_PATH=[path_to_FreeRTOS-Kernel] -DPICOTOOL_PATH=[path_to_picotool]
+cmake .. -DOUTPUT=[HANDHELD / NODE] -DPICO_SDK_PATH=[path_to_pico-sdk] -DFREERTOS_KERNEL_PATH=[path_to_FreeRTOS-Kernel] -DPICOTOOL_PATH=[path_to_picotool]
 ```
 
 If pico-sdk, FreeRTOS-Kernel, and picotool are all located in your $HOME, you can simply do
 ```
-cmake .. -DOUTPUT=HANDHELD
+cmake .. -DOUTPUT=[HANDHELD / NODE]
 ```
 instead.
 
@@ -162,4 +170,8 @@ You will use this .uf2 file in section C.2 to program the Adafruit Feather RP204
 - **Step 5** - Mount the 'RPI-RP2' storage volume and upload the project's .uf2 to it.
 
 **Done! The Feather should be now programmed and functional.**
+
+# How it works
+
+
 
