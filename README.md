@@ -202,9 +202,10 @@ The following are the equations used to find the tangent vectors *Bearing* and *
 For the purposes of this project, we employ the great-circle distance between the Handheld and the Node. It can be directly calculated by applying the following equation:
 
 <figure align="center">
-  <img src="docs/images/math_distance_to_node.png" alt="math_distance_to_node" width="600" />
+  <img src="docs/images/math_distance_to_node.png" alt="math_distance_to_node" width="500" />
   <figcaption><em>Figure 10: Direction-finding equation for the Handheld.</em></figcaption>
 </figure>
+<br><br>
 
 where *R_Earth* is the radius of the Earth in meters, and *Handheld*, *Node* are the vectors corresponding to the locations of the Handheld and Node in Euclidean coordinates, respectively. Note that the argument for arctan is scale-invariant, so the radius of the Earth may be set to 1 when determining the vectors Handheld and Node to save on computational resources. This does not apply to however, which must correspond to the actual radius of Earth.
 
