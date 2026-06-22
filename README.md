@@ -35,7 +35,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 
 # Team roster
 
-- **Leo Cabezas Amigo**: Embedded Systems Lead, UI/UX Software Engineer.
+- **Leo Cabezas Amigo**: Embedded Systems Lead, UI/UX Software Engineer, Mathematician.
 - **Stephen Schmidt**: Project Lead, Software Engineer.
 - **Jacob Nonoyama**: UI/UX Software Engineer.
 - **Matthew Ridgeway**: Power Systems Engineer.
@@ -94,40 +94,26 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 
 <figure align="center">
   <img src="docs/images/software_stack_diagram.png" alt="software_stack_diagram" width="600" />
-  <figcaption>Figure 7: Electronic Pathfinder software stack diagram.</figcaption>
+  <figcaption><em>Figure 7: Electronic Pathfinder software stack diagram.</em></figcaption>
 </figure>
 
 ### B.1. Required software dependencies
 
 The following is a comprehensive list of all software dependencies that users are **REQUIRED** to install themselves to be able to compile the Electronic Pathfinder repository, along with instructions and useful clarifications.
 
-TO-DO: REVISE MINIMUM REQUIRED VERSIONS, DEP. VERSIONS IN GENERAL
-
 - [**pico-sdk (2.2.0)**](https://github.com/raspberrypi/pico-sdk)
-- [**FreeRTOS-Kernel (11.2.0)**](https://github.com/FreeRTOS/FreeRTOS-Kernel)
-- [**picotool (2.2.0)**](https://github.com/raspberrypi/pico-sdk-tools/releases) (download precompiled executable from official repo)
-- [**CMake (minimum 3.13)**](https://github.com/Kitware/CMake) ---> Must be available in your $PATH
-- [**arm-none-eabi-gcc (version?)**]() ---> Must be available in your $PATH
-- [**arm-none-eabi-binutils**]
-- [**arm-none-eabi-newlib**]
-
-In Debian based systems, do
-```
-sudo apt-get install build-essential gcc-arm-none-eabi
-```
-
-SUPER DUPER EXTREMELY IMPORTANT OR SERIALUSB WILL NOT WORK:
+  *Note: Perform the following actions after cloning pico-sdk.*
 ```
 cd [path_to_pico_sdk]
 ```
 ```
 git submodule update --init
-```
-
-- [**arm-none-eabi-g++ (version?)**]() => Must be available in your $PATH
-- What else? Need to make sure nothing's missing.
-
-Make sure the GNU Arm Embedded Toolchain is installed and available in your $PATH.
+```  
+- [**FreeRTOS-Kernel (11.2.0)**](https://github.com/FreeRTOS/FreeRTOS-Kernel)
+- [**picotool (2.2.0)**](https://github.com/raspberrypi/pico-sdk-tools/releases) (download precompiled executable from official repo)
+- [**CMake (>=3.13)**](https://github.com/Kitware/CMake) ---> Must be available in your $PATH
+- [**ARM GNU Toolchain**](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
+  *Note: Ensure that the ARM GNU Toolchain is available in your $PATH.*
 
 ### B.2. Pre-installed software dependencies
 
@@ -149,7 +135,6 @@ The Electronic Pathfinder repository already contains most of the required softw
 ## C. Compilation instructions (Linux)
 
 ### C.1. Handheld / Node compilation instructions
-
 
 - **Step 1:** Navigate to /build in your CLI:
 ```
@@ -189,6 +174,7 @@ You will use this .uf2 file in section C.2 to program the Adafruit Feather RP204
 **Done! The Feather should be now programmed and functional.**
 
 # How it works
+
 
 
 
