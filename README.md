@@ -185,7 +185,7 @@ You will use this .uf2 file in section C.2 to program the Adafruit Feather RP204
 To determine the direction the user should be travelling towards relative to magnetic north, it is necessary to take into consideration the (approximately) spherical geometry of the Earth. In spherical geometry, a “straight line” between two points (i.e. the Handheld and the Node) corresponds to the great circle passing through those two points. To signal the Handheld how to travel along this great circle to reach the Node, we first find two tangent vectors at the Handheld’s location: one which points towards magnetic north (*MagNorth*), and one which points towards the Node (*Bearing*). Then, we simply find the oriented angle between the two tangent vectors, taking *MagNorth* as the reference. We use this information to display an indicator dot on the display, signaling the user in which direction they should travel to reach the Node.
 
 <figure align="center">
-  <img src="docs/images/earth_angle_to_node.png" alt="earth_angle_to_node" width="400" />
+  <img src="docs/images/earth_angle_to_node.png" alt="earth_angle_to_node" width="500" />
   <figcaption><em>Figure 8: Visualization of the tangent vectors and their oriented angle.</em></figcaption>
 </figure>
 <br><br>
@@ -194,11 +194,20 @@ The following are the equations used to find the tangent vectors *Bearing* and *
 
 <figure align="center">
   <img src="docs/images/math_angle_to_node.png" alt="math_angle_to_node" width="600" />
-  <figcaption><em>Figure 9: Direction-finding equations for Handheld.</em></figcaption>
+  <figcaption><em>Figure 9: Direction-finding equations for the Handheld.</em></figcaption>
 </figure>
 
 ## B. Distance-finding algorithm
 
-## C. Finding magnetic north
+For the purposes of this project, we employ the great-circle distance between the Handheld and the Node. It can be directly calculated by applying the following equation:
+
+<figure align="center">
+  <img src="docs/images/math_distance_to_node.png" alt="math_distance_to_node" width="600" />
+  <figcaption><em>Figure 10: Direction-finding equation for the Handheld.</em></figcaption>
+</figure>
+
+where *R_Earth* is the radius of the Earth in meters, and *Handheld*, *Node* are the vectors corresponding to the locations of the Handheld and Node in Euclidean coordinates, respectively. Note that the argument for arctan is scale-invariant, so the radius of the Earth may be set to 1 when determining the vectors Handheld and Node to save on computational resources. This does not apply to however, which must correspond to the actual radius of Earth.
+
+## C. [PENDING] Finding magnetic north
 
 
