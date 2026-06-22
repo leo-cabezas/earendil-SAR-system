@@ -4,6 +4,11 @@
 - **Course:** EECS 542 (Computer Systems Design Lab II)
 - **Honors & Awards:** Winner of the Rummer Award (best overall Capstone project)
 
+<figure align="center">
+  <img src="docs/images/earendil_summary.png" alt="earendil_summary" width="600" />
+  <figcaption>Figure 1: The Electronic Pathfinder in a nutshell.</figcaption>
+</figure>
+
 The Electronic Pathfinder is a handheld system which directs users lost in the wilderness toward a safe location broadcasted via radio by a node, reducing the time and cost for search-and-rescue (SAR) operations. The project consists of two parts: the Handheld system, and the Node system. These devices exchange location data on the 915 MHz ISM band to determine where the user should head toward to find the node, which represents a safe known location.
 
 <table>
@@ -147,11 +152,11 @@ You will use this .uf2 file in section C.2 to program the Adafruit Feather RP204
 
 ### C.2. File upload instructions
 
-- **Step 1:** Grab a USB-C-to-USB-A cable and plug it into the Feather's USB-C port.
+- **Step 1:** Grab a data-capable USB-C cable and plug it into the Feather's USB-C port.
  
 - **Step 2** - Press and hold the 'Boot' button on the Adafruit Feather RP2040 + RFM95.
 
-- **Step 3** - While holding the 'Boot' button, plug the USB-A end of the cable to your computer.
+- **Step 3** - While holding the 'Boot' button, plug the other end of the cable into your computer.
 
 - **Step 4** - Release the 'Boot' button. The Feather should be recognized as storage volume 'RPI-RP2'.
 
