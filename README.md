@@ -182,14 +182,15 @@ You will use this .uf2 file in section C.2 to program the Adafruit Feather RP204
 
 ## A. Direction-finding algorithm
 
-To determine the direction the user should be travelling towards relative to magnetic north, it is necessary to take into consideration the (approximately) spherical geometry of the Earth. In spherical geometry, a “straight line” between two points (i.e. the Handheld/User and the Node) corresponds to the great circle passing through those two points. To signal the Handheld/User how to travel along this great circle to reach the Node, we first find two tangent vectors at the User’s location: one which points towards magnetic north (MagNorth), and one which points towards the Node (Bearing). Then, we simply find the oriented angle between the two tangent vectors (taking MagNorth as the reference). We use this information to display an indicator dot on the display, signaling the user in which direction they should travel to reach the Node.
+To determine the direction the user should be travelling towards relative to magnetic north, it is necessary to take into consideration the (approximately) spherical geometry of the Earth. In spherical geometry, a “straight line” between two points (i.e. the Handheld and the Node) corresponds to the great circle passing through those two points. To signal the Handheld how to travel along this great circle to reach the Node, we first find two tangent vectors at the Handheld’s location: one which points towards magnetic north (*MagNorth*), and one which points towards the Node (*Bearing*). Then, we simply find the oriented angle between the two tangent vectors, taking *MagNorth* as the reference. We use this information to display an indicator dot on the display, signaling the user in which direction they should travel to reach the Node.
 
 <figure align="center">
-  <img src="docs/images/earth_angle_to_node.png" alt="earth_angle_to_node" width="600" />
+  <img src="docs/images/earth_angle_to_node.png" alt="earth_angle_to_node" width="400" />
   <figcaption><em>Figure 8: Visualization of the tangent vectors and their oriented angle.</em></figcaption>
 </figure>
+<br><br>
 
-The following are the equations used to find the tangent vectors Bearing and MagNorth, and to calculate the angle between them, using the Handheld’s and the Node’s Euclidean coordinates. Note that the angle equation is scale-invariant, so the radius of the Earth may be set to 1 to simplify calculations and thus save computational resources when the system is deployed.
+The following are the equations used to find the tangent vectors *Bearing* and *MagNorth*, and to calculate the angle between them, using the Handheld’s and the Node’s Euclidean coordinates. Note that the angle equation is scale-invariant, so the radius of the Earth may be set to 1 to simplify calculations and thus save computational resources when the system is deployed.
 
 <figure align="center">
   <img src="docs/images/math_angle_to_node.png" alt="math_angle_to_node" width="600" />
