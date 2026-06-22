@@ -3,13 +3,6 @@
 # Project: EARENDIL (Team 1; EECS 542)                             #
 ####################################################################
 
-# =========================== SPECIAL TERMINOLOGY ==============================
-# Full:         The library was copied fully.
-# Lean:         Only the minimum required source files have been copied from the original library.
-# Unmodified:   Of those files copied, none were modified.
-# Modified:     Some of the files copied were modified to work with Earendil.
-# ==============================================================================
-
 # Set CMake minimum version
 cmake_minimum_required(VERSION 3.13)
 
@@ -17,8 +10,8 @@ cmake_minimum_required(VERSION 3.13)
 if (NOT DEFINED PICO_SDK_PATH)          # pico-sdk default path
         set(PICO_SDK_PATH               $ENV{HOME}/pico-sdk             CACHE STRING "pico-sdk default path for Earendil")
 endif()
-if (NOT DEFINED picotool_DIR)           # picotool default path
-        set(picotool_DIR                $ENV{HOME}/picotool             CACHE STRING "picotool default path for Earendil")
+if (NOT DEFINED PICOTOOL_PATH)           # picotool default path
+        set(PICOTOOL_PATH                $ENV{HOME}/picotool             CACHE STRING "picotool default path for Earendil")
 endif()
 if (NOT DEFINED FREERTOS_KERNEL_PATH)   # FreeRTOS-Kernel default path
         set(FREERTOS_KERNEL_PATH        $ENV{HOME}/FreeRTOS-Kernel      CACHE STRING "FreeRTOS-Kernel default path for Earendil")
