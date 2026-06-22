@@ -13,22 +13,22 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 <table>
   <tr>
     <td align="center">
-      <img src="docs/images/earendil_handheld.png" alt="Image 1" width="300"><br>
+      <img src="docs/images/earendil_handheld.png" alt="earendil_handheld" width="300"><br>
       <em>Figure 1: Electronic Pathfinder's Handheld system.</em>
     </td>
     <td align="center">
-      <img src="docs/images/earendil_node.png" alt="Image 2" width="300"><br>
-      <em>Caption for Image 2</em>
+      <img src="docs/images/earendil_node.png" alt="node_handheld" width="300"><br>
+      <em>Figure 2: Electronic Pathfinder's Node system.</em>
     </td>
   </tr>
   <tr>
     <td align="center">
       <img src="docs/images/gui_design.png" alt="Image 3" width="300"><br>
-      <em>Caption for Image 3</em>
+      <em>Figure 3: Caption for Image 3</em>
     </td>
     <td align="center">
       <img src="docs/images/software_stack_diagram.png" alt="Image 4" width="300"><br>
-      <em>Caption for Image 4</em>
+      <em>Figure 4: Caption for Image 4</em>
     </td>
   </tr>
 </table>
@@ -48,6 +48,7 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 
 <figure align="center">
   <img src="docs/images/handheld_hardware_diagram.png" alt="handheld_hardware_diagram" width="500" />
+  <figcaption>Figure 5: Handheld hardware diagram.</figcaption>
 </figure>
 
 | Component | Product link | Relevant standards | Cost |
@@ -68,7 +69,8 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 ### A.2. Node hardware
 
 <figure align="center">
-  <img src="docs/images/node_hardware_diagram.png" alt="handheld_hardware_diagram" width="500" />
+  <img src="docs/images/node_hardware_diagram.png" alt="node_hardware_diagram" width="300" />
+  <figcaption>Figure 6: Node hardware diagram.</figcaption>
 </figure>
 
 | Component | Product link | Relevant standards | Cost |
@@ -87,6 +89,11 @@ The Electronic Pathfinder is a handheld system which directs users lost in the w
 **Total Node cost:** $146.78 (as of 2026-06-21)
 
 ## B. Software dependencies
+
+<figure align="center">
+  <img src="docs/images/software_stack_diagram.png" alt="software_stack_diagram" width="400" />
+  <figcaption>Figure 7: Electronic Pathfinder software stack diagram.</figcaption>
+</figure>
 
 ### B.1. Required software dependencies
 
